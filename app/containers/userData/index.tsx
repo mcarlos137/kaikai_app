@@ -20,6 +20,7 @@ import httpRequest from '../../tools/httpRequest';
 //HOOKS
 import { getFinancialOverview } from '../../main/hooks/getFinancialOverview';
 import { getConfig } from '../../main/hooks/getConfig';
+//CONSTANTS
 import { months } from '../../constants/time';
 
 const UserDataScreen = ({ navigation, route, colors, userName, hmacInterceptor }) => {
@@ -35,7 +36,7 @@ const UserDataScreen = ({ navigation, route, colors, userName, hmacInterceptor }
     getConfig(userName)
 
   //MEMOS
-  const digitalBusinessData = useMemo(() => {
+  const dataDigitalBusiness = useMemo(() => {
     if (dataFinancialOverview.length === 0) {
       return {}
     }
@@ -109,7 +110,7 @@ const UserDataScreen = ({ navigation, route, colors, userName, hmacInterceptor }
     }
   }, [dataFinancialOverview])
 
-  const additionalInfoData = useMemo(() => {
+  const dataAdditionalInfo = useMemo(() => {
     return [
       { name: 'description', text: 'description', canEdit: true, value: dataGetConfig?.description === undefined ? '' : dataGetConfig.description, type: 'TEXT', add: dataGetConfig?.description === undefined, changed: false },
       { name: 'web', text: 'web', canEdit: true, value: dataGetConfig?.web === undefined ? '' : dataGetConfig.web, type: 'TEXT_LINK', add: dataGetConfig?.web === undefined, changed: false, info: 'Enter your web site URL.' },
@@ -124,7 +125,7 @@ const UserDataScreen = ({ navigation, route, colors, userName, hmacInterceptor }
     ]
   }, [dataGetConfig])
 
-  const subscriptionsAndCallsData = useMemo(() => {
+  const dataSubscriptionsAndCalls = useMemo(() => {
     return [
       { name: 'moneyCallRate', text: 'calls', canEdit: true, value: dataGetConfig?.moneyCallRate === undefined ? '0.00' : dataGetConfig.moneyCallRate, type: 'NUMBER', decimals: 2, suffix: 'USD/min', add: dataGetConfig?.moneyCallRate === undefined, changed: false, info: 'Change your calls rate per minute. Other users could not schedule calls for less than this amount with you' },
       { name: 'premiumPrice', text: 'premium subs', canEdit: true, value: dataGetConfig?.premiumPrice === undefined ? '0.00' : dataGetConfig.premiumPrice, type: 'NUMBER', decimals: 2, suffix: 'USD/month', add: dataGetConfig?.premiumPrice === undefined, changed: false, info: 'Change your premium subscription price to an amount bigger than 0.00 and it will be activated. Only subscribers older than 18 could see your premium gallery.' },
@@ -132,7 +133,7 @@ const UserDataScreen = ({ navigation, route, colors, userName, hmacInterceptor }
     ]
   }, [dataGetConfig])
 
-  const verifiedInfoData = useMemo(() => {
+  const dataVerifiedInfo = useMemo(() => {
     return [
       { name: 'A', text: 'email verification', canEdit: false, value: dataGetConfig?.verifications?.A, type: 'VERIFICATION', add: dataGetConfig?.phone === undefined, changed: false },
       { name: 'B', text: 'phone verification', canEdit: false, value: dataGetConfig?.verifications?.B, type: 'VERIFICATION', add: dataGetConfig?.email === undefined, changed: false },
@@ -146,7 +147,7 @@ const UserDataScreen = ({ navigation, route, colors, userName, hmacInterceptor }
     {
       type: 'digitalBusiness',
       title: 'Digital Business',
-      sectionContent: <Boby_SectionContentDigitalBusiness data={digitalBusinessData} />,
+      sectionContent: <Boby_SectionContentDigitalBusiness data={dataDigitalBusiness} />,
       canEdit: false,
       visible: true,
       buttons:
@@ -164,21 +165,21 @@ const UserDataScreen = ({ navigation, route, colors, userName, hmacInterceptor }
     {
       type: 'verifiedInfo',
       title: 'Verified Info',
-      sectionContent: <Boby_SectionContentVerifiedInfo data={verifiedInfoData} />,
+      sectionContent: <Boby_SectionContentVerifiedInfo data={dataVerifiedInfo} />,
       canEdit: false,
       visible: dataGetConfig?.verifications?.A !== undefined ||  dataGetConfig?.verifications?.B !== undefined ||  dataGetConfig?.verifications?.C !== undefined,
     },
     {
       type: 'additionalInfo',
       title: 'Additional Info',
-      sectionContent: <Boby_SectionContent data={additionalInfoData} />,
+      sectionContent: <Boby_SectionContent data={dataAdditionalInfo} />,
       canEdit: true,
       visible: true,
     },
     {
       type: 'subscriptionsAndCalls',
       title: 'Subscriptions & Calls',
-      sectionContent: <Boby_SectionContent data={subscriptionsAndCallsData} />,
+      sectionContent: <Boby_SectionContent data={dataSubscriptionsAndCalls} />,
       canEdit: true,
       visible: true,
     },

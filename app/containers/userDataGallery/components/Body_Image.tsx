@@ -2,21 +2,26 @@ import React, { useState, useEffect } from 'react'
 import { Platform, TouchableOpacity } from 'react-native'
 import FastImage from 'react-native-fast-image';
 import RNFetchBlob from 'rn-fetch-blob';
-import { useNavigation, StackActions, useRoute } from '@react-navigation/native';
+import { StackActions } from '@react-navigation/native';
 import { createThumbnail } from 'react-native-create-thumbnail';
+import { compose } from 'redux';
 //TOOLS
 import httpRequest from '../../../tools/httpRequest';
 //HOC
-import { withHmacInterceptor } from '../../../main/hoc';
+import { withHmacInterceptor, withNavigation, withRoute, withUserName } from '../../../main/hoc';
 
-const Component = ({ width, height, item, userName, hmacInterceptor }) => {
-    
+const Component = ({
+    width,
+    height,
+    item,
+    navigation,
+    route,
+    userName,
+    hmacInterceptor
+}) => {
+
     //INITIAL STATES
     const [uri, setUri] = useState('')
-
-    //HOOKS CALLS
-    const { dispatch } = useNavigation()
-    const route = useRoute()
 
     //EFFECTS
     useEffect(() => {
@@ -73,8 +78,7 @@ const Component = ({ width, height, item, userName, hmacInterceptor }) => {
             onPress={() => {
                 setTimeout(() => {
                     console.log('WAIT')
-                    dispatch(StackActions.push('UserDataGalleryViewScreen', { ...route.params, selectedGalleryItem: item }))
-                    //navigateStore.dispatch({ type: NAVIGATE, payload: { target: 'UserDataGalleryViewScreen', selectedGalleryItem: item } })
+                    navigation.dispatch(StackActions.push('UserDataGalleryViewScreen', { ...route.params, selectedGalleryItem: item }))
                 }, 0)
             }}
             activeOpacity={0.9}
@@ -94,4 +98,4 @@ const Component = ({ width, height, item, userName, hmacInterceptor }) => {
     )
 }
 
-export default React.memo( withHmacInterceptor(Component))
+export default React.memo(compose(withNavigation, withRoute, withUserName, withHmacInterceptor)(Component))

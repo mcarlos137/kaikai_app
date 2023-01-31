@@ -1,106 +1,244 @@
 //PRINCIPAL
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Text,
     View,
     FlatList,
     TouchableOpacity,
+    Alert,
 } from 'react-native';
-import { useNavigation, StackActions, useRoute } from '@react-navigation/native';
+import { StackActions } from '@react-navigation/native';
+import Firestore from '@react-native-firebase/firestore';
 import { Avatar, Badge } from '@rneui/themed';
 import { connect } from "react-redux";
+import { compose } from "redux";
 import Moment from 'moment';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import { useTheme } from 'react-native-paper';
+//STORES
+import { store as chatStore } from '../../../main/stores/chat';
 //TOOLS
 import httpRequest from '../../../tools/httpRequest';
-//STORES
-import { store as authStore } from '../../../main/stores/auth'; 
-import { store as headersStore } from '../../../main/stores/headers';
+//HOC
+import { withColors, withHmacInterceptor, withNavigation, withRoute, withUserName } from '../../../main/hoc';
 
 const mapStateToProps = state => {
     return {
         data: state.data,
-        refreshCount: state.refreshCount,
     };
 };
 
 const ConnectedComponent = ({
     data,
-    refreshCount,
+    navigation,
+    route,
+    colors,
+    userName,
+    hmacInterceptor
 }) => {
 
-    //INITIAL CONSTANTS
-    const { userName } = authStore.getState()
-    const { hmacInterceptor } = headersStore.getState()
+    //INITIAL STATES
+    const [chatRoomsToDelete, setChatRoomsToDelete] = useState<string[]>([])
 
-    //HOOKS CALLS
-    const { colors } = useTheme<any>();
-    const { dispatch } = useNavigation()
-    const route = useRoute()
-
-    //FUNCTIONS
-    function getTextLastMessage(item) {
-        let text = '';
-        let notRead = 0;
-        for (let i = 0; i < item.item.messages.length; i++) {
-            if (item.item.messages[i].deleted === undefined || !item.item.messages[i].deleted) {
-                if (text === '') {
-                    if (item.item.messages[i].message.length > 38) {
-                        text = item.item.messages[i].message.trim().slice(0, 35) + '...';
-                    } else {
-                        text = item.item.messages[i].message.trim()
-                    }
-                }
-                if (item.item.messages[i].senderUserName !== userName && item.item.messages[i].readed === false) {
-                    notRead = notRead + 1;
-                }
+    //EFFECTS
+    useEffect(() =>
+        navigation.addListener('beforeRemove', (e) => {
+            if (chatRoomsToDelete.length === 0) {
+                return;
             }
+            e.preventDefault();
+            setChatRoomsToDelete([])
+        }),
+        [navigation, chatRoomsToDelete]
+    );
+
+    useEffect(() => {
+        Firestore()
+            .collection('chats')
+            .doc(userName)
+            .collection('new')
+            .doc('0').set({})
+        const unsubscribe = Firestore()
+            .collection('chats')
+            .doc(userName)
+            .collection('new')
+            .onSnapshot(
+                (querySnapshot) => {
+                    querySnapshot.forEach(documentSnapshot => {
+                        if (String(documentSnapshot.id) === '0') {
+                            return
+                        }
+                        console.log('new message: ', documentSnapshot.id, documentSnapshot.data());
+                        let itemData = { ...documentSnapshot.data() }
+                        /*if (!(navigateStore.getState().currentScreenState === 'ChatScreen' ||
+                            navigateStore.getState().currentScreenState === 'ChatRoomScreen')) {
+                            Toast.show({
+                                type: ALERT_TYPE.SUCCESS,
+                                title: itemData.senderUserName,
+                                textBody: itemData.message,
+                                onPress: () => {
+                                    Toast.hide()
+                                    navigateStore.dispatch({
+                                        type: NAVIGATE,
+                                        payload: {
+                                            target: 'ChatRoomScreen',
+                                            selectedChatRoom: getChatRoom(itemData.senderUserName),
+                                            selectedPhone: {}
+                                        }
+                                    })
+                                }
+                            })
+                        }
+                        let otherPublicKey = null
+                        if (itemData.publicKey !== undefined) {
+                            otherPublicKey = itemData.publicKey
+                        }
+                        delete itemData.publicKey
+                        
+                        
+                        if (otherPublicKey !== null) {
+                            data.otherPublicKey = otherPublicKey
+                        }
+                        chatPersistedStore.dispatch({
+                            type: ADD_CHAT_DATA_NEW,
+                            payload: data
+                        })*/
+                        const chatRoom = userName !== itemData.receiverUserName ? itemData.receiverUserName : itemData.senderUserName
+                        const data = {
+                            chatRoom: chatRoom,
+                            fullName: '',
+                            //publicKey: chatPersistedStore.getState().selectedChatRoomState.publicKey,
+                            message: {
+                                timestamp: itemData.timestamp,
+                                senderUserName: itemData.senderUserName,
+                                receiverUserName: itemData.receiverUserName,
+                                text: itemData.text,
+                                sended: true,
+                                readed: false,
+                                delivered: false,
+                            },
+                        }
+                        chatStore.dispatch({ type: 'ADD_DATA', payload: data })
+                        Firestore()
+                            .collection('chats')
+                            .doc(userName)
+                            .collection('old')
+                            .doc(documentSnapshot.id).set(itemData)
+                        Firestore()
+                            .collection('chats')
+                            .doc(chatRoom)
+                            .collection('delivered')
+                            .doc(documentSnapshot.id).set({ id: documentSnapshot.id, receiverUserName: itemData.receiverUserName })
+                        Firestore()
+                            .collection('chats')
+                            .doc(userName)
+                            .collection('new')
+                            .doc(documentSnapshot.id).delete()
+                    });
+                },
+                (error) => {
+                    console.error(error);
+                }
+            );
+        return () => {
+            unsubscribe;
         }
-        item.item.notRead = notRead;
-        //console.log('msjnoleidos',item.item.notRead);
-        return text;
-    }
-    
-    function getName(item) {
-        return item.item.firstName === undefined || item.item.lastName === undefined
-            ?
-            item.item.contactFullName === undefined
-                ?
-                item.item.nickName === undefined
-                    ?
-                    item.item.chatRoom
-                    :
-                    item.item.nickName
-                :
-                item.item.contactFullName
-            :
-            item.item.firstName + ' ' + item.item.lastName;
-    }
-    
+    }, [])
+
+    useEffect(() => {
+        Firestore()
+            .collection('chats')
+            .doc(userName)
+            .collection('delivered')
+            .doc('0').set({})
+        const unsubscribe = Firestore()
+            .collection('chats')
+            .doc(userName)
+            .collection('delivered')
+            .onSnapshot(
+                (querySnapshot) => {
+                    querySnapshot.forEach(documentSnapshot => {
+                        if (String(documentSnapshot.id) === '0') {
+                            return
+                        }
+                        console.log('new message: ', documentSnapshot.id, documentSnapshot.data());
+                        chatStore.dispatch(
+                            {
+                                type: 'CHANGE_MESSAGE_STATUS',
+                                payload: {
+                                    chatRoom: documentSnapshot.data().receiverUserName,
+                                    timestamp: documentSnapshot.data().timestamp,
+                                    status: 'delivered'
+                                }
+                            })
+                        Firestore()
+                            .collection('chats')
+                            .doc(userName)
+                            .collection('delivered')
+                            .doc(documentSnapshot.id).delete()
+                    });
+                },
+                (error) => {
+                    console.error(error);
+                }
+            );
+        return () => {
+            unsubscribe;
+        }
+    }, [])
+
+    useEffect(() => {
+        Firestore()
+            .collection('chats')
+            .doc(userName)
+            .collection('readed')
+            .doc('0').set({})
+        const unsubscribe = Firestore()
+            .collection('chats')
+            .doc(userName)
+            .collection('readed')
+            .onSnapshot(
+                (querySnapshot) => {
+                    querySnapshot.forEach(documentSnapshot => {
+                        if (String(documentSnapshot.id) === '0') {
+                            return
+                        }
+                        console.log('new message: ', documentSnapshot.id, documentSnapshot.data());
+                        chatStore.dispatch(
+                            {
+                                type: 'CHANGE_MESSAGE_STATUS',
+                                payload: {
+                                    chatRoom: documentSnapshot.data().receiverUserName,
+                                    timestamp: documentSnapshot.data().timestamp,
+                                    status: 'readed'
+                                }
+                            })
+                        Firestore()
+                            .collection('chats')
+                            .doc(userName)
+                            .collection('readed')
+                            .doc(documentSnapshot.id).delete()
+                    });
+                },
+                (error) => {
+                    console.error(error);
+                }
+            );
+        return () => {
+            unsubscribe;
+        }
+    }, [])
+
     //COMPONENTS
     const renderItem = (item) => (
         <>
             {item.item.messages.length > 0 &&
                 <TouchableOpacity
                     onPress={() => {
-                        let selectedChatRoom: any = {
+                        const selectedChatRoom = {
                             chatRoom: item.item.chatRoom,
+                            fullName: item.item.fullName
                         }
-                        if (item.item.nickName !== undefined) {
-                            selectedChatRoom.nickName = item.item.nickName
-                        }
-                        if (item.item.firstName !== undefined) {
-                            selectedChatRoom.firstName = item.item.firstName
-                        }
-                        if (item.item.lastName !== undefined) {
-                            selectedChatRoom.lastName = item.item.lastName
-                        }
-                        if (item.item.contactFullName !== undefined) {
-                            selectedChatRoom.contactFullName = item.item.contactFullName
-                        }
-                        if (item.item.publicKey !== undefined) {
+                        /*if (item.item.publicKey !== undefined) {
                             selectedChatRoom.publicKey = item.item.publicKey
                         }
                         if (item.item.privateKey !== undefined) {
@@ -108,31 +246,17 @@ const ConnectedComponent = ({
                         }
                         if (item.item.otherPublicKey !== undefined) {
                             selectedChatRoom.otherPublicKey = item.item.otherPublicKey
-                        }
-                        /*navigateStore.dispatch({
-                            type: NAVIGATE,
-                            payload: {
-                                target: 'ChatRoomScreen',
-                                selectedChatRoom: selectedChatRoom,
-                                selectedPhone: {}
-                            }
-                        })*/
+                        }*/
+                        navigation.dispatch(StackActions.push('ChatRoomScreen', { ...route.params, selectedChatRoom: selectedChatRoom }))
                     }}
-                    /*onLongPress={() => {
-                        indexPersistedStore.dispatch({
-                            type: SET_CHAT_ROOM_TO_DELETE,
-                            payload: item.item.chatRoom
-                        });
-                        indexPersistedStore.dispatch({
-                            type: SET_NAME_DELETE_CHAT,
-                            payload: getName(item)
-                        });
-                        indexPersistedStore.dispatch({
-                            type: VIEW_DELETE_CHAT,
-                            payload: true
-                        });
-                    }}*/
-                    style={{
+                    onLongPress={() => {
+                        if (chatRoomsToDelete.includes(item.item.chatRoom)) {
+                            setChatRoomsToDelete(ctd => ctd.filter(it => it !== item.item.chatRoom))
+                        } else {
+                            setChatRoomsToDelete([...chatRoomsToDelete, item.item.chatRoom])
+                        }
+                    }}
+                    style={[{
                         marginLeft: 10,
                         marginTop: 10,
                         marginRight: 10,
@@ -140,7 +264,7 @@ const ConnectedComponent = ({
                         padding: 10,
                         backgroundColor: colors.primaryBackground,
                         flexDirection: 'row',
-                    }}
+                    }, chatRoomsToDelete.includes(item.item.chatRoom) && { borderColor: 'red', borderWidth: 2 }]}
                 >
                     <Avatar
                         rounded
@@ -181,7 +305,7 @@ const ConnectedComponent = ({
                                     fontSize: 16
                                 }}
                             >
-                                {getName(item)} {item.item.chatRoom.includes('ADMIN__') ? ' --> ' + item.item.chatRoom.split('__')[1].substring(item.item.chatRoom.split('__')[1].length - 4) : undefined}
+                                {item.item.fullName}
                             </Text>
                             <Text
                                 style={{
@@ -191,7 +315,7 @@ const ConnectedComponent = ({
                                     alignSelf: 'center',
                                 }}
                             >
-                                {Moment(new Date(Number(item.item.messages[0].time)).toISOString()).format(
+                                {Moment(new Date(item.item.messages[0].timestamp)).format(
                                     'hh:mm a'
                                 )}
                             </Text>
@@ -202,18 +326,22 @@ const ConnectedComponent = ({
                                 fontSize: 14,
                             }}
                         >
-                            {getTextLastMessage(item)}
+                            {
+                                item.item.messages[item.item.messages.length - 1].text.length > 38 ?
+                                    item.item.messages[item.item.messages.length - 1].text.trim().slice(0, 35) + '...' :
+                                    item.item.messages[item.item.messages.length - 1].text.trim()
+                            }
                         </Text>
                     </View>
-                    {item.item.notRead > 0 && <View style={{ alignSelf: 'center', padding: 5 }}><Badge value={item.item.notRead} status="primary" /></View>}
+                    {item.item.messages.filter(message => !message?.readed && message.senderUserName !== userName).length > 0 && <View style={{ alignSelf: 'center', padding: 5 }}><Badge value={item.item.messages.filter(message => !message?.readed && message.senderUserName !== userName).length} status="primary" /></View>}
                 </TouchableOpacity>}
         </>
     )
-    
+
     const keyExtractor = (item) => (
         String(item.chatRoom)
     )
-    
+
     const getItemLayout = (data, index) => ({
         length: data.length,
         offset: data.length * index,
@@ -231,37 +359,75 @@ const ConnectedComponent = ({
                 maxToRenderPerBatch={20}
                 windowSize={21}
                 initialNumToRender={20}
-                extraData={refreshCount}
                 //getItemLayout={getItemLayout}
                 updateCellsBatchingPeriod={50}
             />
-            <TouchableOpacity
-                onPress={() => {
-                    dispatch(StackActions.push('ContactsScreen', {...route.params}))
-                    //navigateStore.dispatch({ type: NAVIGATE, payload: { target: 'ContactsScreen', redirectToTarget: 'ChatRoomScreen', selectedStatusBarColor: '#1f65ff' } });
-                }}
+            <View
                 style={{
                     position: 'absolute',
                     right: 30,
                     bottom: 60,
-                    height: 60,
-                    width: 60,
-                    borderRadius: 30,
-                    backgroundColor: '#009387',
-                    alignItems: 'center',
-                    justifyContent: 'center'
                 }}
             >
-                <MaterialCommunityIcons
-                    name="message-text-outline"
-                    color={'white'}
-                    size={40}
-                />
-            </TouchableOpacity>
+                {chatRoomsToDelete.length > 0 ?
+                    <TouchableOpacity
+                        onPress={() => {
+                            Alert.alert(
+                                'Delete chat messages',
+                                'Are you sure to delete selected chat messages?',
+                                [
+                                    { text: "Cancel", style: 'cancel', onPress: () => { } },
+                                    {
+                                        text: 'Delete',
+                                        style: 'destructive',
+                                        // If the user confirmed, then we dispatch the action we blocked earlier
+                                        // This will continue the action that had triggered the removal of the screen
+                                        onPress: () => {
+                                            chatStore.dispatch({ type: 'DELETE_CHATROOMS', payload: chatRoomsToDelete })
+                                            setChatRoomsToDelete([])
+                                        },
+                                    },
+                                ]
+                            );
+                        }}
+                        style={{
+                            height: 60,
+                            width: 60,
+                            borderRadius: 30,
+                            backgroundColor: 'red',
+                            alignItems: 'center',
+                            justifyContent: 'center'
+                        }}
+                    >
+                        <MaterialCommunityIcons
+                            name='delete'
+                            color={'white'}
+                            size={40}
+                        />
+                    </TouchableOpacity>
+                    :
+                    <TouchableOpacity
+                        onPress={() => {
+                            navigation.dispatch(StackActions.push('ContactsScreen', { ...route.params, replaceTarget: 'ChatRoomScreen' }))
+                        }}
+                        style={{
+                            height: 60,
+                            width: 60,
+                            borderRadius: 30,
+                            backgroundColor: '#009387',
+                            alignItems: 'center',
+                            justifyContent: 'center'
+                        }}
+                    >
+                        <MaterialCommunityIcons
+                            name="message-text-outline"
+                            color={'white'}
+                            size={40}
+                        />
+                    </TouchableOpacity>}
+            </View>
         </View>
     )
 };
 
-const Component = connect(mapStateToProps)(ConnectedComponent);
-
-export default Component;
+export default React.memo(compose(withNavigation, withRoute, withColors, withUserName, withHmacInterceptor, connect(mapStateToProps))(ConnectedComponent));

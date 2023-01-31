@@ -15,25 +15,6 @@ const Component = ({ data, colors }) => {
     const [scrollViewRef, setScrollViewRef] = useState<RefObject<any>>(createRef())
 
     //CONSTANTS
-    const CHARTS = [
-        {
-            title: 'Total',
-            dataType: 'ALL'
-        },
-        {
-            title: 'Subscriptions',
-            dataType: 'SUBSCRIPTION'
-        },
-        {
-            title: 'Paid Calls',
-            dataType: 'MONEY_CALL'
-        },
-        {
-            title: 'Donations',
-            dataType: 'DONATION'
-        },
-    ]
-
     const LEGEND = {
         enabled: true,
         textSize: 10,
@@ -54,6 +35,9 @@ const Component = ({ data, colors }) => {
 
     //FUNCTIONS
     const getData = (data, type) => {
+        if (JSON.stringify(data) === JSON.stringify({})) {
+            return {}
+        }
         switch (type) {
             case 1:
                 let activeSubscriptionUsersQuantity = 0
@@ -173,151 +157,141 @@ const Component = ({ data, colors }) => {
                 let partialData: any = {}
                 let currentDate = new Date()
                 let i = 0
-                console.log('data>>>>>>>>>>>>>>>>>>>', data)
-                if (JSON.stringify(data) !== JSON.stringify({})) {
-                    while (i < 9) {
-                        let monthPeriod = months[currentDate.getMonth()] + '-' + currentDate.getFullYear().toString().substring(2)
-                        partialData[monthPeriod] = [
-                            data?.tvShows?.general?.previousActiveOwnPayedSubscriptions + data?.tvShows?.general?.previousActiveOwnFreeSubscriptions,
-                            data?.liveStreamings?.general?.previousActiveOwnPayedSubscriptions + data?.liveStreamings?.general?.previousActiveOwnFreeSubscriptions,
-                            data?.users?.general?.previousActiveOwnPayedSubscriptions + data?.users?.general?.previousActiveOwnFreeSubscriptions,
-                            data?.premiumUsers?.general?.previousActiveOwnPayedSubscriptions + data?.premiumUsers?.general?.previousActiveOwnFreeSubscriptions,
-                            data?.tvShows?.general?.previousActiveOwnPayedSubscriptions + data?.liveStreamings?.general?.previousActiveOwnPayedSubscriptions + data?.users?.general?.previousActiveOwnPayedSubscriptions,
-                            data?.tvShows?.general?.previousActiveOwnFreeSubscriptions + data?.liveStreamings?.general?.previousActiveOwnFreeSubscriptions + data?.users?.general?.previousActiveOwnFreeSubscriptions,
-                        ]
-                        currentDate.setMonth(currentDate.getMonth() - 1);
-                        i++
-                    }
-                    data?.tvShows?.own?.map((item, index) => {
-                        if (item.active) {
-                            let date = new Date(Date.parse(item.initialTimestamp))
-                            let monthPeriod = months[date.getMonth()] + '-' + date.getFullYear().toString().substring(2)
-                            if (partialData[monthPeriod] === undefined) return
-                            partialData[monthPeriod][0] = partialData[monthPeriod][0] + 1
-                            let loopActive = true
-                            Object.keys(partialData).forEach((key) => {
-                                if (key !== monthPeriod && loopActive) {
-                                    partialData[key][0] = partialData[key][0] + 1
-                                } else {
-                                    loopActive = false
-                                }
-                            });
-                            if (Number(item.amount) > 0.00) {
-                                partialData[monthPeriod][4] = partialData[monthPeriod][4] + 1
-                                let loopActive = true
-                                Object.keys(partialData).forEach((key) => {
-                                    if (key !== monthPeriod && loopActive) {
-                                        partialData[key][5] = partialData[key][5] + 1
-                                    } else {
-                                        loopActive = false
-                                    }
-                                });
-                            } else {
-                                partialData[monthPeriod][5] = partialData[monthPeriod][5] + 1
-                                let loopActive = true
-                                Object.keys(partialData).forEach((key) => {
-                                    if (key !== monthPeriod && loopActive) {
-                                        partialData[key][5] = partialData[key][5] + 1
-                                    } else {
-                                        loopActive = false
-                                    }
-                                });
-                            }
-                        }
-                    })
-                    data?.liveStreamings?.own?.map((item, index) => {
-                        if (item.active) {
-                            let date = new Date(Date.parse(item.initialTimestamp))
-                            let monthPeriod = months[date.getMonth()] + '-' + date.getFullYear().toString().substring(2)
-                            if (partialData[monthPeriod] === undefined) return
-                            partialData[monthPeriod][1] = partialData[monthPeriod][1] + 1
-                            let loopActive = true
-                            Object.keys(partialData).forEach((key) => {
-                                if (key !== monthPeriod && loopActive) {
-                                    partialData[key][1] = partialData[key][1] + 1
-                                } else {
-                                    loopActive = false
-                                }
-                            });
-                            if (Number(item.amount) > 0.00) {
-                                partialData[monthPeriod][4] = partialData[monthPeriod][4] + 1
-                                let loopActive = true
-                                Object.keys(partialData).forEach((key) => {
-                                    if (key !== monthPeriod && loopActive) {
-                                        partialData[key][4] = partialData[key][4] + 1
-                                    } else {
-                                        loopActive = false
-                                    }
-                                });
-                            } else {
-                                partialData[monthPeriod][5] = partialData[monthPeriod][5] + 1
-                                let loopActive = true
-                                Object.keys(partialData).forEach((key) => {
-                                    if (key !== monthPeriod && loopActive) {
-                                        partialData[key][5] = partialData[key][5] + 1
-                                    } else {
-                                        loopActive = false
-                                    }
-                                });
-                            }
-                        }
-                    })
-                    data?.users?.own?.map((item, index) => {
-                        if (item.active) {
-                            let date = new Date(Date.parse(item.initialTimestamp))
-                            let monthPeriod = months[date.getMonth()] + '-' + date.getFullYear().toString().substring(2)
-                            if (partialData[monthPeriod] === undefined) return
-                            partialData[monthPeriod][2] = partialData[monthPeriod][2] + 1
-                            let loopActive = true
-                            Object.keys(partialData).forEach((key) => {
-                                if (key !== monthPeriod && loopActive) {
-                                    partialData[key][2] = partialData[key][2] + 1
-                                } else {
-                                    loopActive = false
-                                }
-                            });
-                            if (Number(item.amount) > 0.00) {
-                                partialData[monthPeriod][4] = partialData[monthPeriod][4] + 1
-                                let loopActive = true
-                                Object.keys(partialData).forEach((key) => {
-                                    if (key !== monthPeriod && loopActive) {
-                                        partialData[key][4] = partialData[key][4] + 1
-                                    } else {
-                                        loopActive = false
-                                    }
-                                });
-                            } else {
-                                partialData[monthPeriod][5] = partialData[monthPeriod][5] + 1
-                                let loopActive = true
-                                Object.keys(partialData).forEach((key) => {
-                                    if (key !== monthPeriod && loopActive) {
-                                        partialData[key][5] = partialData[key][5] + 1
-                                    } else {
-                                        loopActive = false
-                                    }
-                                });
-                            }
-                        }
-                    })
-                    Object.keys(partialData).reverse().forEach((key) => {
-                        if (partialData[key][0] !== 0 || partialData[key][1] !== 0 || partialData[key][2] !== 0 || partialData[key][3] !== 0 || partialData[key][4] !== 0 || partialData[key][5] !== 0) {
-                            tvShowsData.push(partialData[key][0])
-                            liveStreamingsData.push(partialData[key][1])
-                            usersData.push(partialData[key][2])
-                            premiumUsersData.push(partialData[key][3])
-                            payedData.push(partialData[key][4])
-                            freeData.push(partialData[key][5])
-                            datesData.push(key)
-                        }
-                    });
+                while (i < 9) {
+                    let monthPeriod = months[currentDate.getMonth()] + '-' + currentDate.getFullYear().toString().substring(2)
+                    partialData[monthPeriod] = [
+                        data?.tvShows?.general?.previousActiveOwnPayedSubscriptions + data?.tvShows?.general?.previousActiveOwnFreeSubscriptions,
+                        data?.liveStreamings?.general?.previousActiveOwnPayedSubscriptions + data?.liveStreamings?.general?.previousActiveOwnFreeSubscriptions,
+                        data?.users?.general?.previousActiveOwnPayedSubscriptions + data?.users?.general?.previousActiveOwnFreeSubscriptions,
+                        data?.premiumUsers?.general?.previousActiveOwnPayedSubscriptions + data?.premiumUsers?.general?.previousActiveOwnFreeSubscriptions,
+                        data?.tvShows?.general?.previousActiveOwnPayedSubscriptions + data?.liveStreamings?.general?.previousActiveOwnPayedSubscriptions + data?.users?.general?.previousActiveOwnPayedSubscriptions,
+                        data?.tvShows?.general?.previousActiveOwnFreeSubscriptions + data?.liveStreamings?.general?.previousActiveOwnFreeSubscriptions + data?.users?.general?.previousActiveOwnFreeSubscriptions,
+                    ]
+                    currentDate.setMonth(currentDate.getMonth() - 1);
+                    i++
                 }
-                console.log('tvShowsData', tvShowsData)
-                console.log('liveStreamingsData', liveStreamingsData)
-                console.log('usersData', usersData)
-                console.log('premiumUsersData', premiumUsersData)
-                console.log('payedData', payedData)
-                console.log('freeData', freeData)
-                console.log('datesData', datesData)
+                data?.tvShows?.own?.map((item, index) => {
+                    if (item.active) {
+                        let date = new Date(Date.parse(item.initialTimestamp))
+                        let monthPeriod = months[date.getMonth()] + '-' + date.getFullYear().toString().substring(2)
+                        if (partialData[monthPeriod] === undefined) return
+                        partialData[monthPeriod][0] = partialData[monthPeriod][0] + 1
+                        let loopActive = true
+                        Object.keys(partialData).forEach((key) => {
+                            if (key !== monthPeriod && loopActive) {
+                                partialData[key][0] = partialData[key][0] + 1
+                            } else {
+                                loopActive = false
+                            }
+                        });
+                        if (Number(item.amount) > 0.00) {
+                            partialData[monthPeriod][4] = partialData[monthPeriod][4] + 1
+                            let loopActive = true
+                            Object.keys(partialData).forEach((key) => {
+                                if (key !== monthPeriod && loopActive) {
+                                    partialData[key][5] = partialData[key][5] + 1
+                                } else {
+                                    loopActive = false
+                                }
+                            });
+                        } else {
+                            partialData[monthPeriod][5] = partialData[monthPeriod][5] + 1
+                            let loopActive = true
+                            Object.keys(partialData).forEach((key) => {
+                                if (key !== monthPeriod && loopActive) {
+                                    partialData[key][5] = partialData[key][5] + 1
+                                } else {
+                                    loopActive = false
+                                }
+                            });
+                        }
+                    }
+                })
+                data?.liveStreamings?.own?.map((item, index) => {
+                    if (item.active) {
+                        let date = new Date(Date.parse(item.initialTimestamp))
+                        let monthPeriod = months[date.getMonth()] + '-' + date.getFullYear().toString().substring(2)
+                        if (partialData[monthPeriod] === undefined) return
+                        partialData[monthPeriod][1] = partialData[monthPeriod][1] + 1
+                        let loopActive = true
+                        Object.keys(partialData).forEach((key) => {
+                            if (key !== monthPeriod && loopActive) {
+                                partialData[key][1] = partialData[key][1] + 1
+                            } else {
+                                loopActive = false
+                            }
+                        });
+                        if (Number(item.amount) > 0.00) {
+                            partialData[monthPeriod][4] = partialData[monthPeriod][4] + 1
+                            let loopActive = true
+                            Object.keys(partialData).forEach((key) => {
+                                if (key !== monthPeriod && loopActive) {
+                                    partialData[key][4] = partialData[key][4] + 1
+                                } else {
+                                    loopActive = false
+                                }
+                            });
+                        } else {
+                            partialData[monthPeriod][5] = partialData[monthPeriod][5] + 1
+                            let loopActive = true
+                            Object.keys(partialData).forEach((key) => {
+                                if (key !== monthPeriod && loopActive) {
+                                    partialData[key][5] = partialData[key][5] + 1
+                                } else {
+                                    loopActive = false
+                                }
+                            });
+                        }
+                    }
+                })
+                data?.users?.own?.map((item, index) => {
+                    if (item.active) {
+                        let date = new Date(Date.parse(item.initialTimestamp))
+                        let monthPeriod = months[date.getMonth()] + '-' + date.getFullYear().toString().substring(2)
+                        if (partialData[monthPeriod] === undefined) return
+                        partialData[monthPeriod][2] = partialData[monthPeriod][2] + 1
+                        let loopActive = true
+                        Object.keys(partialData).forEach((key) => {
+                            if (key !== monthPeriod && loopActive) {
+                                partialData[key][2] = partialData[key][2] + 1
+                            } else {
+                                loopActive = false
+                            }
+                        });
+                        if (Number(item.amount) > 0.00) {
+                            partialData[monthPeriod][4] = partialData[monthPeriod][4] + 1
+                            let loopActive = true
+                            Object.keys(partialData).forEach((key) => {
+                                if (key !== monthPeriod && loopActive) {
+                                    partialData[key][4] = partialData[key][4] + 1
+                                } else {
+                                    loopActive = false
+                                }
+                            });
+                        } else {
+                            partialData[monthPeriod][5] = partialData[monthPeriod][5] + 1
+                            let loopActive = true
+                            Object.keys(partialData).forEach((key) => {
+                                if (key !== monthPeriod && loopActive) {
+                                    partialData[key][5] = partialData[key][5] + 1
+                                } else {
+                                    loopActive = false
+                                }
+                            });
+                        }
+                    }
+                })
+                Object.keys(partialData).reverse().forEach((key) => {
+                    if (partialData[key][0] !== 0 || partialData[key][1] !== 0 || partialData[key][2] !== 0 || partialData[key][3] !== 0 || partialData[key][4] !== 0 || partialData[key][5] !== 0) {
+                        tvShowsData.push(partialData[key][0])
+                        liveStreamingsData.push(partialData[key][1])
+                        usersData.push(partialData[key][2])
+                        premiumUsersData.push(partialData[key][3])
+                        payedData.push(partialData[key][4])
+                        freeData.push(partialData[key][5])
+                        datesData.push(key)
+                    }
+                });
                 return {
                     data: {
                         dataSets: [{

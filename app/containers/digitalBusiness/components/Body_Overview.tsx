@@ -34,11 +34,6 @@ const Component = ({ data, colors }) => {
     ]
 
     const LEGEND = {
-        /*
-        horizontalAlignment: "RIGHT",
-        verticalAlignment: "CENTER",
-        orientation: "VERTICAL",
-        */
         enabled: true,
         textSize: 10,
         form: "CIRCLE",
@@ -52,7 +47,7 @@ const Component = ({ data, colors }) => {
 
     //FUNCTIONS
     const getData = (data, type) => {
-        if (data.length === 0) {
+        if (JSON.stringify(data) === JSON.stringify({})) {
             return {}
         }
         let earningsData: any = []

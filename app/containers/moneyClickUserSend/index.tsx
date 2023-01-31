@@ -54,7 +54,7 @@ const MoneyClickUserSendScreen = ({ navigation, route, colors, userName, config,
         if (route?.params?.selectedPhone !== undefined) {
             setAreaCode(route.params.selectedPhone.areaCode)
             setPhone(route.params.selectedPhone.phone)
-            setReceiverName(route.params.selectedPhone.name)
+            setReceiverName(route.params.selectedPhone.fullName)
         } else {
             setAreaCode(config.areaCode)
         }
@@ -131,7 +131,7 @@ const MoneyClickUserSendScreen = ({ navigation, route, colors, userName, config,
     }, [])
 
     const onPressContacts = useCallback(() => {
-        navigation.dispatch(StackActions.replace('ContactsScreen', { ...route.params }))
+        navigation.dispatch(StackActions.replace('ContactsScreen', { ...route.params, replaceTarget: 'MoneyClickUserSendScreen' }))
     }, [])
 
     const onChangeTextReceiverName = useCallback(text => {

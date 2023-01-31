@@ -1,8 +1,33 @@
 import React from "react";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { useTheme } from 'react-native-paper';
 import { store as authStore } from "./stores/auth";
 import { store as balanceStore } from "./stores/balance";
 import { store as headersStore } from "./stores/headers";
+
+export const withNavigation = (WrappedComponent) => {
+    const WithComponent = props => {
+        const navigation = useNavigation()
+        return (
+            <>
+                <WrappedComponent navigation={navigation} {...props} />
+            </>
+        );
+    }
+    return WithComponent;
+};
+
+export const withRoute = (WrappedComponent) => {
+    const WithComponent = props => {
+        const route = useRoute()
+        return (
+            <>
+                <WrappedComponent route={route} {...props} />
+            </>
+        );
+    }
+    return WithComponent;
+};
 
 export const withColors = (WrappedComponent) => {
     const WithComponent = props => {

@@ -61,14 +61,27 @@ const ContactsScreen = ({ navigation, route, colors }) => {
             <TouchableOpacity
               key={l}
               onPress={() => {
-                const selectedPhone = {
-                  areaCode: j.split('__')[0],
-                  phone: j.split('__')[1],
-                  name: item.name
+                if (route?.params?.replaceTarget === 'MoneyClickUserSendScreen') {
+                  const selectedPhone = {
+                    areaCode: j.split('__')[0],
+                    phone: j.split('__')[1],
+                    fullName: item.name
+                  }
+                  let newParams = { ...route.params, selectedPhone: selectedPhone }
+                  delete newParams.selectedChatRoom
+                  delete newParams.replaceTarget
+                  navigation.dispatch(StackActions.replace('MoneyClickUserSendScreen', newParams))
                 }
-                //console.log('selectedPhone', { areaCode: j.split('__')[0], phone: j.split('__')[1], name: item.name })
-                navigation.dispatch(StackActions.replace('MoneyClickUserSendScreen', { ...route.params, selectedPhone: selectedPhone, selectedChatRoom: {} }))
-                /*indexPersistedStore.dispatch({ type: SET_CONTACTS_TEXT_FILTER, payload: '' })*/
+                if (route?.params?.replaceTarget === 'ChatRoomScreen') {
+                  const selectedChatRoom = {
+                    chatRoom: j.split('__')[0] + j.split('__')[1],
+                    fullName: item.name
+                  }
+                  let newParams = { ...route.params, selectedChatRoom: selectedChatRoom }
+                  delete newParams.selectedPhone
+                  delete newParams.replaceTarget
+                  navigation.dispatch(StackActions.replace('ChatRoomScreen', newParams))
+                }
               }}
             >
               <Text
@@ -167,8 +180,7 @@ const ContactsScreen = ({ navigation, route, colors }) => {
             windowSize={100}
             maxToRenderPerBatch={50}
             initialNumToRender={100}
-          />
-        }
+          />}
       </View>
     </View>
   );

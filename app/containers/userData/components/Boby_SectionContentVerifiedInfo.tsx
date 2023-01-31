@@ -3,16 +3,89 @@ import { Text, View, TouchableOpacity, processColor, Dimensions, TextInput, Swit
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { compose } from 'redux';
+import { StackActions } from "@react-navigation/native";
+import FastImage from "react-native-fast-image";
 //HOC
-import { withColors, withConfig } from "../../../main/hoc";
+import { withColors, withConfig, withHmacInterceptor, withNavigation, withRoute, withUserName } from "../../../main/hoc";
+//TOOLS
+import httpRequest from "../../../tools/httpRequest";
 
 const Component = ({
     data,
     isEditing,
+    navigation,
+    route,
     colors,
+    userName,
+    hmacInterceptor,
     config
 }) => {
 
+    //COMPONENTS
+    const renderItem = (key, item) => {
+        return (
+            <Fragment
+                key={key}
+            >
+                {config?.others[item]?.endsWith('jpeg') ?
+                    <View
+                        style={{
+                            flexDirection: 'row',
+                            alignSelf: 'center',
+                            padding: 5,
+                            alignItems: 'center'
+                        }}
+                    >
+                        <Text
+                            key={key}
+                            style={{
+                                textAlign: 'center',
+                                color: colors.text,
+                                //color: item.value.status === 'OK' ? 'green' : item.value.status === 'PROCESSING' ? 'orange' : item.value.status === 'FAIL' ? 'red' : 'grey',
+                                padding: 5,
+                            }}
+                        >
+                            {item + ': '}
+                        </Text>
+                        <FastImage
+                            style={{
+                                padding: 10,
+                                width: 50,
+                                height: 50
+                            }}
+                            source={{
+                                uri: 'https://service8081.moneyclick.com/attachment/getUserFile/' + userName + '/' + config?.others[item],
+                                //cache: FastImage.cacheControl.cacheOnly,
+                                //method: 'GET',
+                                headers: hmacInterceptor?.process(
+                                    httpRequest.create(
+                                        'https://service8081.moneyclick.com',
+                                        '/attachment/getUserFile/' + userName + '/' + config?.others[item],
+                                        'GET',
+                                        null,
+                                        false
+                                    )).headers,
+                            }}
+                        />
+                    </View>
+                    :
+                    <Text
+                        key={key}
+                        style={{
+                            alignSelf: 'center',
+                            textAlign: 'center',
+                            color: colors.text,
+                            //color: item.value.status === 'OK' ? 'green' : item.value.status === 'PROCESSING' ? 'orange' : item.value.status === 'FAIL' ? 'red' : 'grey',
+                            padding: 5,
+                        }}
+                    >
+                        {item + ': '} {config[item] !== undefined ? config[item] : config?.others[item] !== undefined ? config.others[item] : ''}
+                    </Text>}
+            </Fragment>
+        )
+    }
+
+    //PRINCIPAL RENDER
     return (
         <View
             style={{
@@ -34,7 +107,7 @@ const Component = ({
                                 }}
                                 disabled={item.value.status === 'OK'}
                                 onPress={() => {
-                                    //navigateStore.dispatch({ type: NAVIGATE, payload: { target: 'VerificationScreen', redirectToTarget: 'goBack__1', selectedVerificationType: item.name } });
+                                    navigation.dispatch(StackActions.push('VerificationScreen', { ...route.params, selectedVerificationType: item.name }))
                                 }}
                             >
                                 {item.value.status === 'OK' ?
@@ -44,23 +117,7 @@ const Component = ({
                                             alignSelf: 'center'
                                         }}
                                     >
-                                        {console.log('item>>>>>', item)}
-                                        {config?.verifications[item.name]?.fieldNames.map((it, k) => {
-                                            return (
-                                                <Text
-                                                    key={k}
-                                                    style={{
-                                                        alignSelf: 'center',
-                                                        textAlign: 'center',
-                                                        color: colors.text,
-                                                        //color: item.value.status === 'OK' ? 'green' : item.value.status === 'PROCESSING' ? 'orange' : item.value.status === 'FAIL' ? 'red' : 'grey',
-                                                        padding: 5,
-                                                    }}
-                                                >
-                                                    {it + ': '} {config[it] !== undefined ? config[it] : config?.others[it] !== undefined ? config.others[it] : ''}
-                                                </Text>
-                                            )
-                                        })}
+                                        {config?.verifications[item.name]?.fieldNames.map((it, k) => renderItem(k, it))}
                                     </View> :
                                     <Text
                                         style={{
@@ -92,4 +149,4 @@ const Component = ({
     )
 };
 
-export default React.memo(compose(withColors, withConfig)(Component));
+export default React.memo(compose(withNavigation, withRoute, withColors, withUserName, withHmacInterceptor, withConfig)(Component));

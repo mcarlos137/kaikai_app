@@ -10,10 +10,23 @@ target 'kaikai_mobile' do
   # Flags change depending on the env values.
   flags = get_default_flags()
 
-  #handle chart library
-  #pod 'RNCharts', :path => '../node_modules/react-native-charts-wrapper'
-  pod 'react-native-charts-wrapper', :path => '../node_modules/react-native-charts-wrapper'
+  # react-native-maps dependencies
+  #rn_maps_path = '../node_modules/react-native-maps' # This path is likely to be `../node_modules/react-native-maps` in your own project.
 
+  #pod 'react-native-maps', path: rn_maps_path
+  #pod 'react-native-google-maps', path: rn_maps_path  # Remove this line if you don't want to support GoogleMaps on iOS
+
+  pod 'FirebaseCore', :modular_headers => true
+  #pod 'FirebaseCoreInternal', :modular_headers => true
+  pod 'GoogleUtilities', :modular_headers => true
+  #pod 'GoogleAnalytics', :modular_headers => true
+  
+  #pod 'GoogleUtilities/Environment', :modular_headers => true
+  #pod 'Firebase/Messaging', :modular_headers => true
+
+  #pod 'RNCharts', :path => '../node_modules/react-native-charts-wrapper'  
+  pod 'react-native-charts-wrapper', :path => '../node_modules/react-native-charts-wrapper'
+  
   use_react_native!(
     :path => config[:reactNativePath],
     # Hermes is now enabled by default. Disable by setting this flag to false.

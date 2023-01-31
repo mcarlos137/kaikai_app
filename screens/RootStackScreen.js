@@ -26,7 +26,6 @@ import { navigateStore } from "../app/main/store";*/
 import WalletScreen from "../app/containers/wallet";
 import DebitCardNewPinScreen from "../app/containers/debitCardNewPin";
 import CashScreen from "../app/containers/cash";
-import DigitalBusinessDetailsScreen from "../app/containers/digitalBusinessDetails"
 import MoneyCallCommentsScreen from "../app/containers/moneyCallComments";
 import MoneyCallRatingScreen from "../app/containers/moneyCallRating";
 import MoneyCallBlockedUsersScreen from "../app/containers/moneyCallBlockedUsers";
@@ -37,19 +36,16 @@ import InvestmentDetailScreen from "../app/containers/investmentDetail";
 import FiatMerchantPoSScreen from "../app/containers/fiatMerchantPoS";
 import GiftCardBuyScreen from "../app/containers/giftCardBuy";
 import GiftCardScreen from "../app/containers/giftCard";
-import VerificationScreen from "../app/containers/verification";
 import UserDataOthersScreen from "../app/containers/userDataOthers";
 import UserDataGalleryViewScreen from "../app/containers/userDataGalleryView";
 import UserDataFindScreen from "../app/containers/userDataFind";
 import ChatScreen from "../app/containers/chat";
-import ChatRoomScreen from "../app/containers/chatRoom";
 import OrderScreen from "../app/containers/order";
 import LiveStreamingCreateScreen from "../app/containers/liveStreamingCreate";
 import LiveStreamingScreen from "../app/containers/liveStreaming";
 import LiveStreamingCategoryScreen from "../app/containers/liveStreamingCategory";
 import LiveStreamingDetailsScreen from "../app/containers/liveStreamingDetails";
 import CameraDataScreen from "../app/containers/cameraData";
-import CameraStreamScreen from "../app/containers/cameraStream";
 import SubscriptionJoinScreen from "../app/containers/subscriptionJoin";
 import BroadcastingScreen from "../app/containers/broadcasting";
 import BroadcastingCreateScreen from "../app/containers/broadcastingCreate";
@@ -102,6 +98,8 @@ import CameraBridgeScreen from "../app/containers/cameraBridge";
 import CameraScreen from "../app/containers/camera";
 import PermissionsScreen from "../app/containers/permissions";
 
+import CameraStreamScreen from "../app/containers/cameraStream";
+
 import FiatBankDepositsScreen from "../app/containers/fiatBankDeposits";
 import FiatBankDepositsCreateScreen from "../app/containers/fiatBankDepositsCreate";
 import FiatBankDepositsDetailsScreen from "../app/containers/fiatBankDepositsDetails";
@@ -123,7 +121,10 @@ import MoneyCallsMessagesScreen from "../app/containers/moneyCallsMessages";
 
 import UserDataGalleryScreen from "../app/containers/userDataGallery";
 
+import VerificationScreen from "../app/containers/verification";
+
 import DigitalBusinessScreen from "../app/containers/digitalBusiness"
+import DigitalBusinessDetailsScreen from "../app/containers/digitalBusinessDetails"
 
 import DebitCardsScreen from "../app/containers/debitCards";
 import DebitCardsRequestScreen from "../app/containers/debitCardsRequest";
@@ -133,6 +134,7 @@ import DebitCardsBalanceMovementDetailsScreen from "../app/containers/debitCards
 import DebitCardsAddSubstractBalanceScreen from "../app/containers/debitCardsAddSubstractBalance";
 
 import ChatScreen from "../app/containers/chat";
+import ChatRoomScreen from "../app/containers/chatRoom";
 
 import MainTabScreen from "./MainTabScreen";
 
@@ -314,7 +316,7 @@ const RootStackScreen = ({ }) => {
       <RootStack.Screen
         name="ContactsScreen"
         component={ContactsScreen}
-        options={getOptions({ title: "Select Contact", backgroundColor: "white" })}
+        options={getOptions({ title: "Select Contact", backgroundColor: colors.getRandomMain() })}
       />
       <RootStack.Screen
         name="SignUpScreen"
@@ -394,7 +396,7 @@ const RootStackScreen = ({ }) => {
       <RootStack.Screen
         name="DebitCardsRequestScreen"
         component={DebitCardsRequestScreen}
-        options={getOptions({ title: "Debit Card Request", backgroundColor: colors.getRandomMain(), headerRight: <></> })}
+        options={getOptions({ title: "Debit Card Request", backgroundColor: colors.getRandomMain() })}
       />
       <RootStack.Screen
         name="DebitCardsInfoScreen"
@@ -421,6 +423,26 @@ const RootStackScreen = ({ }) => {
         component={DigitalBusinessScreen}
         options={getOptions({ title: "Digital Business", backgroundColor: colors.getRandomMain() })}
       />
+      <RootStack.Screen
+        name="DigitalBusinessDetailsScreen"
+        component={DigitalBusinessDetailsScreen}
+        options={getOptions({ title: "Digital Business Details", backgroundColor: colors.getRandomMain() })}
+      />
+      <RootStack.Screen
+        name="VerificationScreen"
+        component={VerificationScreen}
+        options={getOptions({ title: "Verification", backgroundColor: colors.getRandomMain() })}
+      />
+      <RootStack.Screen
+        name="ChatRoomScreen"
+        component={ChatRoomScreen}
+        options={getOptions({ title: "ChatRoom", backgroundColor: colors.getRandomMain() })}
+      />
+      <RootStack.Screen
+        name="CameraStreamScreen"
+        component={CameraStreamScreen}
+        options={{ headerShown: false }}
+      />
 
       {/*
     <RootStack.Screen
@@ -428,23 +450,11 @@ const RootStackScreen = ({ }) => {
       component={DebitCardNewPinScreen}
       options={getOptions("Debit Cards New PIN", "#694fad")}
     />
-    
-    
-    
+        
     <RootStack.Screen
       name="CashScreen"
       component={CashScreen}
       options={getOptions("Cash Locator", "#694fad")}
-    />
-    <RootStack.Screen
-      name="InvestmentScreen"
-      component={InvestmentScreen}
-      options={getOptions("Investment Returns", "#694fad", "INVESTMENT")}
-    />
-    <RootStack.Screen
-      name="DigitalBusinessDetailsScreen"
-      component={DigitalBusinessDetailsScreen}
-      options={getOptions("Digital Business Details", "#f5551b")}
     />
     <RootStack.Screen
       name="MoneyCallCommentsScreen"
@@ -470,11 +480,6 @@ const RootStackScreen = ({ }) => {
       name="GiftCardScreen"
       component={GiftCardScreen}
       options={getOptions("My Gift Cards", "#694fad")}
-    />
-    <RootStack.Screen
-      name="VerificationScreen"
-      component={VerificationScreen}
-      options={getOptions("Verification", "#694fad")}
     />
     <RootStack.Screen
       name="UserDataOthersScreen"
@@ -523,19 +528,8 @@ const RootStackScreen = ({ }) => {
       options={getOptions("Live Streaming Category", "#1f65ff")}
     />
     <RootStack.Screen
-      name="ChatRoomScreen"
-      component={ChatRoomScreen}
-      options={getOptions("", "#009387", "CHAT_ROOM")}
-    />
-    <RootStack.Screen
       name="CameraDataScreen"
       component={CameraDataScreen}
-      options={{ headerShown: false }}
-    //options={getOptions('', '#1f65ff', 'CHAT_ROOM')}
-    />
-    <RootStack.Screen
-      name="CameraStreamScreen"
-      component={CameraStreamScreen}
       options={{ headerShown: false }}
     //options={getOptions('', '#1f65ff', 'CHAT_ROOM')}
     />
@@ -580,6 +574,11 @@ const RootStackScreen = ({ }) => {
       options={getOptions("Donation Send", "#d02860")}
     />
     <RootStack.Screen
+      name="InvestmentScreen"
+      component={InvestmentScreen}
+      options={getOptions("Investment Returns", "#694fad", "INVESTMENT")}
+    />
+    <RootStack.Screen
       name="InvestmentAvailableScreen"
       component={InvestmentAvailableScreen}
       options={getOptions("Investment Available", "#694fad")}
@@ -619,88 +618,7 @@ const getOptions = ({ title, backgroundColor, headerRight = <></>, headerTitleAl
               marginRight: 10
             }}
           >
-            <TouchableOpacity
-              onPress={() => {
-                let target = setNavigationOptionsStore.getState().selectedChatRoomState
-                let targetName = target.chatRoom
-                if (target.nickName !== undefined) {
-                  targetName = target.nickName
-                }
-                if (target.nickName !== undefined) {
-                  targetName = target.nickName
-                }
-                if (target.contactFullName !== undefined) {
-                  targetName = target.contactFullName
-                }
-                if (target.firstName === undefined && target.lastName === undefined) {
-                  targetName = target.firstName + ' ' + target.lastName
-                }
-                navigateStore.dispatch({
-                  type: NAVIGATE,
-                  payload: {
-                    target: "CameraStreamScreen",
-                    selectedCameraStreamParams: {
-                      audioStatus: "on",
-                      videoStatus: "on",
-                      showCounter: false,
-                      callId: null,
-                      targetUserName: target.chatRoom,
-                      targetName: targetName
-                    },
-                  },
-                });
-              }}
-              style={{
-                marginRight: 15,
-              }}
-            >
-              <IconIon
-                name="ios-videocam"
-                size={30}
-                color={'white'}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => {
-                navigateStore.dispatch({
-                  type: NAVIGATE,
-                  payload: {
-                    target: "CameraStreamScreen",
-                    selectedCameraStreamParams: {
-                      audioStatus: "on",
-                      videoStatus: "off",
-                      showCounter: false,
-                      callId: null,
-                      chatRoom: setNavigationOptionsStore.getState().selectedChatRoomState.chatRoom
-                    },
-                  },
-                });
-              }}
-              style={{
-                marginRight: 15,
-              }}
-            >
-              <IconIon
-                name="ios-call"
-                size={30}
-                color={'white'}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => {
-                chatRoomStore.dispatch({
-                  type: OPEN_MODAL,
-                  payload: "options",
-                });
-              }}
-            >
-              <IconIon
-                name="ios-ellipsis-vertical"
-                size={30}
-                color={'white'}
-              />
-            </TouchableOpacity>
-          </View>
+            
         ) : type !== undefined &&
           (type === "BROADCASTING" ||
             type === "BROADCASTING_EPISODE_TRAILER" ||
@@ -770,7 +688,7 @@ const getOptions = ({ title, backgroundColor, headerRight = <></>, headerTitleAl
                 marginRight: 10
               }}
             >
-              <IconIon
+              <Ionicons
                 name="ios-add"
                 size={30}
                 color={'white'}

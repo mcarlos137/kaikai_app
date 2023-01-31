@@ -9,6 +9,10 @@ import { getFinancialOverview } from '../../main/hooks/getFinancialOverview';
 //COMPONENTS
 import Body_Overview from './components/Body_Overview'
 import Body_Subscriptions from './components/Body_Subscriptions'
+import Body_Donations from './components/Body_Donations'
+//DATA
+import { data as dataDonations } from './data/donations';
+import { data as dataSubscriptions } from './data/subscriptions';
 
 const DigitalBusinessScreen = ({ navigation, route, colors, userName, hmacInterceptor }) => {
 
@@ -41,7 +45,10 @@ const DigitalBusinessScreen = ({ navigation, route, colors, userName, hmacInterc
         data={dataFinancialOverview}
       />
       <Body_Subscriptions
-        data={{}}
+        data={dataSubscriptions}
+      />
+      <Body_Donations 
+        data={dataDonations}
       />
     </ScrollView>
   );
