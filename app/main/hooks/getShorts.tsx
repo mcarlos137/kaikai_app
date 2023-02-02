@@ -24,7 +24,7 @@ export const getShorts = (
             initialData: [],
             select: (data) => data?.data !== undefined ? data.data : data,
             onSuccess: (data) => {
-                console.log('shorts', JSON.stringify(data, null, 4));
+                //console.log('shorts', JSON.stringify(data, null, 4));
             },
         }
     )

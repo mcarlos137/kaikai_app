@@ -45,12 +45,8 @@ const FiatBankDepositsScreen = ({ navigation, route, colors, userName }) => {
       null
     )
 
-  const { isLoading: isLoadingChangeDepositStatusCanceled, error: errorChangeDepositStatusCanceled, refetch: refetchChangeDepositStatusCanceled } =
-    changeDepositStatus(
-      selectedDeposit?.id,
-      'CANCELED',
-      cancelReason
-    )
+  const { mutate: mutateChangeDepositStatusCanceled, isLoading: isLoadingChangeDepositStatusCanceled } =
+    changeDepositStatus()
 
   //EFFECTS
   useEffect(() => {
@@ -261,7 +257,11 @@ const FiatBankDepositsScreen = ({ navigation, route, colors, userName }) => {
           />
         }
         onPress={() => {
-          refetchChangeDepositStatusCanceled()
+          mutateChangeDepositStatusCanceled({
+            id: selectedDeposit?.id,
+            otcOperationStatus: 'CANCELED',
+            canceledReason: cancelReason
+          })
         }}
       />
     </View>

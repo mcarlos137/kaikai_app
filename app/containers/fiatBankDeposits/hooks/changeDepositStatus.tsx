@@ -1,31 +1,39 @@
-import { useQuery } from "react-query"
+import { useMutation, useQuery, useQueryClient } from "react-query"
 import { request } from "../../../tools/axiosUtils"
 
-const changeDepositStatusRequest = ({ queryKey }) => {
+type ChangeDepositStatusRequest = {
+  id: string
+  otcOperationStatus: string
+  canceledReason: string | null
+}
+
+const changeDepositStatusRequest = ({
+  id,
+  otcOperationStatus,
+  canceledReason,
+}: ChangeDepositStatusRequest) => {
   let body: any = {
-    id: queryKey[1],
-    otcOperationStatus: queryKey[2],
+    id: id,
+    otcOperationStatus: otcOperationStatus,
     userChange: true,
   }
-  if (queryKey[3] !== null) body.canceledReason = queryKey[3]
+  if (canceledReason !== null) body.canceledReason = canceledReason
   return request({ url: `/buyBalance/changeOperationStatus`, method: 'post', data: body })
 }
 
-export const changeDepositStatus = (
-  id: string | null,
-  otcOperationStatus: string | null,
-  canceledReason: string | null,
-) => {
-  return useQuery(
-    ['changeDepositStatusRequest', id, otcOperationStatus, canceledReason],
+export const changeDepositStatus = () => {
+  const queryClient = useQueryClient()
+  return useMutation(
     changeDepositStatusRequest,
     {
-      enabled: false,
-      select: (data) => data?.data,
-      onSuccess: (data) => {
-        console.log('data', JSON.stringify(data, null, 4));
-      }
-      //keepPreviousData: true
-    }
-  )
+      onError: (_error: any, _shorts: any, context: any) => {
+        queryClient.setQueryData('deposits', context.previousDeposits)
+      },
+      onSettled: () => {
+        queryClient.invalidateQueries('deposits')
+      },
+      onSuccess(data, variables, context) {
+        //console.log('data', JSON.stringify(data, null, 4));
+      },
+    })
 }

@@ -1,14 +1,14 @@
 //PRINCIPAL
 import React, { useEffect, useState } from 'react';
-import { View, } from 'react-native';
+import { View, Dimensions } from 'react-native';
 import Video from 'react-native-video';
 
 const ShortsVideoScreen = ({ navigation, route }) => {
 
-  const [uri, setUri] = useState(route.params.selectedShort.uri)
+  //const [uri, setUri] = useState(route.params.selectedShort.uri)
 
   useEffect(() => {
-    console.log('ShortsVideoScreen', route.params)
+    console.log('ShortsVideoScreen', route.params.selectedShort.asset)
   }, []);
 
   return (
@@ -17,7 +17,7 @@ const ShortsVideoScreen = ({ navigation, route }) => {
     }}>
       <Video
         source={{
-          uri: uri,
+          uri: route.params.selectedShort.asset.uri,
         }}
         rate={1.0}
         repeat={true}
@@ -34,11 +34,10 @@ const ShortsVideoScreen = ({ navigation, route }) => {
           bufferForPlaybackAfterRebufferMs: 5000
         }}
         style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          bottom: 0,
-          right: 0,
+          alignSelf: 'center',
+          marginTop: 10,
+          width: Dimensions.get('window').width * 0.95,
+          height:  Dimensions.get('window').width * 0.95 * route.params.selectedShort.asset.height / route.params.selectedShort.asset.width
         }}
       />
     </View >

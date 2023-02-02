@@ -6,6 +6,7 @@ const getConfigGalleryRequest = ({ queryKey }) => {
 }
 
 export const getConfigGallery = (userName: string, type: string) => {
+    console.log('type', type)
     return useQuery(
         ['configGallery', userName, type],
         getConfigGalleryRequest,

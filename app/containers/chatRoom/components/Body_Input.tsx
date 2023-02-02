@@ -1,5 +1,5 @@
 //PRINCIPAL
-import React, { createRef, RefObject, useState } from 'react';
+import React, { createRef, RefObject, useEffect, useState } from 'react';
 import {
     View,
     TouchableOpacity,
@@ -18,6 +18,7 @@ import EmojiSelector, { Categories } from "react-native-emoji-selector";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Firestore from '@react-native-firebase/firestore'
+import { StackActions } from '@react-navigation/native';
 //import Firestore from '@react-native-firebase/firestore'
 //import { Crypt, RSA } from 'hybrid-crypto-js';
 //import base64 from 'react-native-base64';
@@ -28,9 +29,20 @@ import Firestore from '@react-native-firebase/firestore'
 //STORES
 import { store as chatStore } from '../../../main/stores/chat';
 //HOC
-import { withColors, withRoute, withUserName } from '../../../main/hoc';
+import { withColors, withNavigation, withRoute, withUserName } from '../../../main/hoc';
+//FUNCTIONS
+import { handleChooseDocument } from '../../../main/functions';
+import { connect } from 'react-redux';
 
-const Component = ({
+const mapStateToProps = state => {
+    return {
+        mediaAsset: state.mediaAsset,
+    };
+};
+
+const ConnectedComponent = ({
+    mediaAsset,
+    navigation,
     route,
     colors,
     userName
@@ -38,7 +50,6 @@ const Component = ({
 
     //INITIAL STATES
     const [newTextMessage, setNewTextMessage] = useState('')
-    const [newMediaMessage, setMediaNewMessage] = useState<any>(null)
     const [addEmoji, setAddEmoji] = useState(false)
     const [inputRef, setInputRef] = useState<RefObject<any>>(createRef())
 
@@ -75,23 +86,22 @@ const Component = ({
                                     flex: 0.9
                                 }}
                             >
-                                {newMediaMessage === null &&
-                                    <TouchableOpacity
-                                        onPress={() => {
-                                            setAddEmoji(val => !val)
-                                            if (addEmoji) {
-                                                Keyboard.dismiss();
-                                            } else {
-                                                inputRef.current.focus();
-                                            }
-                                        }}
-                                    >
-                                        <MaterialCommunityIcons
-                                            name={addEmoji ? 'keyboard' : 'emoticon-happy-outline'}
-                                            color={colors.icon}
-                                            size={30}
-                                        />
-                                    </TouchableOpacity>}
+                                <TouchableOpacity
+                                    onPress={() => {
+                                        setAddEmoji(val => !val)
+                                        if (addEmoji) {
+                                            Keyboard.dismiss();
+                                        } else {
+                                            inputRef.current.focus();
+                                        }
+                                    }}
+                                >
+                                    <MaterialCommunityIcons
+                                        name={addEmoji ? 'keyboard' : 'emoticon-happy-outline'}
+                                        color={colors.icon}
+                                        size={30}
+                                    />
+                                </TouchableOpacity>
                                 <TextInput
                                     style={{
                                         fontSize: 16,
@@ -114,7 +124,7 @@ const Component = ({
                                     }}
                                     multiline={true}
                                 />
-                                {newMediaMessage === null && (
+                                {mediaAsset === null && (
                                     <View
                                         style={{
                                             flexDirection: 'row',
@@ -123,7 +133,20 @@ const Component = ({
                                     >
                                         <TouchableOpacity
                                             onPress={() => {
-                                                //handleMedia('LIBRARY_MIXED', 'CHAT_ROOM')
+                                                handleChooseDocument(
+                                                    'LIBRARY_PHOTO_VIDEO',
+                                                    {
+                                                        maxWidth: 300,
+                                                        maxHeight: 550,
+                                                        quality: 1,
+                                                        mediaType: "mixed",
+                                                        videoQuality: "low",
+                                                        durationLimit: 60
+                                                    },
+                                                    (asset) => {
+                                                        chatStore.dispatch({ type: 'SET_MEDIA_ASSET', payload: asset })
+                                                    }
+                                                )
                                             }}
                                             style={{
                                                 paddingRight: 10,
@@ -138,6 +161,7 @@ const Component = ({
                                         {newTextMessage === '' &&
                                             <TouchableOpacity
                                                 onPress={() => {
+                                                    navigation.dispatch(StackActions.push('CameraBridgeScreen', { ...route.params }))
                                                     //cameraStore.dispatch({ type: SET_CAMERA_SOURCE, payload: 'ChatRoomScreen' });
                                                     //navigateStore.dispatch({ type: NAVIGATE, payload: { target: 'CameraScreen', redirectToTarget: 'ChatRoomScreen' } });
                                                 }}
@@ -159,7 +183,7 @@ const Component = ({
                                     justifyContent: 'center'
                                 }}
                             >
-                                {newTextMessage === '' && newMediaMessage === null
+                                {newTextMessage === '' && mediaAsset === null
                                     ?
                                     <TouchableOpacity
                                         onPress={() => {
@@ -196,7 +220,6 @@ const Component = ({
                                     :
                                     <TouchableOpacity
                                         onPress={async () => {
-                                            setNewTextMessage('')
                                             const timestamp = new Date().toISOString()
                                             const data = {
                                                 chatRoom: route.params.selectedChatRoom.chatRoom,
@@ -212,7 +235,13 @@ const Component = ({
                                                     delivered: false,
                                                 },
                                             }
+                                            if (mediaAsset !== null) {
+                                                data.message['mediaAsset'] = mediaAsset
+                                            }
                                             chatStore.dispatch({ type: 'ADD_DATA', payload: data })
+                                            setNewTextMessage('')
+                                            setAddEmoji(false)
+                                            chatStore.dispatch({ type: 'SET_MEDIA_ASSET', payload: null })
                                             const chatsReceiverDoc = Firestore().collection('chats').doc(route.params.selectedChatRoom.chatRoom)
                                             chatsReceiverDoc.get().then(async (doc) => {
                                                 let chatsReceiver = {
@@ -280,4 +309,4 @@ const Component = ({
     )
 };
 
-export default React.memo(compose(withRoute, withColors, withUserName)(Component));
+export default React.memo(compose(withNavigation, withRoute, withColors, withUserName, connect(mapStateToProps))(ConnectedComponent));

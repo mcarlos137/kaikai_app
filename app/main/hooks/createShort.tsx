@@ -1,3 +1,4 @@
+import { useId } from "react"
 import { useMutation, useQueryClient } from "react-query"
 import { request } from "../../tools/axiosUtils"
 
@@ -6,8 +7,9 @@ type CreateShortRequest_Props = {
   name: string
   title: string
   description: string
-  video: any
+  videoAsset: any
   publishTimestamp: string | null
+  assetId: string
 }
 
 const createShortRequest = ({
@@ -15,8 +17,9 @@ const createShortRequest = ({
   name,
   title,
   description,
-  video,
-  publishTimestamp
+  videoAsset,
+  publishTimestamp,
+  assetId
 }: CreateShortRequest_Props) => {
   const formData = new FormData();
   formData.append('userName', userName);
@@ -24,18 +27,18 @@ const createShortRequest = ({
   formData.append('title', title);
   formData.append('description', description);
   if(publishTimestamp !== null) formData.append('publishTimestamp', publishTimestamp)
-  if (video !== null) {
-    let type = video.type.split("/")[1];
+  if (videoAsset !== null) {
     formData.append(
       'video',
       {
-        uri: video.uri,
-        name: video.fileName + 'Video.' + type,
-        type: video.type,
+        uri: videoAsset.uri,
+        name: videoAsset.fileName,
+        type: videoAsset.type,
       },
-      video.fileName
+      videoAsset.fileName
     );
-    formData.append('videoFileName', video.fileName);
+    formData.append('videoFileName', videoAsset.fileName);
+    formData.append('assetId', assetId);
   }
   console.log('formData ' + JSON.stringify(formData));
   return request({ url: `/shortsCreate`, method: 'post', data: formData, form: true })
@@ -46,27 +49,14 @@ export const createShort = () => {
   return useMutation(
     createShortRequest,
     {
-      onMutate: async (newShort) => {
-        await queryClient.cancelQueries('shorts')
-        const previousShorts = queryClient.getQueryData('shorts')
-        queryClient.setQueriesData('shorts', (oldQueryData: any) => {
-          return {
-            ...oldQueryData,
-            data: [
-              ...oldQueryData.data,
-              { id: oldQueryData?.data.length + 1, ...newShort }
-            ]
-          }
-        })
-        return {
-          previousShorts
-        }
-      },
       onError: (_error: any, _shorts: any, context: any) => {
         queryClient.setQueryData('shorts', context.previousShorts)
       },
       onSettled: () => {
         queryClient.invalidateQueries('shorts')
-      }
+      },
+      onSuccess(data, variables, context) {
+        //console.log('data', JSON.stringify(data, null, 4));
+      },
     })
 }

@@ -9,7 +9,6 @@ const FiatBankDepositsPayScreen = ({ navigation, route }) => {
 
   useEffect(() => {
     console.log('FiatBankDepositsPayScreen', route.params)
-    return unsubscribe;
   }, []);
 
   return (

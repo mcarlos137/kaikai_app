@@ -135,7 +135,6 @@ const FiatBankDepositsCreateScreen = ({ navigation, route, colors, userName, det
   }, [payment])
 
   const onPressSendRequest = useCallback(() => {
-    console.log('amount', amount)
     setOpenModal(validateConfirmationModalTransaction(
       [
         { name: 'AMOUNT', value: amount, type: 'NUMERIC' },

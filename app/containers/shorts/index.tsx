@@ -1,6 +1,6 @@
 //PRINCIPAL
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Dimensions, Image, RefreshControl, ScrollView, Switch, Text, TouchableOpacity, View, } from 'react-native';
+import { Dimensions, Image, Platform, RefreshControl, ScrollView, Switch, Text, TouchableOpacity, View, } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Share from "react-native-share";
@@ -8,6 +8,8 @@ import { createThumbnail } from 'react-native-create-thumbnail';
 import { compose } from 'redux'
 //FUNCTIONS
 import { decorateTimestamp } from '../../main/functions';
+//STORES
+import { store as mediaStore, persistor as mediaPersistor } from '../../main/stores/media';
 //HOOKS
 import { getShorts } from '../../main/hooks/getShorts';
 //CONSTANTS
@@ -15,8 +17,11 @@ import { REACTIONS } from '../../constants/social';
 import { StackActions } from '@react-navigation/native';
 //COMPONENTS
 import BodyList from '../../main/components/BodyList';
+import Body_ImageVideo from '../../main/components/Body_ImageVideo';
 //HOC
 import { withColors, withUserName } from '../../main/hoc';
+import { Provider } from 'react-redux';
+import { PersistGate } from 'redux-persist/integration/react';
 
 //CONSTANTS
 const INSTRUCTIONS = [
@@ -27,11 +32,14 @@ const INSTRUCTIONS = [
 
 const ShortsScreen = ({ navigation, route, colors, userName }) => {
 
-  //INITIAL STATES
-  const [videoThumbnails, setVideoThumbnails] = useState<any>({})
-
   //HOOKS CALLS
-  const { isLoading: isLoadingShorts, isRefetching: isRefetchingShorts, data: dataShorts, error: errorShorts, refetch: refetchShorts } =
+  const {
+    isLoading: isLoadingShorts,
+    isRefetching: isRefetchingShorts,
+    data: dataShorts,
+    error: errorShorts,
+    refetch: refetchShorts
+  } =
     getShorts([userName], null, null, null)
 
   //EFFECTS
@@ -52,24 +60,6 @@ const ShortsScreen = ({ navigation, route, colors, userName }) => {
     return reactionsQuantity
   }
 
-  const getThumbnail = (id, uri) => {
-    createThumbnail({
-      url: uri,
-      timeStamp: 0,
-    })
-      .then(response => {
-        setVideoThumbnails({
-          ...videoThumbnails,
-          [id]: { uri: response.path }
-        })
-      })
-      .catch(err => {
-        console.log('>>>>>>>>>>err ' + JSON.stringify(err))
-      });
-    return null
-  }
-
-
   //COMPONENTS
   const renderItem = ({ item, index }) => (
     <View
@@ -79,7 +69,6 @@ const ShortsScreen = ({ navigation, route, colors, userName }) => {
         marginTop: 10,
       }}
     >
-      {getThumbnail(item.id, item.uri)}
       <View
         style={{
           alignSelf: 'center',
@@ -291,18 +280,19 @@ const ShortsScreen = ({ navigation, route, colors, userName }) => {
             borderRadius: 10, padding: 5
           }}
         >
-          <FastImage
-            style={{
-              padding: 10,
-              height: 80,
-              width: 80,
-            }}
-            source={
-              videoThumbnails[item.id] !== undefined ?
-                videoThumbnails[item.id] :
-                require('../../../assets/blank.png')
-            }
-          />
+          <Provider store={mediaStore} >
+            <PersistGate loading={null} persistor={mediaPersistor}>
+              <Body_ImageVideo
+                style={{
+                  margin: 10,
+                  height: 80,
+                  width: 80,
+                }}
+                assetId={item.assetId}
+                type={'image'}
+              />
+            </PersistGate>
+          </Provider>
           <View
             style={{
               flexDirection: 'row',
@@ -427,8 +417,10 @@ const ShortsScreen = ({ navigation, route, colors, userName }) => {
             alignSelf: 'center',
             marginBottom: 8
           }}
+          disabled={mediaStore.getState().assets[item.assetId] === undefined}
           onPress={() => {
-            navigation.dispatch(StackActions.push('ShortsVideoScreen', { ...route.params, selectedShorts: item }))
+            //console.log('>>>>>>>>>>>>', { ...item, asset: mediaStore.getState().assets[item.assetId].videoAsset })
+            navigation.dispatch(StackActions.push('ShortsVideoScreen', { ...route.params, selectedShort: { ...item, asset: mediaStore.getState().assets[item.assetId].videoAsset } }))
           }}
         >
           <MaterialCommunityIcons

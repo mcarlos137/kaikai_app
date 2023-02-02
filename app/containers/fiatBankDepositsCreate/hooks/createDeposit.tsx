@@ -44,7 +44,7 @@ export const createDeposit = () => {
         queryClient.invalidateQueries('deposits')
       },
       onSuccess: (data) => {
-        console.log('data', data?.data)
+        //console.log('data', data?.data)
       }
     }
   )

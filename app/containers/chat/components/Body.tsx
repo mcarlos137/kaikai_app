@@ -327,9 +327,9 @@ const ConnectedComponent = ({
                             }}
                         >
                             {
-                                item.item.messages[item.item.messages.length - 1].text.length > 38 ?
-                                    item.item.messages[item.item.messages.length - 1].text.trim().slice(0, 35) + '...' :
-                                    item.item.messages[item.item.messages.length - 1].text.trim()
+                                item.item.messages[0].text.length > 38 ?
+                                    item.item.messages[0].text.trim().slice(0, 35) + '...' :
+                                    item.item.messages[0].text.trim()
                             }
                         </Text>
                     </View>

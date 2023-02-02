@@ -27,7 +27,6 @@ const DebitCardsBalanceMovementsScreen = ({ navigation, route, colors }) => {
 
   //COMPONENTS
   const renderItem = (item) => {
-    console.log('item>>>>>>>>>>', JSON.stringify(item.item.parts[0].balanceOperationType, null, 4))
     return (
       <TouchableOpacity
         onPress={() => {

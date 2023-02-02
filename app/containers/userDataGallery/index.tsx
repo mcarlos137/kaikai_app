@@ -1,28 +1,42 @@
 //PRINCIPAL
-import React, { Fragment, useEffect, useMemo, useState } from 'react';
-import { Dimensions, RefreshControl, ScrollView, Text, View } from 'react-native';
+import React, { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Dimensions, RefreshControl, ScrollView, Text, View, TouchableOpacity } from 'react-native';
 import { compose } from 'redux'
+import { Provider } from 'react-redux';
+import { PersistGate } from 'redux-persist/integration/react';
+import { StackActions } from '@react-navigation/native';
+import Ionicons from "react-native-vector-icons/Ionicons";
+//STORES
+import { store as mediaStore, persistor as mediaPersistor } from '../../main/stores/media';
 //COMPONENTS
 import ViewEmptyList from '../../main/components/ViewEmptyList'
+import ActionSheetDocument from '../../main/components/ActionSheetDocument';
 import Body_Image from './components/Body_Image'
+//HOOKS
 import { getConfigGallery } from '../../main/hooks/getConfigGallery';
+import { addUserAttachment } from '../../main/hooks/addUserAttachment';
+//HOC
 import { withColors, withUserName } from '../../main/hoc';
+//FUNCTIONS
+import { handleChooseDocument } from '../../main/functions';
 
 const UserDataGalleryScreen = ({ navigation, route, colors, userName }) => {
 
   //INITIAL STATES
   const [selectedUserName, setSelectedUserName] = useState(route?.params?.selectedUserName !== undefined ? route.params.selectedUserName : userName)
   const [type, setType] = useState(route?.params?.selectedGalleryType?.split('__')[0])
-  const [videoThumbnails, setVideoThumbnails] = useState({})
   const [addAllowed, setAddAllowed] = useState(selectedUserName === userName ? true : false)
   const [openModal, setOpenModal] = useState(false)
   const [countdown, setCountdown] = useState({})
   const [stopInterval, setStopInterval] = useState(false)
-  const [showCountdown, setShowCountdown] = useState(route?.params?.selectedGalleryType?.split('__')[1] === undefined ? false : true)
+  const actionSheetDocumentRef = useRef<any>()
+  const [showCountdown, setShowCountdown] = useState(route?.params?.selectedGalleryType?.split('__')[1] === undefined || route?.params?.selectedGalleryType?.split('__')[1] === 'ADD' ? false : true)
 
   //HOOKS CALLS
-  const { isLoading: isLoadingConfigGallery, data: dataConfigGallery, error: errorConfigGalleryx } =
+  const { isLoading: isLoadingConfigGallery, data: dataConfigGallery, error: errorConfigGalleryx, refetch: refetchConfigGallery } =
     getConfigGallery(selectedUserName, type)
+
+  const { mutate: mutateAddUserAttachment, isLoading: isLoadingAddUserAttachment } = addUserAttachment()
 
   //EFFECTS
   useEffect(() => {
@@ -56,11 +70,38 @@ const UserDataGalleryScreen = ({ navigation, route, colors, userName }) => {
     }
     if (route.params.selectedGalleryType.split('__')[1] !== undefined && route.params.selectedGalleryType.split('__')[1] === 'ADD') {
       setTimeout(() => {
-        //indexStore.getState().actionSheetDocumentRefState.current?.setModalVisible(true);
+        actionSheetDocumentRef.current.setModalVisible(true)
       },
         1000)
     }
   }, []);
+
+  useEffect(() => {
+    if (selectedUserName === userName) {
+      navigation.setOptions({
+        headerRight: () => (
+          <View
+            style={{
+              flexDirection: "row",
+              marginRight: 10
+            }}
+          >
+            <TouchableOpacity
+              onPress={() => {
+                actionSheetDocumentRef.current.setModalVisible(true)
+              }}
+            >
+              <Ionicons
+                name="ios-add"
+                size={30}
+                color={'white'}
+              />
+            </TouchableOpacity>
+          </View>
+        )
+      })
+    }
+  }, [])
 
   /*useEffect(() => {
     const unsubscribe = navigation.addListener('blur', () => {
@@ -70,6 +111,7 @@ const UserDataGalleryScreen = ({ navigation, route, colors, userName }) => {
     return unsubscribe;
   }, [navigation]);*/
 
+  //MEMOS
   const data = useMemo(() => {
     const initialData = {
       gallery: [],
@@ -77,6 +119,37 @@ const UserDataGalleryScreen = ({ navigation, route, colors, userName }) => {
     }
     return { ...initialData, [type]: dataConfigGallery }
   }, [dataConfigGallery])
+
+  //CALLBACKS
+  const onPressCamera = useCallback(() => {
+    actionSheetDocumentRef.current?.setModalVisible(false);
+    navigation.dispatch(StackActions.push('CameraBridgeScreen', { ...route.params }))
+  }, [])
+
+  const onPressLibrary = useCallback(() => {
+    handleChooseDocument(
+      'LIBRARY_PHOTO_VIDEO',
+      {
+        maxWidth: 300,
+        maxHeight: 550,
+        quality: 1,
+        mediaType: "mixed",
+        videoQuality: "high",
+        durationLimit: 30
+      },
+      (attachment) => {
+        actionSheetDocumentRef.current?.setModalVisible(false);
+        console.log('attachment', attachment)
+        mutateAddUserAttachment({
+          userName: userName,
+          fieldName: new Date().toISOString().split(":").join("-").split(".").join("--"),
+          attachment: attachment,
+          type: 'premiumGallery'
+        })
+      }
+    )
+  }, [])
+
 
   //PRINCIPAL RENDER
   return (
@@ -105,10 +178,11 @@ const UserDataGalleryScreen = ({ navigation, route, colors, userName }) => {
         <ScrollView
           refreshControl={
             <RefreshControl
-              refreshing={false}
+              refreshing={isLoadingConfigGallery}
               onRefresh={() => {
                 //REVIEW REFRESH CONTROL
                 console.log('>>>>>>>>>>>>START REFRESHING')
+                refetchConfigGallery()
               }}
               tintColor={colors.getRandomMain()}
               colors={[colors.getRandomMain()]}
@@ -143,12 +217,17 @@ const UserDataGalleryScreen = ({ navigation, route, colors, userName }) => {
                 <Fragment
                   key={index}
                 >
-                  <Body_Image
-                    width={data[type].length === 0 ? 0 : data[type].length <= 4 && data[type].length > 0 ? 160 : data[type].length > 4 && data[type].length <= 20 ? 120 : 80}
-                    height={data[type].length === 0 ? 0 : data[type].length <= 4 && data[type].length > 0 ? 160 : data[type].length > 4 && data[type].length <= 20 ? 120 : 80}
-                    item={item}
-                    userName={selectedUserName}
-                  />
+                  <Provider store={mediaStore} >
+                    <PersistGate loading={null} persistor={mediaPersistor}>
+                      <Body_Image
+                        width={data[type].length === 0 ? 0 : data[type].length <= 4 && data[type].length > 0 ? 160 : data[type].length > 4 && data[type].length <= 20 ? 120 : 80}
+                        height={data[type].length === 0 ? 0 : data[type].length <= 4 && data[type].length > 0 ? 160 : data[type].length > 4 && data[type].length <= 20 ? 120 : 80}
+                        item={item}
+                        userName={selectedUserName}
+                      />
+                    </PersistGate>
+                  </Provider>
+
                 </Fragment>
               )
             })}
@@ -185,6 +264,11 @@ const UserDataGalleryScreen = ({ navigation, route, colors, userName }) => {
               />*/}
           </>}
       </View>
+      <ActionSheetDocument
+        reference={actionSheetDocumentRef}
+        onPressCamera={onPressCamera}
+        onPressLibrary={onPressLibrary}
+      />
     </View >
   );
 };

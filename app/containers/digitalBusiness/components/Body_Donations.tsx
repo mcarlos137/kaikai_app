@@ -44,7 +44,6 @@ const Component = ({ data, colors }) => {
             currentDate.setMonth(currentDate.getMonth() - 1);
             i++
         }
-        console.log('partialData', partialData)
         let k = 0
         data.topCountries.map((item, index) => {
             countries.push(item.name)
@@ -55,7 +54,6 @@ const Component = ({ data, colors }) => {
             })
             k++
         })
-        console.log('partialData1', partialData)
         let addDate = false
         Object.keys(partialData).reverse().forEach((key) => {
             let value: any[] = []

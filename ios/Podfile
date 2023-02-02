@@ -24,6 +24,9 @@ target 'kaikai_mobile' do
   #pod 'GoogleUtilities/Environment', :modular_headers => true
   #pod 'Firebase/Messaging', :modular_headers => true
 
+  pod 'SDWebImage', :modular_headers => true
+  pod 'SDWebImageWebPCoder', :modular_headers => true
+
   #pod 'RNCharts', :path => '../node_modules/react-native-charts-wrapper'  
   pod 'react-native-charts-wrapper', :path => '../node_modules/react-native-charts-wrapper'
   

@@ -9,7 +9,8 @@ import {
     TextInput,
     TouchableOpacity,
     View,
-    Alert
+    Alert,
+    ActivityIndicator
 } from 'react-native';
 import { compose } from 'redux'
 import { Avatar } from '@rneui/themed';
@@ -47,12 +48,18 @@ const MoneyCallsCreateScreen = ({ navigation, route, colors, userName, config, h
     const [overviewUser, setOverviewUser] = useState(route?.params?.selectedMoneyCallOverviewUser !== undefined ? true : false)
 
     //HOOKS CALLS
-    const { mutate: mutateCreateMoneyCall } = createMoneyCall()
+    const { mutate: mutateCreateMoneyCall, isSuccess: isSuccessCreateMoneyCall, isLoading: isLoadingCreateMoneyCall } = createMoneyCall()
 
     //EFFECTS
     useEffect(() => {
         console.log('MoneyCallsCreateScreen', route.params)
     }, []);
+
+    useEffect(() => {
+        if (isSuccessCreateMoneyCall) {
+            navigation.dispatch(StackActions.pop())
+        }
+    }, [isSuccessCreateMoneyCall]);
 
     //CALLBACKS
     const onPressTarget = useCallback(() => {
@@ -159,9 +166,8 @@ const MoneyCallsCreateScreen = ({ navigation, route, colors, userName, config, h
             estimatedTime: estimatedTime,
             message: message
         })
-        navigation.dispatch(StackActions.pop())
     }, [otherUserName, otherName, payer, type, scheduledTimestamp, rate, estimatedTime, message])
-  
+
     //PRINCIPAL RENDER
     return (
         <View style={{
@@ -566,10 +572,12 @@ const MoneyCallsCreateScreen = ({ navigation, route, colors, userName, config, h
                         backgroundColor: colors.getRandomMain(),
                         padding: 10,
                         marginTop: 20,
-                        borderRadius: 10
-
+                        borderRadius: 10,
+                        justifyContent: 'center',
+                        flexDirection: 'row'
                     }}
                     onPress={onPressCreate}
+                    disabled={isLoadingCreateMoneyCall}
                 >
                     <Text
                         style={{
@@ -578,6 +586,7 @@ const MoneyCallsCreateScreen = ({ navigation, route, colors, userName, config, h
                     >
                         CREATE
                     </Text>
+                    {isLoadingCreateMoneyCall && <ActivityIndicator size="small" color={'white'} style={{ marginLeft: 10}} />}
                 </TouchableOpacity>
             </ScrollView>
         </View >

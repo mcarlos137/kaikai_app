@@ -9,6 +9,7 @@ import { withColors, withHmacInterceptor } from "../../main/hoc";
 //COMPONENTS
 import Body from './components/Body'
 import Body_Input from './components/Body_Input'
+import Body_Media from './components/Body_Media'
 import Modal_Dots from './components/Modal_Dots'
 
 const ChatRoomScreen = ({ navigation, route }) => {
@@ -17,6 +18,7 @@ const ChatRoomScreen = ({ navigation, route }) => {
         <Provider store={chatStore} >
             <PersistGate loading={null} persistor={chatPersistor}>
                 <Body />
+                <Body_Media />
                 <Body_Input />
                 <Modal_Dots />
             </PersistGate>

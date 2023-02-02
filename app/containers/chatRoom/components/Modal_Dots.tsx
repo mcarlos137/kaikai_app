@@ -20,7 +20,6 @@ const ConnectedComponent = ({ openModal, colors }) => {
     const translation = useRef(new Animated.Value(Dimensions.get('window').width)).current;
 
     if (openModal) {
-        console.log('translation1', translation)
         Animated.timing(translation, {
             toValue: 0,
             duration: 500,
@@ -28,7 +27,6 @@ const ConnectedComponent = ({ openModal, colors }) => {
         }).start();
     }
     if (!openModal) {
-        console.log('translation2', translation)
         Animated.timing(translation, {
             toValue: Dimensions.get('window').width,
             duration: 500,

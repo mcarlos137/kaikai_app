@@ -2,8 +2,6 @@ import { useQuery } from "react-query"
 import { request } from "../../../tools/axiosUtils"
 
 const getFastChangeFactorRequest = ({ queryKey }) => {
-    console.log('queryKey[1]', queryKey[1])
-    console.log('queryKey[2]', queryKey[2])
     return request({ url: `/mcUser/getFastChangeFactor/${queryKey[1]}/${queryKey[2]}`, method: 'get' })
 }
 

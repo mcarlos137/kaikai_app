@@ -88,7 +88,6 @@ const getDebitCardBalanceMovementsData = (data) => {
           partialData[timeRegistered].push(newValue);
         } else {
           console.log('------------------ERROR: ' + timeRegistered);
-          console.log('balanceOperationType: ' + value.balanceOperationType)
         }
       } else {
         partialData[time] = [newValue];

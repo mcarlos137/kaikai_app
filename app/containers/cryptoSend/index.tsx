@@ -136,7 +136,6 @@ const CryptoSendScreen = ({ navigation, route, colors, userName }) => {
     }, [])
 
     const onPressSend = useCallback(() => {
-        console.log('EPA')
         var network = 'BITCOIN'
         if (currency.value === 'ETH') {
             network = 'ETHEREUM'
@@ -162,8 +161,6 @@ const CryptoSendScreen = ({ navigation, route, colors, userName }) => {
         if (currency.value === 'XRP') {
             network = 'XRP'
         }
-        console.log('address', address)
-        console.log('amount', amount)
         setOpenModal(validateConfirmationModalTransaction(
             [
                 { name: network + ' ADDRESS', value: address, type: network + '_ADDRESS' },

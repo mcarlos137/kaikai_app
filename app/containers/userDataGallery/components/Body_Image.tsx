@@ -5,12 +5,22 @@ import RNFetchBlob from 'rn-fetch-blob';
 import { StackActions } from '@react-navigation/native';
 import { createThumbnail } from 'react-native-create-thumbnail';
 import { compose } from 'redux';
+//STORES
+import { store as mediaStore } from '../../../main/stores/media';
 //TOOLS
 import httpRequest from '../../../tools/httpRequest';
 //HOC
 import { withHmacInterceptor, withNavigation, withRoute, withUserName } from '../../../main/hoc';
+import { connect } from 'react-redux';
 
-const Component = ({
+const mapStateToProps = state => {
+    return {
+        assets: state.assets,
+    };
+};
+
+const ConnectedComponent = ({
+    assets,
     width,
     height,
     item,
@@ -20,11 +30,7 @@ const Component = ({
     hmacInterceptor
 }) => {
 
-    //INITIAL STATES
-    const [uri, setUri] = useState('')
-
-    //EFFECTS
-    useEffect(() => {
+    if (assets[item.name] === undefined) {
         RNFetchBlob.config({
             fileCache: true,
             appendExt: item.type === 'video' ? 'mp4' : 'jpeg',
@@ -41,18 +47,23 @@ const Component = ({
                         false
                     )).headers)
             .then(data => {
-                console.log('data>>>>>>>>>>', data.data)
-                if (uri === '') {
-                    setUri((Platform.OS === 'android') ? 'file://' + data.data : data.data)
+                if (item.type === 'video') {
+                    mediaStore.dispatch({ type: 'SET_ASSET', payload: { id: item.name, videoAsset: { uri: (Platform.OS === 'android') ? 'file://' + data.data : data.data } } })
                 }
+                if (item.type === 'image') {
+                    mediaStore.dispatch({ type: 'SET_ASSET', payload: { id: item.name, imageAsset: { uri: (Platform.OS === 'android') ? 'file://' + data.data : data.data } } })
+                }
+                /*if (uri === '') {
+                    setUri((Platform.OS === 'android') ? 'file://' + data.data : data.data)
+                }*/
             })
             .catch(err => {
                 console.log('>>>>>>>>>>err ' + JSON.stringify(err))
             });
-        if (item === 'video') {
+        if (item.type === 'video') {
             createThumbnail({
                 url: 'https://service8081.moneyclick.com/attachment/getUserFile/' + userName + '/' + item.name,
-                timeStamp: 0,
+                timeStamp: 2000,
                 headers: hmacInterceptor?.process(
                     httpRequest.create(
                         'https://service8081.moneyclick.com',
@@ -63,14 +74,15 @@ const Component = ({
                     )).headers,
             })
                 .then(data => {
-                    console.log('response>>>>>>>>>', data)
-                    setUri((Platform.OS === 'android') ? 'file://' + data.path : data.path)
+                    mediaStore.dispatch({ type: 'SET_ASSET', payload: { id: item.name, imageAsset: { uri: (Platform.OS === 'android') ? 'file://' + data.path : data.path } } })
+                    //console.log('response>>>>>>>>>', data)
+                    //setUri((Platform.OS === 'android') ? 'file://' + data.path : data.path)
                 })
                 .catch(err => {
                     console.log('>>>>>>>>>>err ' + JSON.stringify(err))
                 });
         }
-    }, [])
+    }
 
     //PRINCIPAL RENDER
     return (
@@ -92,10 +104,10 @@ const Component = ({
                     borderWidth: 0.75,
                     borderColor: 'white'
                 }}
-                source={{ uri: uri }}
+                source={{ uri: assets[item.name]?.imageAsset?.uri }}
             />
         </TouchableOpacity>
     )
 }
 
-export default React.memo(compose(withNavigation, withRoute, withUserName, withHmacInterceptor)(Component))
+export default React.memo(compose(withNavigation, withRoute, withUserName, withHmacInterceptor, connect(mapStateToProps))(ConnectedComponent))

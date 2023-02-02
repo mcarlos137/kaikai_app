@@ -61,7 +61,8 @@ const initialState: any = {
             ]
         },
     ],
-    openModal: ''
+    openModal: '',
+    mediaAsset: null
 };
 
 function reducer(state = initialState, action) {
@@ -107,6 +108,16 @@ function reducer(state = initialState, action) {
     if (action.type === 'SET_OPEN_MODAL') {
         return Object.assign({}, state, {
             token: state.openModal = action.payload,
+        });
+    }
+    if (action.type === 'SET_MEDIA_ASSET') {
+        return Object.assign({}, state, {
+            token: state.mediaAsset = action.payload,
+        });
+    }
+    if (action.type === 'UPDATE_MEDIA_ASSET_URI') {
+        return Object.assign({}, state, {
+            token: state.mediaAsset = { ...state.mediaAsset, uri: action.payload, edited: true },
         });
     }
     return state;

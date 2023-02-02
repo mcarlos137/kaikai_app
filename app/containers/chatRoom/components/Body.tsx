@@ -26,6 +26,7 @@ import { withColors, withHmacInterceptor, withNavigation, withRoute, withUserNam
 import { Avatar } from '@rneui/themed';
 import httpRequest from '../../../tools/httpRequest';
 import { StackActions } from '@react-navigation/native';
+import Video from 'react-native-video';
 
 const mapStateToProps = state => {
     return {
@@ -187,7 +188,6 @@ const ConnectedComponent = ({
                     </TouchableOpacity>
                     <TouchableOpacity
                         onPress={() => {
-                            console.log('AAAA')
                             if (chatStore.getState().openModal === 'options') {
                                 chatStore.dispatch({
                                     type: 'SET_OPEN_MODAL',
@@ -238,42 +238,60 @@ const ConnectedComponent = ({
                 padding: 3
             }}
         >
-            <TouchableOpacity
+            <Pressable
                 onLongPress={() => {
                     if (messagesToDelete.includes(item.item.timestamp)) {
                         setMessagesToDelete(mtd => mtd.filter(it => it !== item.item.timestamp))
                     } else {
                         setMessagesToDelete([...messagesToDelete, item.item.timestamp])
                     }
-                }}>
+                }}
+                style={{
+                    flexDirection: 'column'
+                }}
+            >
                 <View
-                    style={item.item.senderUserName === userName ?
-                        [styles.cardOwn, { backgroundColor: colors.secundaryBackground }, messagesToDelete.includes(item.item.timestamp) && { borderColor: 'red', borderWidth: 2 }]
-                        :
-                        [styles.cardThird, { backgroundColor: colors.primaryBackground }, messagesToDelete.includes(item.item.timestamp) && { borderColor: 'red', borderWidth: 2 }]
+                    style={
+                        item.item.senderUserName === userName ?
+                            [{ backgroundColor: colors.secundaryBackground, padding: 5, borderRadius: 5, marginRight: 10 }]
+                            :
+                            [{ backgroundColor: colors.primaryBackground, padding: 5, borderRadius: 5, marginLeft: 10 }]
                     }
                 >
-                    {/*item.item.reply !== undefined && ((item.item.reply.senderUserName === authStore.getState().userNameState && item.item.reply.attachmentData !== undefined)
-                            || (item.item.reply.senderUserName !== authStore.getState().userNameState && item.item.reply.attachmentFileName !== undefined && item.item.reply.attachmentFileName !== null))
-                            && getMimeType(item.item.reply.senderUserName === authStore.getState().userNameState ?
-                                item.item.reply.attachmentData.fileName : item.item.reply.attachmentFileName).includes('image') &&
-                    createImageReply(item.item.reply, item.item.reply.senderUserName === authStore.getState().userNameState)*/}
-                    {/*item.item.reply !== undefined && ((item.item.reply.senderUserName === authStore.getState().userNameState && item.item.reply.attachmentData !== undefined)
-                            || (item.item.reply.senderUserName !== authStore.getState().userNameState && item.item.reply.attachmentFileName !== undefined && item.item.reply.attachmentFileName !== null))
-                            && getMimeType(item.item.reply.senderUserName === authStore.getState().userNameState ?
-                                item.item.reply.attachmentData.fileName : item.item.reply.attachmentFileName).includes('video') &&
-                createImageReply(item.item.reply, item.item.reply.senderUserName === authStore.getState().userNameState)*/}
-                    {/*item.item.reply !== undefined && item.item.reply.message !== '' &&
-                            (<View
-                                style={{
-                                    borderLeftWidth: 1,
-                                    borderLeftColor: 'grey',
-                                    flexDirection: 'row'
-                                }}>
-                                <Text>
-                                    {item.item.reply.message}
-                                </Text>
-                            </View>)*/}
+                    {item?.item?.mediaAsset !== undefined && item?.item?.mediaAsset.type.includes('image') &&
+                        <Image
+                            source={{
+                                uri: item.item.mediaAsset.uri,
+                                width: 120,
+                                height: 120
+                            }}
+                            style={{
+                                alignSelf: 'center'
+                            }}
+                        />}
+                    {item?.item?.mediaAsset !== undefined && item?.item?.mediaAsset.type.includes('video') &&
+                        <Video
+                            source={{
+                                uri: item.item.mediaAsset.uri,
+                            }}
+                            paused={true}
+                            controls={true}
+                            resizeMode='cover'
+                            onError={(error) => {
+                                //console.log('>>>>>>>>>>>>> ' + JSON.stringify(error))
+                            }}
+                            style={{
+                                height: 150,
+                                width: 150,
+                                alignSelf: 'center'
+                            }}
+                        />}
+                    {item.item.text.trim() !== '' &&
+                        <Text
+                            style={[styles.txtMessage, { color: colors.text }]}
+                        >
+                            {item.item.text.trim()}
+                        </Text>}
                     <View style={styles.viewDateAndStatusMessage}>
                         <Text
                             style={[styles.txtDateOwn, { color: colors.text }]}
@@ -308,25 +326,8 @@ const ConnectedComponent = ({
                                 size={14}
                             />}
                     </View>
-                    {/*((item.item.senderUserName === authStore.getState().userNameState && item.item.attachmentData !== undefined)
-                            || (item.item.senderUserName !== authStore.getState().userNameState && item.item.attachmentFileName !== undefined && item.item.attachmentFileName !== null))
-                            && (getMimeType(item.item.senderUserName === authStore.getState().userNameState ?
-                                item.item.attachmentData.fileName : item.item.attachmentFileName).includes('image') || getMimeType(item.item.senderUserName === authStore.getState().userNameState ?
-                                    item.item.attachmentData.fileName : item.item.attachmentFileName).includes('video')) &&
-                                        createImage(item.item, item.item.senderUserName === authStore.getState().userNameState)*/}
-                    {/*((item.item.senderUserName === authStore.getState().userNameState && item.item.attachmentData !== undefined)
-                            || (item.item.senderUserName !== authStore.getState().userNameState && item.item.attachmentFileName !== undefined && item.item.attachmentFileName !== null))
-                            && getMimeType(item.item.senderUserName === authStore.getState().userNameState ?
-                                item.item.attachmentData.fileName : item.item.attachmentFileName).includes('audio') &&
-                                    <SliderSound isLocal={item.item.senderUserName === authStore.getState().userNameState} item={item.item} />*/}
-                    {item.item.text.trim() !== '' &&
-                        <Text
-                            style={[styles.txtMessage, { color: colors.text }]}
-                        >
-                            {item.item.text.trim()}
-                        </Text>}
                 </View>
-            </TouchableOpacity>
+            </Pressable>
         </View>
     )
 

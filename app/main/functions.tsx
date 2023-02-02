@@ -777,35 +777,37 @@ export const formatPhoneContacts = (areaCode, phone) => {
 }
 
 export const handleChooseDocument = async (permmission, options, onSuccessChoose) => {
-  try {
-    if (await checkPermissions(permmission)) {
-      switch (permmission) {
-        case "LIBRARY_PHOTO":
-        case "LIBRARY_VIDEO":
-        case "LIBRARY_PHOTO_VIDEO":
-          launchImageLibrary(options, (response) => {
-            if (
-              response !== undefined &&
-              response.assets !== undefined &&
-              response.assets.length > 0
-            ) {
-              onSuccessChoose(response.assets[0])
-            }
-          });
-          break;
+  checkPermissions(permmission)
+    .then(response => {
+      console.log('response', response)
+      if (response) {
+        switch (permmission) {
+          case "LIBRARY_PHOTO":
+          case "LIBRARY_VIDEO":
+          case "LIBRARY_PHOTO_VIDEO":
+            launchImageLibrary(options, (response) => {
+              if (
+                response !== undefined &&
+                response.assets !== undefined &&
+                response.assets.length > 0
+              ) {
+                onSuccessChoose(response.assets[0])
+              }
+            });
+            break;
+        }
+      } else {
+        Alert.alert(
+          "Permissions Error",
+          "Error trying to get PHOTO LIBRARY permission.",
+          [{ text: "Ok" }]
+        );
+        return;
       }
-    } else {
-      Alert.alert(
-        "Permissions Error",
-        "Error trying to get PHOTO LIBRARY permission.",
-        [{ text: "Ok" }]
-      );
+    }).catch(error => {
+      Alert.alert("File Error", "File can not be processed.", [{ text: "Ok" }]);
       return;
-    }
-  } catch (error) {
-    Alert.alert("File Error", "File can not be processed.", [{ text: "Ok" }]);
-    return;
-  }
+    })
 }
 
 export function getExpirationDate(timestamp) {
@@ -819,31 +821,31 @@ export function getExpirationDate(timestamp) {
   return month + "/" + year;
 }
 
-export const getIconName: any  = (balanceOperationType) => {
+export const getIconName: any = (balanceOperationType) => {
   switch (balanceOperationType) {
-      case 'SEND_OUT':
-      case 'SEND_IN':
-      case 'SEND_TO_PAYMENT':
-      case 'MC_SEND_SMS_NATIONAL':
-      case 'MC_SEND_SMS_INTERNATIONAL':
-      case 'GIFT_CARD_ACTIVATION':
-      case 'SUBSCRIPTION_JOIN':
-      case 'DEBIT':
-          return 'bank-transfer-out'
-      case 'RECEIVE_OUT':
-      case 'RECEIVE_IN':
-      case 'MC_BUY_BALANCE':
-      case 'GIFT_CARD_REDEEM_BR':
-      case 'GIFT_CARD_REDEEM':
-      case 'CREDIT':
-          return 'bank-transfer-in'
-      case 'MC_FAST_CHANGE':
-      case 'MC_MESSAGE_OFFER_CHANGE':
-      case 'MC_BUY_BITCOINS':
-      case 'MC_BUY_CRYPTO':
-      case 'MC_SELL_BITCOINS':
-      case 'MC_SELL_CRYPTO':
-          return 'exchange'
+    case 'SEND_OUT':
+    case 'SEND_IN':
+    case 'SEND_TO_PAYMENT':
+    case 'MC_SEND_SMS_NATIONAL':
+    case 'MC_SEND_SMS_INTERNATIONAL':
+    case 'GIFT_CARD_ACTIVATION':
+    case 'SUBSCRIPTION_JOIN':
+    case 'DEBIT':
+      return 'bank-transfer-out'
+    case 'RECEIVE_OUT':
+    case 'RECEIVE_IN':
+    case 'MC_BUY_BALANCE':
+    case 'GIFT_CARD_REDEEM_BR':
+    case 'GIFT_CARD_REDEEM':
+    case 'CREDIT':
+      return 'bank-transfer-in'
+    case 'MC_FAST_CHANGE':
+    case 'MC_MESSAGE_OFFER_CHANGE':
+    case 'MC_BUY_BITCOINS':
+    case 'MC_BUY_CRYPTO':
+    case 'MC_SELL_BITCOINS':
+    case 'MC_SELL_CRYPTO':
+      return 'exchange'
   }
 }
 
