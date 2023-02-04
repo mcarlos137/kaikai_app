@@ -860,6 +860,8 @@ PODS:
     - nanopb/encode (= 2.30909.0)
   - nanopb/decode (2.30909.0)
   - nanopb/encode (2.30909.0)
+  - OGReactNativeWaveform (2.0.5):
+    - React
   - OpenSSL-Universal (1.1.1100)
   - Permission-AppTrackingTransparency (3.6.1):
     - RNPermissions
@@ -1120,6 +1122,8 @@ PODS:
   - React-jsinspector (0.71.1)
   - React-logger (0.71.1):
     - glog
+  - react-native-biometrics (3.0.1):
+    - React-Core
   - react-native-blur (4.3.0):
     - React-Core
   - react-native-charts-wrapper (0.5.11):
@@ -1240,6 +1244,8 @@ PODS:
     - React-perflogger (= 0.71.1)
   - rn-fetch-blob (0.12.0):
     - React-Core
+  - RNAudioRecorderPlayer (3.5.3):
+    - React-Core
   - RNCAsyncStorage (1.17.11):
     - React-Core
   - RNCClipboard (1.5.1):
@@ -1263,6 +1269,8 @@ PODS:
     - React-Core
     - RNFBApp
   - RNGestureHandler (2.8.0):
+    - React-Core
+  - RNKeychain (8.1.1):
     - React-Core
   - RNPermissions (3.6.1):
     - React-Core
@@ -1361,6 +1369,7 @@ DEPENDENCIES:
   - GoogleUtilities
   - hermes-engine (from `../node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec`)
   - libevent (~> 2.1.12)
+  - OGReactNativeWaveform (from `../node_modules/react-native-audiowaveform`)
   - OpenSSL-Universal (= 1.1.1100)
   - Permission-AppTrackingTransparency (from `../node_modules/react-native-permissions/ios/AppTrackingTransparency`)
   - Permission-BluetoothPeripheral (from `../node_modules/react-native-permissions/ios/BluetoothPeripheral`)
@@ -1397,6 +1406,7 @@ DEPENDENCIES:
   - React-jsiexecutor (from `../node_modules/react-native/ReactCommon/jsiexecutor`)
   - React-jsinspector (from `../node_modules/react-native/ReactCommon/jsinspector`)
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
+  - react-native-biometrics (from `../node_modules/react-native-biometrics`)
   - "react-native-blur (from `../node_modules/@react-native-community/blur`)"
   - react-native-charts-wrapper (from `../node_modules/react-native-charts-wrapper`)
   - react-native-contacts (from `../node_modules/react-native-contacts`)
@@ -1421,6 +1431,7 @@ DEPENDENCIES:
   - React-runtimeexecutor (from `../node_modules/react-native/ReactCommon/runtimeexecutor`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
   - rn-fetch-blob (from `../node_modules/rn-fetch-blob`)
+  - RNAudioRecorderPlayer (from `../node_modules/react-native-audio-recorder-player`)
   - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
   - "RNCClipboard (from `../node_modules/@react-native-community/clipboard`)"
   - "RNCMaskedView (from `../node_modules/@react-native-community/masked-view`)"
@@ -1430,6 +1441,7 @@ DEPENDENCIES:
   - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
   - "RNFBFirestore (from `../node_modules/@react-native-firebase/firestore`)"
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
+  - RNKeychain (from `../node_modules/react-native-keychain`)
   - RNPermissions (from `../node_modules/react-native-permissions`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
@@ -1507,6 +1519,8 @@ EXTERNAL SOURCES:
     :podspec: "../node_modules/react-native/third-party-podspecs/glog.podspec"
   hermes-engine:
     :podspec: "../node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec"
+  OGReactNativeWaveform:
+    :path: "../node_modules/react-native-audiowaveform"
   Permission-AppTrackingTransparency:
     :path: "../node_modules/react-native-permissions/ios/AppTrackingTransparency"
   Permission-BluetoothPeripheral:
@@ -1573,6 +1587,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/jsinspector"
   React-logger:
     :path: "../node_modules/react-native/ReactCommon/logger"
+  react-native-biometrics:
+    :path: "../node_modules/react-native-biometrics"
   react-native-blur:
     :path: "../node_modules/@react-native-community/blur"
   react-native-charts-wrapper:
@@ -1621,6 +1637,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon"
   rn-fetch-blob:
     :path: "../node_modules/rn-fetch-blob"
+  RNAudioRecorderPlayer:
+    :path: "../node_modules/react-native-audio-recorder-player"
   RNCAsyncStorage:
     :path: "../node_modules/@react-native-async-storage/async-storage"
   RNCClipboard:
@@ -1639,6 +1657,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-firebase/firestore"
   RNGestureHandler:
     :path: "../node_modules/react-native-gesture-handler"
+  RNKeychain:
+    :path: "../node_modules/react-native-keychain"
   RNPermissions:
     :path: "../node_modules/react-native-permissions"
   RNReanimated:
@@ -1664,7 +1684,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   abseil: ebe5b5529fb05d93a8bdb7951607be08b7fa71bc
-  boost: a7c83b31436843459a1961bfd74b96033dc77234
+  boost: 57d2868c099736d80fcd648bf211b4431e51a558
   BoringSSL-GRPC: 3175b25143e648463a56daeaaa499c6cb86dad33
   BVLinearGradient: 34a999fda29036898a09c6a6b728b0b4189e1a44
   Charts: 354f86803d11d9c35de280587fef50d1af063978
@@ -1706,6 +1726,7 @@ SPEC CHECKSUMS:
   MLKitCommon: f6da6c5659618c070b50a80db01248ebe2964175
   MLKitVision: 96c96571190b7f63eddf4a12068ce8a8689e0d2c
   nanopb: b552cce312b6c8484180ef47159bc0f65a1f0431
+  OGReactNativeWaveform: f789fabadbf3904c7cba84d183405395861b8fed
   OpenSSL-Universal: ebc357f1e6bc71fa463ccb2fe676756aff50e88c
   Permission-AppTrackingTransparency: 9eedbc3b5a2907b8cb2c971461754616eac1661d
   Permission-BluetoothPeripheral: 67708853584bb9208c76d36d0e0ea4eafb97ea5b
@@ -1728,7 +1749,7 @@ SPEC CHECKSUMS:
   Permission-StoreKit: 7dcf43ad1b8cdc7ae21e547d49df9ac9b6ea7270
   PromisesObjC: ab77feca74fa2823e7af4249b8326368e61014cb
   Protobuf: f4128517d7a42302e106cc3afe614ee3a7513e94
-  RCT-Folly: 0080d0a6ebf2577475bda044aa59e2ca1f909cda
+  RCT-Folly: 424b8c9a7a0b9ab2886ffe9c3b041ef628fd4fb1
   RCTRequired: fd4d923b964658aa0c4091a32c8b2004c6d9e3a6
   RCTTypeSafety: c276d85975bde3d8448907235c70bf0da257adfd
   React: e481a67971af1ce9639c9f746b753dd0e84ca108
@@ -1742,6 +1763,7 @@ SPEC CHECKSUMS:
   React-jsiexecutor: 60cf272aababc5212410e4249d17cea14fc36caa
   React-jsinspector: ff56004b0c974b688a6548c156d5830ad751ae07
   React-logger: 60a0b5f8bed667ecf9e24fecca1f30d125de6d75
+  react-native-biometrics: 352e5a794bfffc46a0c86725ea7dc62deb085bdc
   react-native-blur: 50c9feabacbc5f49b61337ebc32192c6be7ec3c3
   react-native-charts-wrapper: 4461b72f48e737a490e968bf2468cc0fd2281681
   react-native-contacts: 0aa99963d8f29099d4725cd0d2f8b6ef5f0d9a2d
@@ -1766,6 +1788,7 @@ SPEC CHECKSUMS:
   React-runtimeexecutor: 311feb67600774723fe10eb8801d3138cae9ad67
   ReactCommon: 03be76588338a27a88d103b35c3c44a3fd43d136
   rn-fetch-blob: f065bb7ab7fb48dd002629f8bdcb0336602d3cba
+  RNAudioRecorderPlayer: 6638283925b46808310c9fdf803ebabc3abdbadc
   RNCAsyncStorage: 8616bd5a58af409453ea4e1b246521bb76578d60
   RNCClipboard: 41d8d918092ae8e676f18adada19104fa3e68495
   RNCMaskedView: 0e1bc4bfa8365eba5fbbb71e07fbdc0555249489
@@ -1775,6 +1798,7 @@ SPEC CHECKSUMS:
   RNFBApp: aecfcdc0964d9bc0c5f7ba05efb50be724d8e8b3
   RNFBFirestore: acc94fe644f02ea746bc0e0bb9016f5ce548abdf
   RNGestureHandler: 62232ba8f562f7dea5ba1b3383494eb5bf97a4d3
+  RNKeychain: ff836453cba46938e0e9e4c22e43d43fa2c90333
   RNPermissions: dcdb7b99796bbeda6975a6e79ad519c41b251b1c
   RNReanimated: d8d9d3d3801bda5e35e85cdffc871577d044dc2e
   RNScreens: 34cc502acf1b916c582c60003dc3089fa01dc66d

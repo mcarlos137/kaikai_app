@@ -6,6 +6,7 @@ import {
     ActivityIndicator,
     Text
 } from 'react-native';
+import * as Keychain from 'react-native-keychain';
 //HOOKS
 import { signInProcess } from '../../main/hooks/signInProcess';
 
@@ -21,7 +22,7 @@ const SignInProcessScreen = ({ navigation, route }) => {
     const isMounted = useRef(false)
 
     //HOOKS CALLS
-    const { isLoading: isLoadingSignInProcess, run: runSignInProcess } =
+    const { isLoading: isLoadingSignInProcess, run: runSignInProcess, isSuccess: isSuccessSignInProcess } =
         signInProcess(
             areaCode,
             phone,
@@ -41,6 +42,17 @@ const SignInProcessScreen = ({ navigation, route }) => {
         }, 1000)
         return () => clearInterval(interval)
     }, [])
+
+    //EFFECTS
+    useEffect(() => {
+        if (isSuccessSignInProcess) {
+            setTimeout(() => {
+                Keychain.setGenericPassword(areaCode + '' + phone, password).then(result => {
+                    console.log('setGenericPassword', result)
+                });
+            }, 500)
+        }
+    }, [isSuccessSignInProcess])
 
     //PRINCIPAL RENDER
     return (

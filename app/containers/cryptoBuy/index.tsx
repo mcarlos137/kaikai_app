@@ -1,10 +1,10 @@
 //PRINCIPAL
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import {
-    View,
     Text,
 } from 'react-native';
 import { compose } from 'redux'
+import { StackActions } from '@react-navigation/native';
 //FUNCTIONS
 import {
     validateConfirmationModalTransaction
@@ -17,7 +17,6 @@ import Body_TextRight from '../../main/components/Body_TextRight'
 import Body_Button from '../../main/components/Body_Button'
 import Modal_Transaction from '../../main/components/Modal_Transaction'
 import Header from '../../main/components/Header'
-import { StackActions } from '@react-navigation/native';
 //HOOKS
 import { getCryptoPrice } from '../../main/hooks/getCryptoPrice';
 import { getCharges } from '../../main/hooks/getCharges';
@@ -32,8 +31,7 @@ const CryptoBuyScreen = ({ navigation, route, colors, userName, detailedBalances
     const [targetCurrencyAmount, setTargetCurrencyAmount] = useState(0.00)
     const [baseCurrency, setBaseCurrency] = useState<any>(detailedBalances.find(currency => !currency.isCrypto))
     const [targetCurrency, setTargetCurrency] = useState<any>(detailedBalances.find(currency => currency.isCrypto))
-    const [openModal, setOpenModal] = useState(false)
-    const [modalMessage, setModalMessage] = useState('')
+    const [isVisibleModalTransaction, setIsVisibleModalTransaction] = useState(false)
 
     //HOOKS CALLS
     const { data: cryptoPrice, refetch } =
@@ -53,7 +51,8 @@ const CryptoBuyScreen = ({ navigation, route, colors, userName, detailedBalances
             null
         )
 
-    const { mutate: mutateCryptoBuy } = cryptoBuy()
+    const { mutate: mutateCryptoBuy, isSuccess: isSuccessCryptoBuy, isError: isErrorCryptoBuy } =
+        cryptoBuy()
 
     //EFFECTS
     useEffect(() => {
@@ -187,7 +186,7 @@ const CryptoBuyScreen = ({ navigation, route, colors, userName, detailedBalances
     ), [baseCurrency])
 
     const onPressBuy = useCallback(() => {
-        setOpenModal(validateConfirmationModalTransaction(
+        setIsVisibleModalTransaction(validateConfirmationModalTransaction(
             [
                 { name: 'AMOUNT', value: baseCurrencyAmount, type: 'NUMERIC' },
             ]
@@ -195,21 +194,22 @@ const CryptoBuyScreen = ({ navigation, route, colors, userName, detailedBalances
     }, [baseCurrencyAmount])
 
     const onPressCancel = useCallback(() => {
-        setOpenModal(false)
+        setIsVisibleModalTransaction(false)
     }, [])
 
     const onPressClose = useCallback(() => {
+        setIsVisibleModalTransaction(false)
         navigation.dispatch(StackActions.popToTop())
     }, [])
 
-    const onPressAccept = () => {
-        /*mutateCryptoBuy({
+    const process = () => {
+        mutateCryptoBuy({
             userName: userName,
             cryptoCurrency: targetCurrency?.value,
             fiatCurrency: baseCurrency.value,
             cryptoAmount: targetCurrencyAmount,
             fiatAmount: baseCurrencyAmount
-        })*/
+        })
     }
 
     //PRINCIPAL RENDER
@@ -285,12 +285,13 @@ const CryptoBuyScreen = ({ navigation, route, colors, userName, detailedBalances
             </Body>
             <Modal_Transaction
                 data={modalData}
-                visible={openModal}
-                confirmationModalMessage={modalMessage}
-                color={colors.getRandomMain()}
-                onPressAccept={onPressAccept}
+                isVisible={isVisibleModalTransaction}
+                process={process}
+                isSuccess={isSuccessCryptoBuy}
+                isError={isErrorCryptoBuy}
                 onPressCancel={onPressCancel}
                 onPressClose={onPressClose}
+                allowSecongAuthStrategy={false}
             />
         </>
     );

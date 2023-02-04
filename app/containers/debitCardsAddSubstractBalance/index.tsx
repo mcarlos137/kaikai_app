@@ -5,6 +5,7 @@ import { compose } from 'redux';
 import { StackActions } from '@react-navigation/native';
 //HOOKS
 import { getCharges } from '../../main/hooks/getCharges';
+import { addSubstractDebitCardBalance } from './hooks/addSubstractDebitCardBalance';
 //COMPONENTS
 import Body from '../../main/components/Body'
 import Header from '../../main/components/Header'
@@ -17,7 +18,6 @@ import Modal_Transaction from '../../main/components/Modal_Transaction'
 import { withColors, withDetailedBalances, withUserName } from '../../main/hoc';
 //FUNCTIONS
 import { validateConfirmationModalTransaction } from '../../main/functions';
-import { addSubstractDebitCardBalance } from './hooks/addSubstractDebitCardBalance';
 
 const DebitCardsAddSubstractBalanceScreen = ({ navigation, route, colors, userName, detailedBalances }) => {
 
@@ -25,8 +25,7 @@ const DebitCardsAddSubstractBalanceScreen = ({ navigation, route, colors, userNa
   const [currency, setCurrency] = useState<any>(detailedBalances.find(cur => cur.value === route.params.selectedDebitCard.currency))
   const [amount, setAmount] = useState(0)
   const [operationType, setOperationType] = useState('ADD')
-  const [openModal, setOpenModal] = useState(false)
-  const [modalMessage, setModalMessage] = useState('')
+  const [isVisibleModalTransaction, setIsVisibleModalTransaction] = useState(false)
 
   //HOOKS CALLS
   const { data: dataCharges, error: errorCharges, isLoading: isLoadingCharges } =
@@ -40,7 +39,8 @@ const DebitCardsAddSubstractBalanceScreen = ({ navigation, route, colors, userNa
       null
     )
 
-  const { mutate: mutateAddSubstractDebitCardBalance } = addSubstractDebitCardBalance()
+  const { mutate: mutateAddSubstractDebitCardBalance, isSuccess: isSuccessAddSubstractDebitCardBalance, isError: isErrorAddSubstractDebitCardBalance } =
+    addSubstractDebitCardBalance()
 
   //EFFECTS
   useEffect(() => {
@@ -127,7 +127,7 @@ const DebitCardsAddSubstractBalanceScreen = ({ navigation, route, colors, userNa
   ), [currency, operationType])
 
   const onPressAddSubsctract = useCallback(() => {
-    setOpenModal(validateConfirmationModalTransaction(
+    setIsVisibleModalTransaction(validateConfirmationModalTransaction(
       [
         { name: 'AMOUNT', value: amount, type: 'NUMERIC' },
       ]
@@ -135,20 +135,21 @@ const DebitCardsAddSubstractBalanceScreen = ({ navigation, route, colors, userNa
   }, [amount])
 
   const onPressCancel = useCallback(() => {
-    setOpenModal(false)
+    setIsVisibleModalTransaction(false)
   }, [])
 
   const onPressClose = useCallback(() => {
+    setIsVisibleModalTransaction(false)
     navigation.dispatch(StackActions.popToTop())
   }, [])
 
-  const onPressAccept = () => {
-    /*mutateAddSubstractDebitCardBalance({
+  const process = () => {
+    mutateAddSubstractDebitCardBalance({
       userName: userName,
       amount: amount,
       operationType: operationType,
       id: route.params.selectedDebitCard.id
-    })*/
+    })
   }
 
   //PRINCIPAL RENDER
@@ -194,12 +195,13 @@ const DebitCardsAddSubstractBalanceScreen = ({ navigation, route, colors, userNa
       </Body>
       <Modal_Transaction
         data={modalData}
-        visible={openModal}
-        confirmationModalMessage={modalMessage}
-        color={colors.getRandomMain()}
-        onPressAccept={onPressAccept}
+        isVisible={isVisibleModalTransaction}
+        process={process}
+        isSuccess={isSuccessAddSubstractDebitCardBalance}
+        isError={isErrorAddSubstractDebitCardBalance}
         onPressCancel={onPressCancel}
         onPressClose={onPressClose}
+        allowSecongAuthStrategy={true}
       />
     </>
   );

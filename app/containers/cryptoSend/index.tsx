@@ -5,6 +5,7 @@ import {
     Text
 } from 'react-native';
 import { compose } from 'redux'
+import { StackActions } from '@react-navigation/native';
 //STORES
 import { store as balanceStore } from '../../main/stores/balance';
 //FUNCTIONS
@@ -23,6 +24,7 @@ import Body_TextRight from '../../main/components/Body_TextRight'
 import Body_Button from '../../main/components/Body_Button'
 import Header from '../../main/components/Header'
 import Modal_Transaction from '../../main/components/Modal_Transaction'
+//HOC
 import { withColors, withUserName } from '../../main/hoc';
 
 const CryptoSendScreen = ({ navigation, route, colors, userName }) => {
@@ -34,8 +36,7 @@ const CryptoSendScreen = ({ navigation, route, colors, userName }) => {
     const [description, setDescription] = useState('')
     const [operationType, setOperationType] = useState('')
     const [currencyProtocol, setCurrencyProtocol] = useState('')
-    const [openModal, setOpenModal] = useState(false)
-    const [modalMessage, setModalMessage] = useState('')
+    const [isVisibleModalTransaction, setIsVisibleModalTransaction] = useState(false)
 
     //HOOKS CALLS
     const { data: dataCharges, isLoading: isLoadingCharges, error: errorCharges } =
@@ -49,7 +50,8 @@ const CryptoSendScreen = ({ navigation, route, colors, userName }) => {
             currencyProtocol !== '' ? getCryptoPaymentType(currencyProtocol) : null
         )
 
-    const { mutate: mutateCryptoSend } = cryptoSend()
+    const { mutate: mutateCryptoSend, isSuccess: isSuccessCryptoSend, isError: isErrorCryptoSend } =
+        cryptoSend()
 
     //EFFECTS
     console.log('CryptoSendScreen', route.params)
@@ -112,7 +114,7 @@ const CryptoSendScreen = ({ navigation, route, colors, userName }) => {
             );
         }
         return data;
-    }, [currency, amount, operationType, dataCharges, description])
+    }, [currency, amount, operationType, dataCharges, description, address])
 
     //CALLBACKS
     const onValueChangeCurrency = useCallback((item) => {
@@ -161,7 +163,7 @@ const CryptoSendScreen = ({ navigation, route, colors, userName }) => {
         if (currency.value === 'XRP') {
             network = 'XRP'
         }
-        setOpenModal(validateConfirmationModalTransaction(
+        setIsVisibleModalTransaction(validateConfirmationModalTransaction(
             [
                 { name: network + ' ADDRESS', value: address, type: network + '_ADDRESS' },
                 { name: 'AMOUNT', value: amount, type: 'NUMERIC' },
@@ -195,22 +197,23 @@ const CryptoSendScreen = ({ navigation, route, colors, userName }) => {
         </>
     ), [currency])
 
-    const onPressAccept = () => {
-        /*mutateCryptoSend({
+    const process = () => {
+        mutateCryptoSend({
             userName: userName,
             currency: currency.value,
             amount: amount,
             targetAddress: address,
             additionalInfo: description,
             paymentType: currencyProtocol !== '' ? getCryptoPaymentType(currencyProtocol) : null
-        })*/
+        })
     }
 
     const onPressClose = useCallback(() => {
-        //GO OUT TRANSACTION
+        setIsVisibleModalTransaction(false)
+        navigation.dispatch(StackActions.popToTop())
     }, [])
 
-    const onPressCancel = useCallback(() => setOpenModal(false), [])
+    const onPressCancel = useCallback(() => setIsVisibleModalTransaction(false), [])
 
     return (
         <View style={{
@@ -289,12 +292,13 @@ const CryptoSendScreen = ({ navigation, route, colors, userName }) => {
             </Body>
             <Modal_Transaction
                 data={modalData}
-                visible={openModal}
-                confirmationModalMessage={modalMessage}
-                color={colors.getRandomMain()}
-                onPressAccept={onPressAccept}
+                isVisible={isVisibleModalTransaction}
+                process={process}
+                isSuccess={isSuccessCryptoSend}
+                isError={isErrorCryptoSend}
                 onPressClose={onPressClose}
                 onPressCancel={onPressCancel}
+                allowSecongAuthStrategy={true}
             />
         </View >
     );

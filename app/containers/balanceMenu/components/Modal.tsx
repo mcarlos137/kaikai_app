@@ -86,7 +86,7 @@ const Component = ({ isVisible, title, buttons, onPressClose }) => {
               <FontAwesomeIcons
                 name="close"
                 color={colors.icon}
-                size={25}
+                size={26}
               />
             </TouchableOpacity>
           </View>

@@ -10,6 +10,7 @@ import {
   Image
 } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import WaveForm from 'react-native-audiowaveform';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import PhotoEditor from '@baronha/react-native-photo-editor';
 import Video from 'react-native-video';
@@ -20,16 +21,16 @@ import { connect } from "react-redux";
 import { store as chatStore } from '../../../main/stores/chat';
 //HOC
 import { withColors } from '../../../main/hoc';
-import FastImage from 'react-native-fast-image';
+
 
 const mapStateToProps = state => {
   return {
-    mediaAsset: state.mediaAsset,
+    audioAsset: state.audioAsset,
   };
 };
 
 const ConnectedComponent = ({
-  mediaAsset,
+  audioAsset,
   colors
 }) => {
 
@@ -39,7 +40,7 @@ const ConnectedComponent = ({
         alignItems: 'center',
       }}
     >
-      {mediaAsset !== null &&
+      {audioAsset !== null &&
         <View
           style={{
             justifyContent: 'center',
@@ -50,7 +51,19 @@ const ConnectedComponent = ({
             padding: 5,
           }}
         >
-          {mediaAsset.type.includes('image') &&
+          {/*console.log('uri', audioAsset.uri)*/}
+          <WaveForm
+            source={{ uri: audioAsset.uri }}
+            //source={{uri:'https://url/path/to/the/file.mp3'}}
+            waveFormStyle={{waveColor:'red', scrubColor:'blue'}}
+            play={false}
+            style={{
+              height: 100,
+              width: 100
+            }}
+            onPress = {(sender) => console.log('sender', sender) }
+          />
+          {/*mediaAsset.type.includes('image') &&
             <FastImage
               source={{
                 uri: mediaAsset.uri,
@@ -60,8 +73,8 @@ const ConnectedComponent = ({
                 width: 200,
               }}
             />
-          }
-          {mediaAsset.type.includes('video') &&
+            */}
+          {/*mediaAsset.type.includes('video') &&
             <Video
               source={{
                 uri: mediaAsset.uri,
@@ -78,13 +91,13 @@ const ConnectedComponent = ({
                 width: 250,
               }}
             />
-          }
+            */}
           <View
             style={{
               marginLeft: 15
             }}
           >
-            {mediaAsset.type.includes('image') &&
+            {/*mediaAsset.type.includes('image') &&
               <TouchableOpacity
                 onPress={() => {
                   PhotoEditor.open({
@@ -123,10 +136,10 @@ const ConnectedComponent = ({
                   color={colors.icon}
                   size={26}
                 />
-              </TouchableOpacity>}
+              </TouchableOpacity>*/}
             <TouchableOpacity
               onPress={() => {
-                chatStore.dispatch({ type: 'SET_MEDIA_ASSET', payload: null })
+                chatStore.dispatch({ type: 'SET_AUDIO_ASSET', payload: null })
               }}
 
             >

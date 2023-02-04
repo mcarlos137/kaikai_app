@@ -1,8 +1,8 @@
 //PRINCIPAL
 import React, { useEffect, useCallback, useState, createRef, useMemo } from 'react';
-import { Dimensions, Image, ScrollView, Text, TouchableOpacity, View, } from 'react-native';
+import { Dimensions, ScrollView } from 'react-native';
 import { compose } from 'redux'
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { StackActions } from '@react-navigation/native';
 //FUNCTIONS
 import { handleChooseDocument, validateConfirmationModalTransaction } from '../../main/functions';
 //COMPONENTS
@@ -16,7 +16,7 @@ import Modal_Transaction from '../../main/components/Modal_Transaction'
 import ActionSheetDocument from '../../main/components/ActionSheetDocument';
 //HOC
 import { withColors, withDetailedBalances, withUserName } from '../../main/hoc';
-import { StackActions } from '@react-navigation/native';
+//HOOKS
 import { requestDebitCard } from './hooks/requestDebitCard';
 
 const DebitCardsRequestScreen = ({ navigation, route, colors, userName, detailedBalances }) => {
@@ -28,12 +28,12 @@ const DebitCardsRequestScreen = ({ navigation, route, colors, userName, detailed
     const [email, setEmail] = useState('')
     const [model, setModel] = useState('MONEYCLICK - 1')
     const [photoAsset, setPhotoAsset] = useState<any>({})
-    const [openModal, setOpenModal] = useState(false)
-    const [modalMessage, setModalMessage] = useState('')
+    const [isVisibleModalTransaction, setIsVisibleModalTransaction] = useState(false)
     const [actionSheetDocumentRef, setActionSheetDocumentRef] = useState<any>(createRef())
 
     //HOOKS CALLS
-    const { mutate: mutateRequestDebitCard } = requestDebitCard()
+    const { mutate: mutateRequestDebitCard, isSuccess: isSuccessRequestDebitCard, isError: isErrorRequestDebitCard } =
+        requestDebitCard()
 
     //EFFECTS
     useEffect(() => {
@@ -104,7 +104,7 @@ const DebitCardsRequestScreen = ({ navigation, route, colors, userName, detailed
     }, [])
 
     const onPressSendRequest = useCallback(() => {
-        setOpenModal(validateConfirmationModalTransaction(
+        setIsVisibleModalTransaction(validateConfirmationModalTransaction(
             [
                 { name: 'HOLDER_NAME', value: holderName, type: 'TEXT' },
                 { name: 'PHONE_NUMBER', value: phoneNumber, type: 'TEXT' },
@@ -133,8 +133,8 @@ const DebitCardsRequestScreen = ({ navigation, route, colors, userName, detailed
         )
     }, [])
 
-    const onPressAccept = () => {
-        /*mutateRequestDebitCard({
+    const process = () => {
+        mutateRequestDebitCard({
             userName: userName,
             currency: currency.value,
             holderName: holderName,
@@ -142,14 +142,15 @@ const DebitCardsRequestScreen = ({ navigation, route, colors, userName, detailed
             email: email,
             model: model,
             photo: photoAsset
-        })*/
+        })
     }
 
     const onPressClose = useCallback(() => {
-        //GO OUT TRANSACTION
+        setIsVisibleModalTransaction(false)
+        navigation.dispatch(StackActions.popToTop())
     }, [])
 
-    const onPressCancel = useCallback(() => setOpenModal(false), [])
+    const onPressCancel = useCallback(() => setIsVisibleModalTransaction(false), [])
 
     //PRINCIPAL RENDER
     return (
@@ -217,12 +218,13 @@ const DebitCardsRequestScreen = ({ navigation, route, colors, userName, detailed
             </Body>
             <Modal_Transaction
                 data={modalData}
-                visible={openModal}
-                confirmationModalMessage={modalMessage}
-                color={colors.getRandomMain()}
-                onPressAccept={onPressAccept}
+                isVisible={isVisibleModalTransaction}
+                process={process}
+                isSuccess={isSuccessRequestDebitCard}
+                isError={isErrorRequestDebitCard}
                 onPressClose={onPressClose}
                 onPressCancel={onPressCancel}
+                allowSecongAuthStrategy={false}
             />
         </>
     );

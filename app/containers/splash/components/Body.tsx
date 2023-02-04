@@ -3,6 +3,7 @@ import { Dimensions, View } from 'react-native';
 import { connect } from "react-redux";
 import * as Animatable from "react-native-animatable";
 import { CommonActions } from '@react-navigation/native';
+import * as Keychain from 'react-native-keychain';
 //STORES
 import { store as authStore } from '../../../main/stores/auth';
 
@@ -28,6 +29,11 @@ const ConnectedComponent = ({
         type: 'SET_PARAMS',
         payload: { userName: "", secretKey: "", time: null, config: {}, frequentUsers: [] },
       });
+      setTimeout(() => {
+        Keychain.resetGenericPassword().then(result => {
+          console.log('resetGenericPassword', result)
+        });
+      }, 500)
     }
   }
   /*Sound.setCategory('Playback');

@@ -6,6 +6,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useTheme } from 'react-native-paper';
 import { CommonActions, StackActions } from '@react-navigation/native';
+import * as Keychain from 'react-native-keychain';
 //COMPONENTS
 import SocialScreen from '../app/containers/social';
 import SubsScreen from '../app/containers/subs';
@@ -22,14 +23,6 @@ const SubsStack = createStackNavigator();
 const OptionsStack = createStackNavigator();
 const WalletStack = createStackNavigator();
 const UserDataStack = createStackNavigator();
-
-function SettingsScreen() {
-  return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Settings!</Text>
-    </View>
-  );
-}
 
 const tabBackgroundColors = {
   Social: '#d02860',
@@ -729,6 +722,11 @@ const UserDataStackScreen = ({ navigation, route }) => {
                             frequentUsers: []
                           }
                         })
+                      setTimeout(() => {
+                        Keychain.resetGenericPassword().then(result => {
+                          console.log('resetGenericPassword', result)
+                        });
+                      }, 500)
                       /*navigation.dispatch((state) => {
                         const routes = [{ name: 'SplashScreen' }];
                         return CommonActions.reset({

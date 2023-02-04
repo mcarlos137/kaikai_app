@@ -23,6 +23,7 @@ import Body_TextRight from '../../main/components/Body_TextRight';
 import { MemoizedStep, MemoizedSteps } from '../../main/components/Steps';
 import Modal_Transaction from '../../main/components/Modal_Transaction';
 import Body_InputsCreatePayment from './components/Body_InputsCreatePayment'
+//HOC
 import { withColors, withConfig, withDetailedBalances, withUserName } from '../../main/hoc';
 
 const FiatBankTransfersScreen = ({ navigation, route, colors, userName, config, detailedBalances }) => {
@@ -33,8 +34,7 @@ const FiatBankTransfersScreen = ({ navigation, route, colors, userName, config, 
   const [payment, setPayment] = useState({})
   const [activeStep, setActiveStep] = useState(1)
   const [description, setDescription] = useState('')
-  const [openModal, setOpenModal] = useState(false)
-  const [modalMessage, setModalMessage] = useState('')
+  const [isVisibleModalTransaction, setIsVisibleModalTransaction] = useState(false)
   const [createPayment, setCreatePayment] = useState(false)
   const [financialType, setFinancialType] = useState<any>(null)
   const [allowedOwnership, setAllowedOwnership] = useState('own')
@@ -48,9 +48,11 @@ const FiatBankTransfersScreen = ({ navigation, route, colors, userName, config, 
   const { isLoading: isLoadingPayments, data: dataPayments, error: errorPayments } =
     getPayments(userName, currency?.value)
 
-  const { mutate: mutateAddPayment } = addPayment()
+  const { mutate: mutateAddPayment } =
+    addPayment()
 
-  const { mutate: mutateSendToPayment } = sendToPayment()
+  const { mutate: mutateSendToPayment, isSuccess: isSuccessSendToPayment, isError: isErrorSendToPayment } =
+    sendToPayment()
 
   const { data: dataCharges, error: errorCharges, isLoading: isLoadingCharges } =
     getCharges(
@@ -259,7 +261,7 @@ const FiatBankTransfersScreen = ({ navigation, route, colors, userName, config, 
   }, [])
 
   const onPressTransfer = useCallback(() => {
-    setOpenModal(validateConfirmationModalTransaction(
+    setIsVisibleModalTransaction(validateConfirmationModalTransaction(
       [
         { name: 'AMOUNT', value: amount, type: 'NUMERIC' },
         { name: 'PAYMENT', value: payment, type: 'JSON' },
@@ -311,22 +313,23 @@ const FiatBankTransfersScreen = ({ navigation, route, colors, userName, config, 
     setActiveStep(step => step + 1)
   }, [payment, financialType])
 
-  const onPressAccept = () => {
-    /*mutateSendToPayment({
+  const process = () => {
+    mutateSendToPayment({
       userName: userName,
       currency: currency.value,
       amount: amount,
       payment: payment,
       description: description,
       paymentType: null
-    })*/
+    })
   }
 
   const onPressClose = useCallback(() => {
-    //GO OUT TRANSACTION
+    setIsVisibleModalTransaction(false)
+    navigation.dispatch(StackActions.pop())
   }, [])
 
-  const onPressCancel = useCallback(() => setOpenModal(false), [])
+  const onPressCancel = useCallback(() => setIsVisibleModalTransaction(false), [])
 
   const buttonTextStyle = {
     color: '#393939'
@@ -512,12 +515,13 @@ const FiatBankTransfersScreen = ({ navigation, route, colors, userName, config, 
       </Body>
       <Modal_Transaction
         data={modalData}
-        visible={openModal}
-        confirmationModalMessage={modalMessage}
-        color={colors.getRandomMain()}
-        onPressAccept={onPressAccept}
+        isVisible={isVisibleModalTransaction}
+        process={process}
+        isSuccess={isSuccessSendToPayment}
+        isError={isErrorSendToPayment}
         onPressClose={onPressClose}
         onPressCancel={onPressCancel}
+        allowSecongAuthStrategy={true}
       />
     </>
   );

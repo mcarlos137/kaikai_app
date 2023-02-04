@@ -1,5 +1,5 @@
 //PRINCIPAL
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useRef } from 'react';
 import {
     Text,
     View,
@@ -9,33 +9,41 @@ import {
     Image,
     StyleSheet,
     Pressable,
-    Alert
+    Alert,
+    Animated
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { connect } from "react-redux";
 import Moment from 'moment';
 //import Firestore from '@react-native-firebase/firestore';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { StackActions } from '@react-navigation/native';
+import Video from 'react-native-video';
+import FastImage from 'react-native-fast-image';
+import { Avatar } from '@rneui/themed';
 //import { SliderSound } from './SliderSound';
-import RNFetchBlob from 'rn-fetch-blob';
 import { compose } from 'redux';
 //STORE
 import { store as chatStore } from '../../../main/stores/chat';
 //HOC
 import { withColors, withHmacInterceptor, withNavigation, withRoute, withUserName } from '../../../main/hoc';
-import { Avatar } from '@rneui/themed';
+//TOOLS
 import httpRequest from '../../../tools/httpRequest';
-import { StackActions } from '@react-navigation/native';
-import Video from 'react-native-video';
+
+const AnimatedTouchableOpacity = Animated.createAnimatedComponent(
+    TouchableOpacity
+);
 
 const mapStateToProps = state => {
     return {
         data: state.data,
+        replyId: state.replyId
     };
 };
 
 const ConnectedComponent = ({
     data,
+    replyId,
     navigation,
     route,
     colors,
@@ -44,11 +52,25 @@ const ConnectedComponent = ({
 }) => {
 
     //INITIAL STATES
-    const [messagesToDelete, setMessagesToDelete] = useState<string[]>([])
+    const [selectedMessages, setSelectedMessages] = useState<string[]>([])
+    const headerRightMarginRight = useRef(new Animated.Value(15)).current;
 
     //EFFECTS
     useEffect(() => {
         console.log('ChatRoomScreen', route.params)
+        if (selectedMessages.length > 0) {
+            Animated.timing(headerRightMarginRight, {
+                toValue: 25,
+                duration: 300,
+                useNativeDriver: false,
+            }).start()
+        } else {
+            Animated.timing(headerRightMarginRight, {
+                toValue: 15,
+                duration: 300,
+                useNativeDriver: false,
+            }).start()
+        }
         navigation.setOptions({
             headerLeft: () => (
                 <View
@@ -69,46 +91,77 @@ const ConnectedComponent = ({
                             size={35}
                         />
                     </TouchableOpacity>
-                    <Avatar
-                        size={35}
-                        rounded
-                        source={{
-                            uri: 'https://service8081.moneyclick.com/attachment/getUserFile/' + route.params.selectedChatRoom.chatRoom,
-                            method: 'GET',
-                            headers: hmacInterceptor?.process(
-                                httpRequest.create(
-                                    'https://service8081.moneyclick.com',
-                                    '/attachment/getUserFile/' + route.params.selectedChatRoom.chatRoom,
-                                    'GET',
-                                    null,
-                                    false
-                                )).headers,
-                        }}
-                        overlayContainerStyle={{
-                            backgroundColor: 'white',
-                        }}
-                    />
-                    <Text
-                        style={{
-                            color: 'white',
-                            fontWeight: 'bold',
-                            fontSize: 14,
-                            marginLeft: 5
-                        }}
-                    >
-                        {route.params.selectedChatRoom.fullName}
-                    </Text>
+                    {selectedMessages.length === 0 ?
+                        <>
+                            <Avatar
+                                size={35}
+                                rounded
+                                source={{
+                                    uri: 'https://service8081.moneyclick.com/attachment/getUserFile/' + route.params.selectedChatRoom.chatRoom,
+                                    method: 'GET',
+                                    headers: hmacInterceptor?.process(
+                                        httpRequest.create(
+                                            'https://service8081.moneyclick.com',
+                                            '/attachment/getUserFile/' + route.params.selectedChatRoom.chatRoom,
+                                            'GET',
+                                            null,
+                                            false
+                                        )).headers,
+                                }}
+                                overlayContainerStyle={{
+                                    backgroundColor: 'white',
+                                }}
+                            />
+                            <Text
+                                style={{
+                                    color: 'white',
+                                    fontWeight: 'bold',
+                                    fontSize: 14,
+                                    marginLeft: 5
+                                }}
+                            >
+                                {route.params.selectedChatRoom.fullName}
+                            </Text>
+                        </> :
+                        <Text
+                            style={{
+                                fontSize: 20,
+                                color: 'white',
+                                marginRight: 15,
+                                fontWeight: 'bold'
+                            }}
+                        >
+                            {selectedMessages.length}
+                        </Text>
+                    }
                 </View>
             ),
             headerRight: () => (
                 <View
                     style={{
                         flexDirection: "row",
-                        marginRight: 10
+                        marginRight: 10,
+                        alignItems: 'center'
                     }}
                 >
-                    {messagesToDelete.length > 0 &&
-                        <TouchableOpacity
+                    {selectedMessages.length === 1 &&
+                        <AnimatedTouchableOpacity
+                            onPress={() => {
+                                chatStore.dispatch({ type: 'SET_REPLY_ID', payload: selectedMessages[0] })
+                            }}
+                            style={{
+                                marginRight: headerRightMarginRight
+                            }}
+                        >
+                            <MaterialCommunityIcons
+                                name={'reply'}
+                                color={'white'}
+                                size={26}
+                            />
+                        </AnimatedTouchableOpacity>
+                    }
+                    {selectedMessages.length > 0 &&
+                        <AnimatedTouchableOpacity
                             onPress={() => {
                                 Alert.alert(
                                     'Delete chat messages',
@@ -126,17 +179,17 @@ const ConnectedComponent = ({
                                                         type: 'DELETE_CHATROOM_MESSAGES',
                                                         payload: {
                                                             chatRoom: route.params.selectedChatRoom.chatRoom,
-                                                            timestamps: messagesToDelete
+                                                            timestamps: selectedMessages
                                                         }
                                                     })
-                                                setMessagesToDelete([])
+                                                setSelectedMessages([])
                                             },
                                         },
                                     ]
                                 );
                             }}
                             style={{
-                                marginRight: 15,
+                                marginRight: headerRightMarginRight
                             }}
                         >
                             <Ionicons
@@ -144,9 +197,9 @@ const ConnectedComponent = ({
                                 size={26}
                                 color={'white'}
                             />
-                        </TouchableOpacity>
+                        </AnimatedTouchableOpacity>
                     }
-                    <TouchableOpacity
+                    <AnimatedTouchableOpacity
                         onPress={() => {
                             const selectedCameraStreamParams = {
                                 audioStatus: "on",
@@ -157,7 +210,7 @@ const ConnectedComponent = ({
                             navigation.dispatch(StackActions.push('CameraStreamScreen', { ...route.params, selectedCameraStreamParams: selectedCameraStreamParams, replaceTarget: 'ChatRoomScreen' }))
                         }}
                         style={{
-                            marginRight: 15,
+                            marginRight: headerRightMarginRight
                         }}
                     >
                         <Ionicons
@@ -165,8 +218,8 @@ const ConnectedComponent = ({
                             size={26}
                             color={'white'}
                         />
-                    </TouchableOpacity>
-                    <TouchableOpacity
+                    </AnimatedTouchableOpacity>
+                    <AnimatedTouchableOpacity
                         onPress={() => {
                             const selectedCameraStreamParams = {
                                 audioStatus: "on",
@@ -177,7 +230,7 @@ const ConnectedComponent = ({
                             navigation.dispatch(StackActions.push('CameraStreamScreen', { ...route.params, selectedCameraStreamParams: selectedCameraStreamParams, replaceTarget: 'ChatRoomScreen' }))
                         }}
                         style={{
-                            marginRight: 15,
+                            marginRight: headerRightMarginRight
                         }}
                     >
                         <Ionicons
@@ -185,7 +238,7 @@ const ConnectedComponent = ({
                             size={26}
                             color={'white'}
                         />
-                    </TouchableOpacity>
+                    </AnimatedTouchableOpacity>
                     <TouchableOpacity
                         onPress={() => {
                             if (chatStore.getState().openModal === 'options') {
@@ -211,18 +264,22 @@ const ConnectedComponent = ({
             ),
             title: ''
         })
-    }, [messagesToDelete])
+    }, [selectedMessages])
 
     useEffect(() =>
         navigation.addListener('beforeRemove', (e) => {
-            if (messagesToDelete.length === 0) {
+            if (selectedMessages.length === 0) {
                 return;
             }
             e.preventDefault();
-            setMessagesToDelete([])
+            setSelectedMessages([])
         }),
-        [navigation, messagesToDelete]
+        [navigation, selectedMessages]
     );
+
+    useEffect(() => {
+        setSelectedMessages([])
+    }, [replyId])
 
     //MEMOS
     const dataChatRoom = useMemo(() => {
@@ -240,10 +297,10 @@ const ConnectedComponent = ({
         >
             <Pressable
                 onLongPress={() => {
-                    if (messagesToDelete.includes(item.item.timestamp)) {
-                        setMessagesToDelete(mtd => mtd.filter(it => it !== item.item.timestamp))
+                    if (selectedMessages.includes(item.item.timestamp)) {
+                        setSelectedMessages(mtd => mtd.filter(it => it !== item.item.timestamp))
                     } else {
-                        setMessagesToDelete([...messagesToDelete, item.item.timestamp])
+                        setSelectedMessages([...selectedMessages, item.item.timestamp])
                     }
                 }}
                 style={{
@@ -253,20 +310,21 @@ const ConnectedComponent = ({
                 <View
                     style={
                         item.item.senderUserName === userName ?
-                            [{ backgroundColor: colors.secundaryBackground, padding: 5, borderRadius: 5, marginRight: 10 }]
+                            [{ backgroundColor: colors.secundaryBackground, padding: 5, borderRadius: 5, marginRight: 10, borderWidth: 2, borderColor: colors.secundaryBackground }, selectedMessages.includes(item.item.timestamp) && { borderColor: '#009387' }]
                             :
-                            [{ backgroundColor: colors.primaryBackground, padding: 5, borderRadius: 5, marginLeft: 10 }]
+                            [{ backgroundColor: colors.primaryBackground, padding: 5, borderRadius: 5, marginLeft: 10, borderWidth: 2, borderColor: colors.primaryBackground }, selectedMessages.includes(item.item.timestamp) && { borderColor: '#009387' }]
                     }
                 >
                     {item?.item?.mediaAsset !== undefined && item?.item?.mediaAsset.type.includes('image') &&
-                        <Image
+                        <FastImage
                             source={{
                                 uri: item.item.mediaAsset.uri,
-                                width: 120,
-                                height: 120
                             }}
                             style={{
-                                alignSelf: 'center'
+                                marginBottom: 5,
+                                alignSelf: 'center',
+                                width: 180,
+                                height: 180 * item.item.mediaAsset.height / item.item.mediaAsset.width
                             }}
                         />}
                     {item?.item?.mediaAsset !== undefined && item?.item?.mediaAsset.type.includes('video') &&
@@ -281,9 +339,10 @@ const ConnectedComponent = ({
                                 //console.log('>>>>>>>>>>>>> ' + JSON.stringify(error))
                             }}
                             style={{
-                                height: 150,
-                                width: 150,
-                                alignSelf: 'center'
+                                height: 250 * item.item.mediaAsset.height / item.item.mediaAsset.width,
+                                width: 250,
+                                alignSelf: 'center',
+                                marginBottom: 5,
                             }}
                         />}
                     {item.item.text.trim() !== '' &&
@@ -306,7 +365,7 @@ const ConnectedComponent = ({
                                 <MaterialCommunityIcons
                                     name={'check'}
                                     color={item.item.readed ? '#1f65ff' : 'silver'}
-                                    size={14}
+                                    size={16}
                                 />
                                 {item.item.delivered &&
                                     <MaterialCommunityIcons
@@ -315,7 +374,7 @@ const ConnectedComponent = ({
                                         }}
                                         name={'check'}
                                         color={item.item.readed ? '#1f65ff' : 'silver'}
-                                        size={14}
+                                        size={16}
                                     />}
                             </>
                             :
@@ -323,7 +382,7 @@ const ConnectedComponent = ({
                             <MaterialCommunityIcons
                                 name={'clock-time-three-outline'}
                                 color={'silver'}
-                                size={14}
+                                size={16}
                             />}
                     </View>
                 </View>
@@ -404,7 +463,7 @@ const styles = StyleSheet.create({
     },
     txtMessage: {
         marginRight: 10,
-        fontSize: 14,
+        fontSize: 16,
         textAlign: 'justify',
         maxWidth: Dimensions.get('window').width * 0.7,
     }

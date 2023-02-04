@@ -13,7 +13,7 @@ const Hook = (areaCode: string, phone: string, password: string, navigation: any
     const isMounted = useRef(false)
 
     //HOOKS CALLS
-    const { isLoading: isLoadingSignIn, data: dataSignIn, error: errorSignIn, refetch: refetchSignIn } =
+    const { isLoading: isLoadingSignIn, data: dataSignIn, error: errorSignIn, refetch: refetchSignIn, isSuccess: isSuccessSignIn } =
         signIn(
             areaCode,
             phone,
@@ -21,13 +21,13 @@ const Hook = (areaCode: string, phone: string, password: string, navigation: any
             '4454e4d08748617h'
         )
 
-    const { isLoading: isLoadingSetSecretKey, data: dataSetSecretKey, error: errorSetSecretKey } =
+    const { isLoading: isLoadingSetSecretKey, data: dataSetSecretKey, error: errorSetSecretKey, isSuccess: isSuccessSetSecretKey } =
         setSecretKey(
             dataSignIn?.base?.userName || null,
             dataSignIn?.base?.secretKey || null,
             '4454e4d08748617h'
         )
-    const { isLoading: isLoadingGetConfig, data: dataGetConfig, error: errorGetConfig } =
+    const { isLoading: isLoadingGetConfig, data: dataGetConfig, error: errorGetConfig, isSuccess: isSuccessGetConfig } =
         getConfig(
             dataSignIn?.base?.userName || null,
         )
@@ -64,7 +64,8 @@ const Hook = (areaCode: string, phone: string, password: string, navigation: any
     return {
         run: refetchSignIn,
         isLoading: isLoadingSignIn || isLoadingSetSecretKey || isLoadingGetConfig,
-        error: errorSignIn !== null ? errorSignIn : errorSetSecretKey !== null ? errorSetSecretKey : errorGetConfig
+        error: errorSignIn !== null ? errorSignIn : errorSetSecretKey !== null ? errorSetSecretKey : errorGetConfig,
+        isSuccess: isSuccessSignIn && isSuccessSetSecretKey && isSuccessGetConfig
     }
 
 }

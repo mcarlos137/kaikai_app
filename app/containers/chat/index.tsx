@@ -14,7 +14,6 @@ const ChatScreen = ({ navigation, route }) => {
     console.log('ChatScreen', route.params)
   }, []);
 
-  
   //PRINCIPAL RENDER
   return (
     <>

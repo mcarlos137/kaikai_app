@@ -31,8 +31,7 @@ const MoneyClickUserSendScreen = ({ navigation, route, colors, userName, config,
     const [phone, setPhone] = useState('')
     const [receiverName, setReceiverName] = useState('')
     const [description, setDescription] = useState('')
-    const [openModal, setOpenModal] = useState(false)
-    const [modalMessage, setModalMessage] = useState('')
+    const [isVisibleModalTransaction, setIsVisibleModalTransaction] = useState(false)
 
     //HOOKS CALLS
     const { isLoading: isLoadingCharges, data: dataCharges, error: errorCharges } =
@@ -46,7 +45,8 @@ const MoneyClickUserSendScreen = ({ navigation, route, colors, userName, config,
             null
         )
 
-    const { mutate: mutateMoneyClickUserSend } = moneyClickUserSend()
+    const { mutate: mutateMoneyClickUserSend, isSuccess: isSuccessMoneyClickUserSend, isError: isErrorMoneyClickUserSend } =
+        moneyClickUserSend()
 
     //EFFECTS
     useEffect(() => {
@@ -162,7 +162,7 @@ const MoneyClickUserSendScreen = ({ navigation, route, colors, userName, config,
     ), [currency])
 
     const onPressSend = useCallback(() => {
-        setOpenModal(validateConfirmationModalTransaction(
+        setIsVisibleModalTransaction(validateConfirmationModalTransaction(
             [
                 { name: 'AREA CODE', value: areaCode, type: 'TEXT' },
                 { name: 'PHONE', value: phone, type: 'TEXT' },
@@ -171,7 +171,7 @@ const MoneyClickUserSendScreen = ({ navigation, route, colors, userName, config,
         ))
     }, [areaCode, phone, amount])
 
-    const onPressAccept = () => {
+    const process = () => {
         /*mutateMoneyClickUserSend({
             baseUserName: userName,
             targetUserName: areaCode + '' + phone,
@@ -187,11 +187,12 @@ const MoneyClickUserSendScreen = ({ navigation, route, colors, userName, config,
     }
 
     const onPressCancel = useCallback(() => {
-        setOpenModal(false)
+        setIsVisibleModalTransaction(false)
     }, [])
 
     const onPressClose = useCallback(() => {
-        //GO OUT TRANSACTION
+        setIsVisibleModalTransaction(false)
+        navigation.dispatch(StackActions.pop())
     }, [])
 
     //PRINCIPAL RENDER
@@ -278,12 +279,13 @@ const MoneyClickUserSendScreen = ({ navigation, route, colors, userName, config,
             </Body>
             <Modal_Transaction
                 data={modalData}
-                visible={openModal}
-                confirmationModalMessage={modalMessage}
-                color={colors.getRandomMain()}
-                onPressAccept={onPressAccept}
+                isVisible={isVisibleModalTransaction}
+                process={process}
+                isSuccess={isSuccessMoneyClickUserSend}
+                isError={isErrorMoneyClickUserSend}
                 onPressClose={onPressClose}
                 onPressCancel={onPressCancel}
+                allowSecongAuthStrategy={false}
             />
         </View >
     );

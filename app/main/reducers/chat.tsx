@@ -11,7 +11,16 @@ const initialState: any = {
                     sended: true,
                     delivered: true,
                     readed: true,
-                    timestamp: '2023-01-28T02:23:00.000Z'
+                    timestamp: '2023-01-28T02:23:00.000Z',
+                    mediaAsset: {
+                        edited: true, 
+                        fileName: "16E87DEA-69AB-473A-B418-E107E05A1997.jpg", 
+                        fileSize: 128563, 
+                        height: 399, 
+                        type: "image/jpg", 
+                        uri: "file:///Users/mcarlos/Library/Developer/CoreSimulator/Devices/62E5DE84-DC93-49A6-8704-19C9445A3674/data/Containers/Data/Application/8794A7E7-8587-4D9C-89E5-82DE4F7673EB/Documents/1675355964244.png", 
+                        width: 300
+                    }
                 },
                 {
                     senderUserName: '584245522788',
@@ -62,7 +71,9 @@ const initialState: any = {
         },
     ],
     openModal: '',
-    mediaAsset: null
+    mediaAsset: null,
+    replyId: null,
+    audioAsset: null
 };
 
 function reducer(state = initialState, action) {
@@ -118,6 +129,16 @@ function reducer(state = initialState, action) {
     if (action.type === 'UPDATE_MEDIA_ASSET_URI') {
         return Object.assign({}, state, {
             token: state.mediaAsset = { ...state.mediaAsset, uri: action.payload, edited: true },
+        });
+    }
+    if (action.type === 'SET_REPLY_ID') {
+        return Object.assign({}, state, {
+            token: state.replyId = action.payload,
+        });
+    }
+    if (action.type === 'SET_AUDIO_ASSET') {
+        return Object.assign({}, state, {
+            token: state.audioAsset = action.payload,
         });
     }
     return state;

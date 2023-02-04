@@ -617,12 +617,12 @@ export const getPermission: any = (permissionName, platformOS) => {
       if (platformOS === "android") {
         return PERMISSIONS.ANDROID.RECORD_AUDIO;
       } else {
-        return null;
+        return PERMISSIONS.IOS.MICROPHONE;
       }
   }
 }
 
-async function checkPermissions(permissionName) {
+export async function checkPermissions(permissionName) {
   if (Platform.OS === "android") {
     try {
       switch (await check(getPermission(permissionName, Platform.OS))) {
@@ -848,4 +848,3 @@ export const getIconName: any = (balanceOperationType) => {
       return 'exchange'
   }
 }
-

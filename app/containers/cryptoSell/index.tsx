@@ -1,10 +1,10 @@
 //PRINCIPAL
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
-    View,
     Text
 } from 'react-native';
 import { compose } from 'redux'
+import { StackActions } from '@react-navigation/native';
 //FUNCTIONS
 import { validateConfirmationModalTransaction } from '../../main/functions';
 //COMPONENTS
@@ -19,6 +19,7 @@ import Body_TextRight from '../../main/components/Body_TextRight'
 import { getCryptoPrice } from '../../main/hooks/getCryptoPrice';
 import { getCharges } from '../../main/hooks/getCharges';
 import { cryptoSell } from './hooks/cryptoSell';
+//HOC
 import { withColors, withDetailedBalances, withUserName } from '../../main/hoc';
 
 const CryptoSellScreen = ({ navigation, route, colors, userName, detailedBalances }) => {
@@ -28,8 +29,7 @@ const CryptoSellScreen = ({ navigation, route, colors, userName, detailedBalance
     const [targetCurrencyAmount, setTargetCurrencyAmount] = useState(0.00)
     const [baseCurrency, setBaseCurrency] = useState(detailedBalances.find(currency => currency.value === route.params.selectedCurrency.value))
     const [targetCurrency, setTargetCurrency] = useState(detailedBalances.find(currency => !currency.isCrypto))
-    const [openModal, setOpenModal] = useState(false)
-    const [modalMessage, setModalMessage] = useState('')
+    const [isVisibleModalTransaction, setIsVisibleModalTransaction] = useState(false)
 
     //HOOKS CALLS
     const { data: dataCryptoPrice, refetch: refetchCryptoPrice } =
@@ -49,7 +49,8 @@ const CryptoSellScreen = ({ navigation, route, colors, userName, detailedBalance
             null
         )
 
-    const { mutate: mutateCryptoSell } = cryptoSell()
+    const { mutate: mutateCryptoSell, isSuccess: isSuccessCryptoSell, isError: isErrorCryptoSell } =
+        cryptoSell()
 
     //EFFECTS
     useEffect(() => {
@@ -178,28 +179,29 @@ const CryptoSellScreen = ({ navigation, route, colors, userName, detailedBalance
     ), [baseCurrency])
 
     const onPressSell = useCallback(() => {
-        setOpenModal(validateConfirmationModalTransaction(
+        setIsVisibleModalTransaction(validateConfirmationModalTransaction(
             [
                 { name: 'AMOUNT', value: baseCurrencyAmount, type: 'NUMERIC' },
             ]
         ))
     }, [baseCurrencyAmount])
 
-    const onPressAccept = () => {
-        /*mutateCryptoSell({
+    const process = () => {
+        mutateCryptoSell({
             userName: userName,
             cryptoCurrency: baseCurrency.value,
             fiatCurrency: targetCurrency?.value,
             cryptoAmount: baseCurrencyAmount,
             fiatAmount: targetCurrencyAmount
-        })*/
+        })
     }
 
     const onPressClose = useCallback(() => {
-        //GO OUT TRANSACTION
+        setIsVisibleModalTransaction(false)
+        navigation.dispatch(StackActions.popToTop())
     }, [])
 
-    const onPressCancel = useCallback(() => setOpenModal(false), [])
+    const onPressCancel = useCallback(() => setIsVisibleModalTransaction(false), [])
 
     //PRINCIPAL RENDER
     return (
@@ -274,12 +276,13 @@ const CryptoSellScreen = ({ navigation, route, colors, userName, detailedBalance
             </Body>
             <Modal_Transaction
                 data={modalData}
-                visible={openModal}
-                confirmationModalMessage={modalMessage}
-                color={colors.getRandomMain()}
-                onPressAccept={onPressAccept}
+                isVisible={isVisibleModalTransaction}
+                process={process}
+                isSuccess={isSuccessCryptoSell}
+                isError={isErrorCryptoSell}
                 onPressClose={onPressClose}
                 onPressCancel={onPressCancel}
+                allowSecongAuthStrategy={false}
             />
         </>
     );

@@ -1,5 +1,5 @@
 //PRINCIPAL
-import React, { createRef, RefObject, useEffect, useState } from 'react';
+import React, { createRef, RefObject, useCallback, useEffect, useState } from 'react';
 import {
     View,
     TouchableOpacity,
@@ -19,20 +19,15 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Firestore from '@react-native-firebase/firestore'
 import { StackActions } from '@react-navigation/native';
-//import Firestore from '@react-native-firebase/firestore'
-//import { Crypt, RSA } from 'hybrid-crypto-js';
-//import base64 from 'react-native-base64';
-//import TimerMixin from 'react-timer-mixin';
-//import SoundRecorder from 'react-native-sound-recorder';
-//import { stat } from 'react-native-fs';
-//import SoundPlayer from 'react-native-sound-player';
+import { connect } from 'react-redux';
+import AudioRecorderPlayer from 'react-native-audio-recorder-player';
+import RNFetchBlob from 'rn-fetch-blob';
 //STORES
 import { store as chatStore } from '../../../main/stores/chat';
 //HOC
 import { withColors, withNavigation, withRoute, withUserName } from '../../../main/hoc';
 //FUNCTIONS
-import { handleChooseDocument } from '../../../main/functions';
-import { connect } from 'react-redux';
+import { checkPermissions, handleChooseDocument } from '../../../main/functions';
 
 const mapStateToProps = state => {
     return {
@@ -49,9 +44,128 @@ const ConnectedComponent = ({
 }) => {
 
     //INITIAL STATES
-    const [newTextMessage, setNewTextMessage] = useState('')
+    const [text, setText] = useState('')
     const [addEmoji, setAddEmoji] = useState(false)
     const [inputRef, setInputRef] = useState<RefObject<any>>(createRef())
+    const [audioRecord, setAudioRecord] = useState({})
+
+    //AUDIO RECORDER
+    const audioRecorderPlayer = new AudioRecorderPlayer();
+    const dirs = RNFetchBlob.fs.dirs;
+    const path = (time) => Platform.select({
+        ios: time + '_sound.m4a',
+        android: `${dirs.CacheDir}/` + time + '_sound.mp3',
+    });
+
+    //FUNCTIONS
+    const onStartRecord = async () => {
+        const result = await audioRecorderPlayer.startRecorder(path(new Date().toISOString()));
+        audioRecorderPlayer.addRecordBackListener((e) => {
+            setAudioRecord({
+                recordSecs: e.currentPosition,
+                recordTime: audioRecorderPlayer.mmssss(
+                    Math.floor(e.currentPosition),
+                ),
+            });
+            return;
+        });
+        chatStore.dispatch({ type: 'SET_AUDIO_ASSET', payload: { uri: result } })
+        console.log('onStartRecord', { uri: result });
+    };
+
+    const onStopRecord = async () => {
+        const result = await audioRecorderPlayer.stopRecorder();
+        audioRecorderPlayer.removeRecordBackListener();
+        setAudioRecord({
+            recordSecs: 0,
+        });
+        console.log('onStopRecord', result);
+    };
+
+    //CALLBACKS
+    const onPressSend = useCallback(async () => {
+        const timestamp = new Date().toISOString()
+        const data = {
+            chatRoom: route.params.selectedChatRoom.chatRoom,
+            fullName: route.params.selectedChatRoom.fullName,
+            //publicKey: chatPersistedStore.getState().selectedChatRoomState.publicKey,
+            message: {
+                timestamp: timestamp,
+                senderUserName: userName,
+                receiverUserName: route.params.selectedChatRoom.chatRoom,
+                text: text,
+                sended: false,
+                readed: false,
+                delivered: false,
+            },
+        }
+        if (mediaAsset !== null) {
+            data.message['mediaAsset'] = mediaAsset
+        }
+        chatStore.dispatch({ type: 'ADD_DATA', payload: data })
+        setText('')
+        setAddEmoji(false)
+        chatStore.dispatch({ type: 'SET_MEDIA_ASSET', payload: null })
+        chatStore.dispatch({ type: 'SET_REPLY_ID', payload: null })
+        const chatsReceiverDoc = Firestore().collection('chats').doc(route.params.selectedChatRoom.chatRoom)
+        chatsReceiverDoc.get().then(async (doc) => {
+            let chatsReceiver = {
+                lastTime: timestamp,
+            }
+            if (doc.data() === undefined) {
+                await chatsReceiverDoc.set(chatsReceiver)
+            } else {
+                await chatsReceiverDoc.update(chatsReceiver)
+            }
+        })
+        const newMessage = {
+            senderUserName: userName,
+            receiverUserName: route.params.selectedChatRoom.chatRoom,
+            message: text,
+            timestamp: timestamp,
+            //delivered: String(false),
+            //readed: String(false)
+        }
+        await chatsReceiverDoc
+            .collection('new')
+            .doc(timestamp)
+            .set(newMessage)
+            .then(result => {
+                chatStore.dispatch(
+                    {
+                        type: 'CHANGE_MESSAGE_STATUS',
+                        payload: {
+                            chatRoom: route.params.selectedChatRoom.chatRoom,
+                            timestamp: timestamp,
+                            status: 'sended'
+                        }
+                    })
+            })
+
+    }, [text, mediaAsset])
+
+    const onPressPaperClip = useCallback(() => {
+        handleChooseDocument(
+            'LIBRARY_PHOTO_VIDEO',
+            {
+                maxWidth: 300,
+                maxHeight: 550,
+                quality: 1,
+                mediaType: "mixed",
+                videoQuality: "low",
+                durationLimit: 60
+            },
+            (asset) => {
+                chatStore.dispatch({ type: 'SET_MEDIA_ASSET', payload: asset })
+            }
+        )
+    }, [])
+
+    const onPressCamera = useCallback(() => {
+        navigation.dispatch(StackActions.push('CameraBridgeScreen', { ...route.params }))
+        //cameraStore.dispatch({ type: SET_CAMERA_SOURCE, payload: 'ChatRoomScreen' });
+        //navigateStore.dispatch({ type: NAVIGATE, payload: { target: 'CameraScreen', redirectToTarget: 'ChatRoomScreen' } });
+    }, [])
 
     //PRINCIPAL RENDER
     return (
@@ -108,21 +222,21 @@ const ConnectedComponent = ({
                                         paddingLeft: 7,
                                         paddingTop: 7,
                                         paddingBottom: 7,
-                                        flex: 1,
                                         color: colors.text,
+                                        flex: 1
                                     }}
                                     ref={inputRef}
-                                    value={newTextMessage}
+                                    value={text}
                                     placeholder={'Write a message'}
                                     placeholderTextColor={colors.placeholderText}
                                     onChangeText={text => {
-                                        setNewTextMessage(text)
+                                        setText(text)
                                     }}
                                     onFocus={() => {
                                         console.log("onFocus");
                                         setAddEmoji(false)
                                     }}
-                                    multiline={true}
+                                //multiline={true}
                                 />
                                 {mediaAsset === null && (
                                     <View
@@ -132,22 +246,7 @@ const ConnectedComponent = ({
                                         }}
                                     >
                                         <TouchableOpacity
-                                            onPress={() => {
-                                                handleChooseDocument(
-                                                    'LIBRARY_PHOTO_VIDEO',
-                                                    {
-                                                        maxWidth: 300,
-                                                        maxHeight: 550,
-                                                        quality: 1,
-                                                        mediaType: "mixed",
-                                                        videoQuality: "low",
-                                                        durationLimit: 60
-                                                    },
-                                                    (asset) => {
-                                                        chatStore.dispatch({ type: 'SET_MEDIA_ASSET', payload: asset })
-                                                    }
-                                                )
-                                            }}
+                                            onPress={onPressPaperClip}
                                             style={{
                                                 paddingRight: 10,
                                             }}
@@ -158,13 +257,9 @@ const ConnectedComponent = ({
                                                 size={26}
                                             />
                                         </TouchableOpacity>
-                                        {newTextMessage === '' &&
+                                        {text === '' &&
                                             <TouchableOpacity
-                                                onPress={() => {
-                                                    navigation.dispatch(StackActions.push('CameraBridgeScreen', { ...route.params }))
-                                                    //cameraStore.dispatch({ type: SET_CAMERA_SOURCE, payload: 'ChatRoomScreen' });
-                                                    //navigateStore.dispatch({ type: NAVIGATE, payload: { target: 'CameraScreen', redirectToTarget: 'ChatRoomScreen' } });
-                                                }}
+                                                onPress={onPressCamera}
                                                 style={{
                                                     paddingRight: 10,
                                                 }}
@@ -183,26 +278,23 @@ const ConnectedComponent = ({
                                     justifyContent: 'center'
                                 }}
                             >
-                                {newTextMessage === '' && mediaAsset === null
+                                {text === '' && mediaAsset === null
                                     ?
                                     <TouchableOpacity
                                         onPress={() => {
-                                            //checkPermissions('RECORD_AUDIO');
+                                            checkPermissions('RECORD_AUDIO');
                                         }}
-                                        /*onLongPress={async () => {
+                                        onLongPress={async () => {
                                             let result = await checkPermissions('RECORD_AUDIO');
                                             if (result) {
-    
-                                                indexStore.dispatch({
-                                                    type: SET_CHAT_ROOM_IS_RECORDING, payload: true
-                                                });
-    
-                                                onStartRecord();
-    
+                                                onStartRecord()
                                             } else {
                                                 console.log('Not permission : RECORD_AUDIO');
                                             }
-                                        }}*/
+                                        }}
+                                        onPressOut={() => {
+                                            onStopRecord()
+                                        }}
                                         style={{
                                             backgroundColor: '#009387',
                                             padding: 4,
@@ -219,64 +311,7 @@ const ConnectedComponent = ({
                                     </TouchableOpacity>
                                     :
                                     <TouchableOpacity
-                                        onPress={async () => {
-                                            const timestamp = new Date().toISOString()
-                                            const data = {
-                                                chatRoom: route.params.selectedChatRoom.chatRoom,
-                                                fullName: route.params.selectedChatRoom.fullName,
-                                                //publicKey: chatPersistedStore.getState().selectedChatRoomState.publicKey,
-                                                message: {
-                                                    timestamp: timestamp,
-                                                    senderUserName: userName,
-                                                    receiverUserName: route.params.selectedChatRoom.chatRoom,
-                                                    text: newTextMessage,
-                                                    sended: false,
-                                                    readed: false,
-                                                    delivered: false,
-                                                },
-                                            }
-                                            if (mediaAsset !== null) {
-                                                data.message['mediaAsset'] = mediaAsset
-                                            }
-                                            chatStore.dispatch({ type: 'ADD_DATA', payload: data })
-                                            setNewTextMessage('')
-                                            setAddEmoji(false)
-                                            chatStore.dispatch({ type: 'SET_MEDIA_ASSET', payload: null })
-                                            const chatsReceiverDoc = Firestore().collection('chats').doc(route.params.selectedChatRoom.chatRoom)
-                                            chatsReceiverDoc.get().then(async (doc) => {
-                                                let chatsReceiver = {
-                                                    lastTime: timestamp,
-                                                }
-                                                if (doc.data() === undefined) {
-                                                    await chatsReceiverDoc.set(chatsReceiver)
-                                                } else {
-                                                    await chatsReceiverDoc.update(chatsReceiver)
-                                                }
-                                            })
-                                            const newMessage = {
-                                                senderUserName: userName,
-                                                receiverUserName: route.params.selectedChatRoom.chatRoom,
-                                                message: newTextMessage,
-                                                timestamp: timestamp,
-                                                //delivered: String(false),
-                                                //readed: String(false)
-                                            }
-                                            await chatsReceiverDoc
-                                                .collection('new')
-                                                .doc(timestamp)
-                                                .set(newMessage)
-                                                .then(result => {
-                                                    chatStore.dispatch(
-                                                        {
-                                                            type: 'CHANGE_MESSAGE_STATUS',
-                                                            payload: {
-                                                                chatRoom: route.params.selectedChatRoom.chatRoom,
-                                                                timestamp: timestamp,
-                                                                status: 'sended'
-                                                            }
-                                                        })
-                                                })
-                                        }}
+                                        onPress={onPressSend}
                                         style={{
                                             backgroundColor: '#009387',
                                             padding: 4,
@@ -302,7 +337,7 @@ const ConnectedComponent = ({
                     category={Categories.symbols}
                     theme={colors.primaryBackground}
                     onEmojiSelected={emoji => {
-                        setNewTextMessage(text => text + ' ' + emoji)
+                        setText(text => text + ' ' + emoji)
                     }}
                 />}
         </>

@@ -11,7 +11,7 @@ import { store as mediaStore, persistor as mediaPersistor } from '../../main/sto
 //COMPONENTS
 import ViewEmptyList from '../../main/components/ViewEmptyList'
 import ActionSheetDocument from '../../main/components/ActionSheetDocument';
-import Body_Image from './components/Body_Image'
+import Body_Image from '../../main/components/Body_Image'
 //HOOKS
 import { getConfigGallery } from '../../main/hooks/getConfigGallery';
 import { addUserAttachment } from '../../main/hooks/addUserAttachment';
@@ -103,14 +103,6 @@ const UserDataGalleryScreen = ({ navigation, route, colors, userName }) => {
     }
   }, [])
 
-  /*useEffect(() => {
-    const unsubscribe = navigation.addListener('blur', () => {
-      console.log('OUT OF USER DATA GALLERY')
-      //indexStore.getState().stopIntervalState = true
-    });
-    return unsubscribe;
-  }, [navigation]);*/
-
   //MEMOS
   const data = useMemo(() => {
     const initialData = {
@@ -153,9 +145,7 @@ const UserDataGalleryScreen = ({ navigation, route, colors, userName }) => {
 
   //PRINCIPAL RENDER
   return (
-    <View style={{
-      flex: 1
-    }}>
+    <>
       <View style={{ flex: 1, backgroundColor: 'black', alignItems: 'center' }}>
         {type === 'premiumGallery' && !openModal && showCountdown &&
           <View
@@ -178,7 +168,7 @@ const UserDataGalleryScreen = ({ navigation, route, colors, userName }) => {
         <ScrollView
           refreshControl={
             <RefreshControl
-              refreshing={isLoadingConfigGallery}
+              refreshing={isLoadingConfigGallery || isLoadingAddUserAttachment}
               onRefresh={() => {
                 //REVIEW REFRESH CONTROL
                 console.log('>>>>>>>>>>>>START REFRESHING')
@@ -214,54 +204,35 @@ const UserDataGalleryScreen = ({ navigation, route, colors, userName }) => {
             }
             {data[type]?.length > 0 && data[type]?.map((item, index) => {
               return (
-                <Fragment
+                <TouchableOpacity
                   key={index}
+                  onPress={() => {
+                    setTimeout(() => {
+                      console.log('WAIT')
+                      navigation.dispatch(StackActions.push('UserDataGalleryViewScreen', { ...route.params, selectedGalleryItem: item }))
+                    }, 0)
+                  }}
+                  activeOpacity={0.9}
                 >
                   <Provider store={mediaStore} >
                     <PersistGate loading={null} persistor={mediaPersistor}>
                       <Body_Image
+                        path={'/attachment/getUserFile/' + selectedUserName + '/' + item.name}
                         width={data[type].length === 0 ? 0 : data[type].length <= 4 && data[type].length > 0 ? 160 : data[type].length > 4 && data[type].length <= 20 ? 120 : 80}
                         height={data[type].length === 0 ? 0 : data[type].length <= 4 && data[type].length > 0 ? 160 : data[type].length > 4 && data[type].length <= 20 ? 120 : 80}
-                        item={item}
-                        userName={selectedUserName}
+                        fileName={item.name}
+                        inType={item.type}
+                        outType={'image'}
                       />
                     </PersistGate>
                   </Provider>
-
-                </Fragment>
+                </TouchableOpacity>
               )
             })}
           </View>
         </ScrollView>
         {addAllowed &&
           <>
-            {/*<IconMaterialCommunity
-                    name={'plus'}
-                    color={'white'}
-                    size={30}
-                    style={{
-                        width: 60,
-                        backgroundColor: navigateStore.getState().selectedColorState,
-                        padding: 15,
-                        borderRadius: 30,
-                        position: 'absolute',
-                        bottom: 10,
-                        right: 10,
-                        zIndex: 15,
-                        elevation: (Platform.OS === 'android') ? 50 : 0
-                    }}
-                    onPress={() => {
-                        actionSheetDocumentRefState.current?.setModalVisible(true);
-                        indexStore.dispatch({ type: UPDATE_USER_DATA_GALLERY_DATA })
-                    }}
-                />*/}
-            {/*<ActionSheetDocument
-              actionSheetDocumentRef={actionSheetDocumentRefState}
-              operation={selectedGalleryTypeState === 'premiumGallery' ? 'USER_DATA_GALLERY_PREMIUM' : 'USER_DATA_GALLERY'}
-              cameraType={'CAMERA_PHOTO_VIDEO'}
-              libraryType={'LIBRARY_PHOTO_VIDEO'}
-              color={navigateStore.getState().selectedColorState}
-              />*/}
           </>}
       </View>
       <ActionSheetDocument
@@ -269,7 +240,7 @@ const UserDataGalleryScreen = ({ navigation, route, colors, userName }) => {
         onPressCamera={onPressCamera}
         onPressLibrary={onPressLibrary}
       />
-    </View >
+    </>
   );
 };
 

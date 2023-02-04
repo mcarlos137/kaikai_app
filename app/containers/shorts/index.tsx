@@ -1,11 +1,12 @@
 //PRINCIPAL
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Dimensions, Image, Platform, RefreshControl, ScrollView, Switch, Text, TouchableOpacity, View, } from 'react-native';
+import React, { useEffect } from 'react';
+import { Dimensions, Switch, Text, TouchableOpacity, View, } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Share from "react-native-share";
-import { createThumbnail } from 'react-native-create-thumbnail';
 import { compose } from 'redux'
+import { Provider } from 'react-redux';
+import { PersistGate } from 'redux-persist/integration/react';
 //FUNCTIONS
 import { decorateTimestamp } from '../../main/functions';
 //STORES
@@ -18,10 +19,9 @@ import { StackActions } from '@react-navigation/native';
 //COMPONENTS
 import BodyList from '../../main/components/BodyList';
 import Body_ImageVideo from '../../main/components/Body_ImageVideo';
+import Body_Image from '../../main/components/Body_Image';
 //HOC
 import { withColors, withUserName } from '../../main/hoc';
-import { Provider } from 'react-redux';
-import { PersistGate } from 'redux-persist/integration/react';
 
 //CONSTANTS
 const INSTRUCTIONS = [
@@ -282,14 +282,13 @@ const ShortsScreen = ({ navigation, route, colors, userName }) => {
         >
           <Provider store={mediaStore} >
             <PersistGate loading={null} persistor={mediaPersistor}>
-              <Body_ImageVideo
-                style={{
-                  margin: 10,
-                  height: 80,
-                  width: 80,
-                }}
-                assetId={item.assetId}
-                type={'image'}
+              <Body_Image
+                path={'/shorts/getAttachment/' + item.videoFileName}
+                width={80}
+                height={80}
+                fileName={item.assetId}
+                inType={'video'}
+                outType={'image'}
               />
             </PersistGate>
           </Provider>
@@ -344,7 +343,7 @@ const ShortsScreen = ({ navigation, route, colors, userName }) => {
                     marginLeft: 3
                   }}
                 >
-                  <Image
+                  <FastImage
                     style={{
                       width: 20,
                       height: 20,

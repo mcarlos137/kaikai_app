@@ -24,6 +24,7 @@ import { getCharges } from '../../main/hooks/getCharges';
 import { fastChange } from './hooks/fastChange';
 //HOC
 import { withColors, withDetailedBalances, withUserName } from '../../main/hoc';
+import { StackActions } from '@react-navigation/native';
 
 const FastChangeScreen = ({ navigation, route, colors, userName, detailedBalances }) => {
 
@@ -32,8 +33,7 @@ const FastChangeScreen = ({ navigation, route, colors, userName, detailedBalance
     const [targetCurrency, setTargetCurrency] = useState(detailedBalances.find(currency => (currency.isCrypto && route.params.balanceType === 'CRYPTO' || !currency.isCrypto && route.params.balanceType === 'FIAT') && currency.value !== baseCurrency.value))
     const [baseCurrencyAmount, setBaseCurrencyAmount] = useState(0)
     const [targetCurrencyAmount, setTargetCurrencyAmount] = useState(0)
-    const [openModal, setOpenModal] = useState(false)
-    const [modalMessage, setModalMessage] = useState('')
+    const [isVisibleModalTransaction, setIsVisibleModalTransaction] = useState(false)
 
     //HOOKS CALLS
     const { isLoading: isLoadingFastChangeFactor, data: dataFastChangeFactor, error: errorFastChangeFactor } =
@@ -50,7 +50,8 @@ const FastChangeScreen = ({ navigation, route, colors, userName, detailedBalance
             null
         )
 
-    const { mutate: mutateFastChange } = fastChange()
+    const { mutate: mutateFastChange, isSuccess: isSuccessFastChange, isError: isErrorFastChange } =
+        fastChange()
 
     //EFFECTS
     useEffect(() => {
@@ -178,7 +179,7 @@ const FastChangeScreen = ({ navigation, route, colors, userName, detailedBalance
     }, [baseCurrency])
 
     const onPressChange = useCallback(() => {
-        setOpenModal(validateConfirmationModalTransaction(
+        setIsVisibleModalTransaction(validateConfirmationModalTransaction(
             [
                 { name: 'AMOUNT', value: baseCurrencyAmount, type: 'NUMERIC' },
             ]
@@ -202,33 +203,24 @@ const FastChangeScreen = ({ navigation, route, colors, userName, detailedBalance
         </Text>
     ), [baseCurrency, targetCurrency])
 
-    /****
-     * 
-     * userName,
-                baseCurrency.value,
-                targetCurrency.value,
-                baseCurrencyAmount,
-                dataFastChangeFactor?.factor,
-                ''
-     */
-
-    const onPressAccept = () => {
-        /*mutateFastChange({
+    const process = () => {
+        mutateFastChange({
             userName: userName,
             baseCurrency: baseCurrency.value,
             targetCurrency: targetCurrency.value,
             amount: baseCurrencyAmount,
             factor: dataFastChangeFactor?.factor,
             description: ''
-        })*/
+        })
     }
 
     const onPressCancel = useCallback(() => {
-        setOpenModal(false)
+        setIsVisibleModalTransaction(false)
     }, [])
 
     const onPressClose = useCallback(() => {
-        //GO OUT TRANSACTION
+        setIsVisibleModalTransaction(false)
+        navigation.dispatch(StackActions.pop())
     }, [])
 
     //PRINCIPAL RENDER
@@ -306,12 +298,13 @@ const FastChangeScreen = ({ navigation, route, colors, userName, detailedBalance
             </Body>
             <Modal_Transaction
                 data={modalData}
-                visible={openModal}
-                confirmationModalMessage={modalMessage}
-                color={colors.getRandomMain()}
-                onPressAccept={onPressAccept}
+                isVisible={isVisibleModalTransaction}
+                process={process}
+                isSuccess={isSuccessFastChange}
+                isError={isErrorFastChange}
                 onPressClose={onPressClose}
                 onPressCancel={onPressCancel}
+                allowSecongAuthStrategy={false}
             />
         </View >
     );

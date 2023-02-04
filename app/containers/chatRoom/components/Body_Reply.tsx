@@ -24,12 +24,12 @@ import FastImage from 'react-native-fast-image';
 
 const mapStateToProps = state => {
   return {
-    mediaAsset: state.mediaAsset,
+    replyId: state.replyId,
   };
 };
 
 const ConnectedComponent = ({
-  mediaAsset,
+  replyId,
   colors
 }) => {
 
@@ -39,7 +39,7 @@ const ConnectedComponent = ({
         alignItems: 'center',
       }}
     >
-      {mediaAsset !== null &&
+      {replyId !== null &&
         <View
           style={{
             justifyContent: 'center',
@@ -50,7 +50,7 @@ const ConnectedComponent = ({
             padding: 5,
           }}
         >
-          {mediaAsset.type.includes('image') &&
+          {/*mediaAsset.type.includes('image') &&
             <FastImage
               source={{
                 uri: mediaAsset.uri,
@@ -60,8 +60,8 @@ const ConnectedComponent = ({
                 width: 200,
               }}
             />
-          }
-          {mediaAsset.type.includes('video') &&
+            */}
+          {/*mediaAsset.type.includes('video') &&
             <Video
               source={{
                 uri: mediaAsset.uri,
@@ -78,13 +78,13 @@ const ConnectedComponent = ({
                 width: 250,
               }}
             />
-          }
+            */}
           <View
             style={{
               marginLeft: 15
             }}
           >
-            {mediaAsset.type.includes('image') &&
+            {/*mediaAsset.type.includes('image') &&
               <TouchableOpacity
                 onPress={() => {
                   PhotoEditor.open({
@@ -123,10 +123,10 @@ const ConnectedComponent = ({
                   color={colors.icon}
                   size={26}
                 />
-              </TouchableOpacity>}
+              </TouchableOpacity>*/}
             <TouchableOpacity
               onPress={() => {
-                chatStore.dispatch({ type: 'SET_MEDIA_ASSET', payload: null })
+                chatStore.dispatch({ type: 'SET_REPLY_ID', payload: null })
               }}
 
             >

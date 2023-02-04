@@ -2,6 +2,7 @@
 import React, { useCallback, useEffect, useState, useMemo } from 'react';
 import { Text, View, ScrollView, Dimensions } from 'react-native';
 import { compose } from 'redux'
+import { StackActions } from '@react-navigation/native';
 //HOOKS
 import { getDollarBTCPayments } from './hooks/getDollarBTCPayments';
 import { getCharges } from '../../main/hooks/getCharges';
@@ -23,8 +24,7 @@ const FiatBankDepositsCreateScreen = ({ navigation, route, colors, userName, det
   const [currency, setCurrency] = useState(route?.params?.selectedCurrency !== undefined ? route.params.selectedCurrency : detailedBalances.find(currency => !currency.isCrypto))
   const [amount, setAmount] = useState(0)
   const [payment, setPayment] = useState<any>(null)
-  const [openModal, setOpenModal] = useState(false)
-  const [modalMessage, setModalMessage] = useState('')
+  const [isVisibleModalTransaction, setIsVisibleModalTransaction] = useState(false)
 
   //HOOKS CALLS
   const { isLoading: isLoadingDollarBTCPayments, data: dataDollarBTCPayments, error: errorDollarBTCPayments, refetch: refetchDollarBTCPayments } =
@@ -44,7 +44,8 @@ const FiatBankDepositsCreateScreen = ({ navigation, route, colors, userName, det
       null
     )
 
-  const { mutate: mutateCreateDeposit } = createDeposit()
+  const { mutate: mutateCreateDeposit, isSuccess: isSuccessCreateDeposit, isError: isErrorCreateDeposit } =
+    createDeposit()
 
   //EFFECTS
   useEffect(() => {
@@ -135,15 +136,15 @@ const FiatBankDepositsCreateScreen = ({ navigation, route, colors, userName, det
   }, [payment])
 
   const onPressSendRequest = useCallback(() => {
-    setOpenModal(validateConfirmationModalTransaction(
+    setIsVisibleModalTransaction(validateConfirmationModalTransaction(
       [
         { name: 'AMOUNT', value: amount, type: 'NUMERIC' },
       ]
     ))
   }, [amount])
 
-  const handleOnPressAccept = () => {
-    /*mutateCreateDeposit({
+  const process = () => {
+    mutateCreateDeposit({
       userName: userName,
       currency: currency.value,
       amount: amount,
@@ -151,15 +152,15 @@ const FiatBankDepositsCreateScreen = ({ navigation, route, colors, userName, det
       clientPayment: null,
       description: '',
       message: ''
-
-    })*/
+    })
   }
 
   const onPressClose = useCallback(() => {
-    //GO OUT TRANSACTION
+    setIsVisibleModalTransaction(false)
+    navigation.dispatch(StackActions.pop())
   }, [])
 
-  const onPressCancel = useCallback(() => setOpenModal(false), [])
+  const onPressCancel = useCallback(() => setIsVisibleModalTransaction(false), [])
 
   //PRINCIPAL RENDER
   return (
@@ -282,12 +283,13 @@ const FiatBankDepositsCreateScreen = ({ navigation, route, colors, userName, det
       </Body>
       <Modal_Transaction
         data={modalData}
-        visible={openModal}
-        confirmationModalMessage={modalMessage}
-        color={colors.getRandomMain()}
-        onPressAccept={handleOnPressAccept}
+        isVisible={isVisibleModalTransaction}
+        process={process}
+        isSuccess={isSuccessCreateDeposit}
+        isError={isErrorCreateDeposit}
         onPressClose={onPressClose}
         onPressCancel={onPressCancel}
+        allowSecongAuthStrategy={false}
       />
     </>
   );
