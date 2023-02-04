@@ -3,13 +3,17 @@ import {
     TouchableOpacity,
     Text
 } from 'react-native';
-import { useTheme } from 'react-native-paper';
+import { compose } from 'redux';
+//HOC
+import { withColors } from '../hoc';
 
 const Component = ({
     onPress,
-    label
+    label,
+    colors
 }) => {
-    const { colors } = useTheme<any>();
+
+    //PRINCIPAL RENDER
     return (
         <TouchableOpacity
             style={{
@@ -32,4 +36,4 @@ const Component = ({
     )
 };
 
-export default React.memo(Component);
+export default React.memo(compose(withColors)(Component));

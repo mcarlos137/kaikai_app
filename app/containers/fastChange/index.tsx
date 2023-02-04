@@ -299,6 +299,7 @@ const FastChangeScreen = ({ navigation, route, colors, userName, detailedBalance
             <Modal_Transaction
                 data={modalData}
                 isVisible={isVisibleModalTransaction}
+                label={'FAST CHANGE'}
                 process={process}
                 isSuccess={isSuccessFastChange}
                 isError={isErrorFastChange}

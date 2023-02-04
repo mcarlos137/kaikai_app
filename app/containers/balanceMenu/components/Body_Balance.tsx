@@ -4,16 +4,18 @@ import {
   View,
 } from 'react-native';
 import { Avatar } from '@rneui/themed';
-import { useTheme } from 'react-native-paper';
+import { compose } from 'redux';
 import { NumericFormat } from 'react-number-format';
 //FUNTIONS
 import { getRequire } from '../../../main/functions'
+//HOC
+import { withColors } from '../../../main/hoc';
 
 
-const Component = ({ currency }) => {
-
-  //HOOKS CALLS
-  const { colors } = useTheme<any>();
+const Component = ({
+  currency,
+  colors
+}) => {
 
   //PRINCIPAL RENDER
   return (
@@ -76,4 +78,4 @@ const Component = ({ currency }) => {
   )
 };
 
-export default React.memo(Component);
+export default React.memo(compose(withColors)(Component));

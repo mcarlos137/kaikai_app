@@ -516,6 +516,7 @@ const FiatBankTransfersScreen = ({ navigation, route, colors, userName, config, 
       <Modal_Transaction
         data={modalData}
         isVisible={isVisibleModalTransaction}
+        label={'BANK TRANSFER'}
         process={process}
         isSuccess={isSuccessSendToPayment}
         isError={isErrorSendToPayment}

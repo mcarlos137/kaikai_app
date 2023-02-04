@@ -1,9 +1,9 @@
 //PRINCIPAL
 import React from 'react';
-import { useTheme } from 'react-native-paper';
 import {
     Picker,
 } from '@react-native-picker/picker'
+//HOC
 import { withColors } from '../../../main/hoc';
 
 const Component = ({

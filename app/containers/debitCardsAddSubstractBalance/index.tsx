@@ -196,6 +196,7 @@ const DebitCardsAddSubstractBalanceScreen = ({ navigation, route, colors, userNa
       <Modal_Transaction
         data={modalData}
         isVisible={isVisibleModalTransaction}
+        label={'DEBIT CARD ADD/SUBSTRACT BALANCE'}
         process={process}
         isSuccess={isSuccessAddSubstractDebitCardBalance}
         isError={isErrorAddSubstractDebitCardBalance}

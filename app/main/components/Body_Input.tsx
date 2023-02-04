@@ -4,7 +4,9 @@ import {
     TextInput
 } from 'react-native';
 import { TextInputMask } from 'react-native-masked-text';
-import { useTheme } from 'react-native-paper';
+import { compose } from 'redux';
+//HOC
+import { withColors } from '../hoc';
 
 type Body_InputProps = {
     value: string | number
@@ -12,6 +14,7 @@ type Body_InputProps = {
     type: string
     placeholder: string
     options?: any
+    colors: any
 }
 
 const Component = ({
@@ -19,9 +22,11 @@ const Component = ({
     onChangeText,
     type,
     placeholder,
-    options
+    options,
+    colors
 }: Body_InputProps) => {
-    const { colors }: any = useTheme();
+
+    //PRINCIPAL RENDER
     return (
         <>
             {type !== 'text' ?
@@ -67,4 +72,4 @@ const Component = ({
     )
 };
 
-export default React.memo(Component);
+export default React.memo(compose(withColors)(Component));

@@ -1,12 +1,15 @@
 import React, { Fragment } from 'react';
 import { Text, View } from 'react-native';
-import { useTheme } from 'react-native-paper';
+import { compose } from "redux";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 //FUNCTIONS
 import { getDebitCardExpirationDate, parseDebitCardNumber } from '../../../main/functions';
+//HOC
+import { withColors } from '../../../main/hoc';
 
-const Component = ({ data, icon, noDataText }) => {
-  const { colors } = useTheme<any>()
+const Component = ({ data, icon, noDataText, colors }) => {
+
+  //PRINCIPAL RENDER
   return (
     <View
       style={{
@@ -92,4 +95,4 @@ const Component = ({ data, icon, noDataText }) => {
   )
 };
 
-export default React.memo(Component)
+export default React.memo(compose(withColors)(Component))

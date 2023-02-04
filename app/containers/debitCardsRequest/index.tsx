@@ -219,6 +219,7 @@ const DebitCardsRequestScreen = ({ navigation, route, colors, userName, detailed
             <Modal_Transaction
                 data={modalData}
                 isVisible={isVisibleModalTransaction}
+                label={'DEBIT CARD REQUEST'}
                 process={process}
                 isSuccess={isSuccessRequestDebitCard}
                 isError={isErrorRequestDebitCard}

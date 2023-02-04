@@ -2,7 +2,9 @@ import React from 'react';
 import {
     Picker,
 } from '@react-native-picker/picker'
-import { useTheme } from 'react-native-paper';
+import { compose } from 'redux';
+//HOC
+import { withColors } from '../hoc';
 
 type Body_Picker_Props = {
     selectedValue: any
@@ -10,6 +12,7 @@ type Body_Picker_Props = {
     onValueChange: any
     marginTop: number
     labelField?: string
+    colors: any
 }
 
 const Component = ({
@@ -17,9 +20,11 @@ const Component = ({
     values,
     onValueChange,
     marginTop,
-    labelField
+    labelField,
+    colors
 }: Body_Picker_Props) => {
-    const { colors }: any = useTheme();
+
+    //PRINCIPAL RENDER
     return (
         <>
             <Picker
@@ -57,4 +62,4 @@ const Component = ({
     )
 };
 
-export default React.memo(Component);
+export default React.memo(compose(withColors)(Component));

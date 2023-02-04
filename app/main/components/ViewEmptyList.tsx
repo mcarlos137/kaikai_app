@@ -7,7 +7,6 @@ import {
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import { useTheme } from 'react-native-paper';
 
 const getIconName = (operation) => {
     switch (operation) {

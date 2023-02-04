@@ -3,14 +3,18 @@ import React from 'react';
 import {
     Picker,
 } from '@react-native-picker/picker'
-import { useTheme } from 'react-native-paper';
+import { compose } from 'redux';
+//HOC
+import { withColors } from '../../../main/hoc';
 
 const Component = ({
     selectedValue,
     values,
-    onValueChange
+    onValueChange,
+    colors
 }) => {
-    const { colors } = useTheme<any>();
+
+    //PRINCIPAL RENDER
     return (
         <Picker
             style={{
@@ -47,4 +51,4 @@ const Component = ({
     )
 };
 
-export default Component;
+export default React.memo(compose(withColors)(Component));

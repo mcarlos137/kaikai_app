@@ -6,63 +6,52 @@ import {
 } from 'react-native';
 import Moment from 'moment';
 import { CandleStickChart } from 'react-native-charts-wrapper';
-import { useTheme } from 'react-native-paper';
+import { compose } from 'redux';
+//HOC
+import { withColors } from '../../../main/hoc';
 
-const MARKER = {
-    enabled: true,
-    markerColor: processColor('#2c3e50'),
-    textColor: processColor('white'),
-}
-
-/*const X_AXIS = {
-    $set: {
-        drawLabels: true,
-        drawGridLines: true,
-        position: 'BOTTOM',
-        yOffset: 5,
-        limitLines: _.times(20 / 5, (i) => {
-            return {
-                limit: 5 * (i + 1) + 0.5,
-                lineColor: processColor('darkgray'),
-                lineWidth: 1,
-                //label: (i + 1).toString()
-            };
-        })
-    }
-}*/
-
-const Y_AXIS = {
-    $set: {
-        left: {
-            valueFormatter: '$ #',
-            limitLines: [{
-                limit: 112.4,
-                lineColor: processColor('red'),
-                lineDashPhase: 2,
-                lineDashLengths: [10, 20]
-            }, {
-                limit: 89.47,
-                lineColor: processColor('red'),
-                lineDashPhase: 2,
-                lineDashLengths: [10, 20]
-            }]
-        },
-        right: {
-            enabled: false
-        },
-    }
-}
-
-const zoomXValue = {
-    $set: 99999
-}
-
-//var zoomXValue = 0
 
 const Component = ({
     data,
+    colors,
 }) => {
-    const { colors } = useTheme();
+
+    //CONSTANTS
+    const MARKER = {
+        enabled: true,
+        markerColor: processColor('#2c3e50'),
+        textColor: processColor('white'),
+    }
+
+    const Y_AXIS = {
+        $set: {
+            left: {
+                valueFormatter: '$ #',
+                limitLines: [{
+                    limit: 112.4,
+                    lineColor: processColor('red'),
+                    lineDashPhase: 2,
+                    lineDashLengths: [10, 20]
+                }, {
+                    limit: 89.47,
+                    lineColor: processColor('red'),
+                    lineDashPhase: 2,
+                    lineDashLengths: [10, 20]
+                }]
+            },
+            right: {
+                enabled: false
+            },
+        }
+    }
+
+    const zoomXValue = {
+        $set: 99999
+    }
+
+    //var zoomXValue = 0
+
+    //PRINCIPAL RENDER
     return (
         <CandleStickChart
             style={{
@@ -117,4 +106,4 @@ const Component = ({
     )
 };
 
-export default Component;
+export default React.memo(compose(withColors)(Component));

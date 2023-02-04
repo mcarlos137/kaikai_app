@@ -218,7 +218,7 @@ export const getDetailedBalances = (balance: BalanceAPI, currencies: any, curren
         isActive: true
       };
       if (findCurrency !== undefined) {
-        currency = currenciesParams[key];
+        currency = { ...currenciesParams[key] };
         let indexPosition = currenciesOrder.indexOf(key);
         //if (indexPosition !== -1) {
         //currency.priority = indexPosition + 1;

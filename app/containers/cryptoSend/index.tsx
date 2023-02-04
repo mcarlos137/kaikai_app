@@ -293,6 +293,7 @@ const CryptoSendScreen = ({ navigation, route, colors, userName }) => {
             <Modal_Transaction
                 data={modalData}
                 isVisible={isVisibleModalTransaction}
+                label={'CRYPTO SEND'}
                 process={process}
                 isSuccess={isSuccessCryptoSend}
                 isError={isErrorCryptoSend}

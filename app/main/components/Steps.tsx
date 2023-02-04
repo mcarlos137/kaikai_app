@@ -1,8 +1,10 @@
 import React, { ReactNode } from 'react';
 import { View, Image, StyleSheet, Text, TouchableOpacity, GestureResponderEvent } from 'react-native';
-import { useTheme } from 'react-native-paper';
+import { compose } from 'redux';
 //FUNCTIONS
 import { getRequire } from '../functions';
+//HOC
+import { withColors } from '../hoc';
 
 const lineNext = "silver";
 const lineDone = "#004FC0";
@@ -11,15 +13,16 @@ type MemoizedSteps_Props = {
     children: ReactNode[]
     activeStep: number
     totalSteps: number
+    colors: any
 }
 
 const Steps = ({
     children,
     activeStep,
     totalSteps,
+    colors
 }: MemoizedSteps_Props) => {
 
-    const { colors } = useTheme<any>()
     const mainColor = colors.getRandomMain()
 
     return (
@@ -52,14 +55,15 @@ const Steps = ({
     );
 };
 
-export const MemoizedSteps = React.memo(Steps);
+export const MemoizedSteps = React.memo(compose(withColors)(Steps));
 
 type MemoizedStep_Props = {
     children: ReactNode
     leftButtonLabel?: string
     onPressLeftButton?: (event: GestureResponderEvent) => void
     rightButtonLabel: string
-    onPressRightButton: (event: GestureResponderEvent) => void
+    onPressRightButton: (event: GestureResponderEvent) => void,
+    colors: any
 }
 
 const Step = ({
@@ -67,10 +71,10 @@ const Step = ({
     leftButtonLabel,
     onPressLeftButton,
     rightButtonLabel,
-    onPressRightButton
+    onPressRightButton,
+    colors
 }: MemoizedStep_Props) => {
 
-    const { colors } = useTheme<any>()
     const mainColor = colors.getRandomMain()
 
     return (
@@ -119,7 +123,7 @@ const Step = ({
     )
 }
 
-export const MemoizedStep = React.memo(Step);
+export const MemoizedStep = React.memo(compose(withColors)(Step));
 
 const styles = StyleSheet.create({
     navigator: {

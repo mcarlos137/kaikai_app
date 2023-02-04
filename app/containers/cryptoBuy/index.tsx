@@ -286,6 +286,7 @@ const CryptoBuyScreen = ({ navigation, route, colors, userName, detailedBalances
             <Modal_Transaction
                 data={modalData}
                 isVisible={isVisibleModalTransaction}
+                label={'CRYPTO BUY'}
                 process={process}
                 isSuccess={isSuccessCryptoBuy}
                 isError={isErrorCryptoBuy}

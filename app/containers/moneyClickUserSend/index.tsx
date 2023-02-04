@@ -172,7 +172,7 @@ const MoneyClickUserSendScreen = ({ navigation, route, colors, userName, config,
     }, [areaCode, phone, amount])
 
     const process = () => {
-        /*mutateMoneyClickUserSend({
+        mutateMoneyClickUserSend({
             baseUserName: userName,
             targetUserName: areaCode + '' + phone,
             currency: currency.value,
@@ -183,7 +183,7 @@ const MoneyClickUserSendScreen = ({ navigation, route, colors, userName, config,
             description: description,
             clientId: null,
             receiveAuthorizationId: null
-        })*/
+        })
     }
 
     const onPressCancel = useCallback(() => {
@@ -280,6 +280,7 @@ const MoneyClickUserSendScreen = ({ navigation, route, colors, userName, config,
             <Modal_Transaction
                 data={modalData}
                 isVisible={isVisibleModalTransaction}
+                label={'MONEYCLICK USER SEND'}
                 process={process}
                 isSuccess={isSuccessMoneyClickUserSend}
                 isError={isErrorMoneyClickUserSend}

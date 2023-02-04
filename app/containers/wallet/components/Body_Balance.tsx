@@ -2,11 +2,13 @@ import React from 'react';
 import { Dimensions, Text, View } from 'react-native';
 import { Avatar } from '@rneui/themed';
 import { NumericFormat } from 'react-number-format';
-import { useTheme } from 'react-native-paper';
+import { compose } from 'redux';
 //FUNCTIONS
 import { formatValue, getRequire } from '../../../main/functions';
+//HOC
+import { withColors } from '../../../main/hoc';
 
-const Component = ({ data }) => {
+const Component = ({ data, colors }) => {
 
   //INITIAL FUNCTIONS
   const imgs: string[] = []
@@ -18,9 +20,7 @@ const Component = ({ data }) => {
     }
   })
 
-  //HOOKS CALLS
-  const { colors } = useTheme<any>()
-
+  //PRINCIPAL RENDER
   return (
     <>
       <View
@@ -78,4 +78,4 @@ const Component = ({ data }) => {
   )
 };
 
-export default React.memo(Component)
+export default React.memo(compose(withColors)(Component))

@@ -4,7 +4,7 @@ import { createMaterialBottomTabNavigator } from '@react-navigation/material-bot
 import { createStackNavigator } from '@react-navigation/stack';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { useTheme } from 'react-native-paper';
+import { compose } from 'redux';
 import { CommonActions, StackActions } from '@react-navigation/native';
 import * as Keychain from 'react-native-keychain';
 //COMPONENTS
@@ -15,6 +15,8 @@ import UserDataScreen from '../app/containers/userData';
 //STORES
 import { store as actionSheetOptionsStore } from '../app/main/stores/actionSheetOptions';
 import { store as authStore } from '../app/main/stores/auth';
+//HOC
+import { withColors } from '../app/main/hoc';
 
 const Tab = createMaterialBottomTabNavigator();
 
@@ -35,7 +37,6 @@ const MainTabScreen = ({ navigation, route }) => {
 
   const [selectedTab, setSelectedTab] = useState('Social')
 
-  const { colors } = useTheme();
   return (
     <Tab.Navigator
       initialRouteName={selectedTab}
@@ -58,7 +59,7 @@ const MainTabScreen = ({ navigation, route }) => {
           ),
         }}
       />
-      <Tab.Screen name="Subs" component={SubsStackScreen}
+      <Tab.Screen name="Subs" component={compose(withColors)(SubsStackScreen)}
         listeners={{
           tabPress: (e) => {
             setSelectedTab('Subs')
@@ -99,7 +100,7 @@ const MainTabScreen = ({ navigation, route }) => {
           ),
         }}
       />
-      <Tab.Screen name="Wallet" component={WalletStackScreen}
+      <Tab.Screen name="Wallet" component={compose(withColors)(WalletStackScreen)}
         listeners={{
           tabPress: (e) => {
             setSelectedTab('Wallet')
@@ -112,7 +113,7 @@ const MainTabScreen = ({ navigation, route }) => {
           ),
         }}
       />
-      <Tab.Screen name="UserData" component={UserDataStackScreen}
+      <Tab.Screen name="UserData" component={compose(withColors)(UserDataStackScreen)}
         listeners={{
           tabPress: (e) => {
             setSelectedTab('UserData')
@@ -130,7 +131,6 @@ const MainTabScreen = ({ navigation, route }) => {
 }
 
 const SocialStackScreen = ({ navigation, route }) => {
-  const { colors } = useTheme();
   return (
     <SocialStack.Navigator screenOptions={{
       headerTransparent: true,
@@ -298,8 +298,7 @@ const SocialStackScreen = ({ navigation, route }) => {
   )
 };
 
-const SubsStackScreen = ({ navigation, route }) => {
-  const { colors } = useTheme();
+const SubsStackScreen = ({ navigation, route, colors }) => {
   return (
     <SubsStack.Navigator screenOptions={{
       headerTransparent: true,
@@ -423,8 +422,8 @@ const OptionsStackScreen = ({ navigation }) => (
   </OptionsStack.Navigator>
 );
 
-const WalletStackScreen = ({ navigation, route }) => {
-  const { colors } = useTheme();
+const WalletStackScreen = ({ navigation, route, colors }) => {
+
   return (
     <WalletStack.Navigator screenOptions={{
       headerTransparent: true,
@@ -573,8 +572,8 @@ const WalletStackScreen = ({ navigation, route }) => {
   )
 };
 
-const UserDataStackScreen = ({ navigation, route }) => {
-  const { colors } = useTheme();
+const UserDataStackScreen = ({ navigation, route, colors }) => {
+
   return (
     <UserDataStack.Navigator screenOptions={{
       headerTransparent: true,

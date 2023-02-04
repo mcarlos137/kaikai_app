@@ -6,38 +6,41 @@ import {
     TouchableOpacity,
     Dimensions,
 } from 'react-native';
-import { useTheme } from 'react-native-paper';
+import { compose } from 'redux';
 import { Avatar } from '@rneui/themed';
 //FUNCTIONS
 import { getRequire } from '../../../main/functions'
+//HOC
+import { withColors } from '../../../main/hoc'
 
-const giftCardMenu = {
-    buy: {
-        title: 'Buy',
-        options: [
-            'VISA',
-            'BITCOINRECHARGE',
-            'MONEYCLICK_1',
-            'DISNEYPLUS',
-            'NETFLIX',
-            'HBOMAX',
-            'GOOGLE',
-            'APPLE',
-            'AMAZON'
-        ]
-    },
-    redeem: {
-        title: 'Redeem',
-        options: [
-            'BITCOINRECHARGE',
-            'MONEYCLICK_1'
-        ]
+const Component = ({ colors, data }) => {
+
+    //CONSTANTS
+    const giftCardMenu = {
+        buy: {
+            title: 'Buy',
+            options: [
+                'VISA',
+                'BITCOINRECHARGE',
+                'MONEYCLICK_1',
+                'DISNEYPLUS',
+                'NETFLIX',
+                'HBOMAX',
+                'GOOGLE',
+                'APPLE',
+                'AMAZON'
+            ]
+        },
+        redeem: {
+            title: 'Redeem',
+            options: [
+                'BITCOINRECHARGE',
+                'MONEYCLICK_1'
+            ]
+        }
     }
-}
-
-
-const Component = ({ data, navigation }) => {
-    const { colors } = useTheme();
+    
+    //PRINCIPAL RENDER
     return (
         <View
             style={{
@@ -182,4 +185,4 @@ const Component = ({ data, navigation }) => {
     )
 };
 
-export default Component;
+export default React.memo(compose(withColors)(Component));

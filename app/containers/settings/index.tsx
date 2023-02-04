@@ -3,7 +3,6 @@ import React, { useEffect } from 'react';
 import { View, } from 'react-native';
 import { Provider } from "react-redux";
 import { PersistGate } from 'redux-persist/integration/react';
-import { useTheme } from 'react-native-paper'
 //STORES
 import {
   store as settingsStore,

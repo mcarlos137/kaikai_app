@@ -32,6 +32,7 @@ import { withColors } from "../hoc";
 const Component = ({
   data,
   isVisible,
+  label,
   process,
   isSuccess,
   isError,
@@ -759,7 +760,7 @@ const Component = ({
                       marginRight: 10
                     }}
                   >
-                    {'FAST CHANGE'}
+                    {label}
                   </Text>
                   <ActivityIndicator
                     size="small"

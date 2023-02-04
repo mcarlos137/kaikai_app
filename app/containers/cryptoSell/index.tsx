@@ -277,6 +277,7 @@ const CryptoSellScreen = ({ navigation, route, colors, userName, detailedBalance
             <Modal_Transaction
                 data={modalData}
                 isVisible={isVisibleModalTransaction}
+                label={'CRYPTO SELL'}
                 process={process}
                 isSuccess={isSuccessCryptoSell}
                 isError={isErrorCryptoSell}

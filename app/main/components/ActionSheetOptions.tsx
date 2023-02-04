@@ -8,13 +8,15 @@ import {
 } from 'react-native';
 import { StackActions } from '@react-navigation/native';
 import ActionSheet from "react-native-actions-sheet";
-import { useTheme } from 'react-native-paper';
+import { compose } from 'redux';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 //STORES
 import { store as authStore } from '../stores/auth';
+//HOC
+import { withColors } from '../hoc';
 
-const Component = ({ customRef, navigation, route }) => {
+const Component = ({ customRef, navigation, route, colors }) => {
 
     //INITIAL CONSTANTS
     const { userName } = authStore.getState()
@@ -122,9 +124,6 @@ const Component = ({ customRef, navigation, route }) => {
         }
     ]
 
-    //HOOKS CALLS
-    const { colors } = useTheme<any>();
-
     //COMPONENTS
     const getIcon = (icon) => {
         switch (icon.split('__')[0]) {
@@ -227,4 +226,4 @@ const Component = ({ customRef, navigation, route }) => {
     )
 };
 
-export default React.memo(Component);
+export default React.memo(compose(withColors)(Component));

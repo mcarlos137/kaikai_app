@@ -4,7 +4,9 @@ import {
     RefreshControl,
     FlatList,
 } from 'react-native';
-import { useTheme } from 'react-native-paper';
+import { compose } from 'redux';
+//HOC
+import { withColors } from '../hoc';
 //COMPONENTS
 import ViewInstructions from './ViewInstructions'
 
@@ -15,12 +17,10 @@ type BodyList_Props = {
     instructions: any[]
     refreshing: any
     onRefresh: any
+    colors: any
 }
 
-const Component = ({ data, renderItem, keyExtractor, instructions, refreshing, onRefresh }: BodyList_Props) => {
-
-    //HOOKS CALLS
-    const { colors } = useTheme<any>()
+const Component = ({ data, renderItem, keyExtractor, instructions, refreshing, onRefresh, colors }: BodyList_Props) => {
 
     //PRINCIPAL RENDER
     return (
@@ -68,4 +68,4 @@ const Component = ({ data, renderItem, keyExtractor, instructions, refreshing, o
     )
 };
 
-export default React.memo(Component);
+export default React.memo(compose(withColors)(Component));

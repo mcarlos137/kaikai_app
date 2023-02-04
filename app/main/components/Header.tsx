@@ -9,12 +9,15 @@ import {
 } from 'react-native';
 import { Avatar } from '@rneui/themed';
 import { NumericFormat } from 'react-number-format';
-import { useTheme } from 'react-native-paper';
+import { compose } from 'redux';
 //FUNCTIONS
 import { getRequire } from '../functions'
+//HOC
+import { withColors } from '../hoc';
 
-const Component = ({ currency, targetImg, maxAmount = 0.00, amount = 0.00 }) => {
-    const { colors } = useTheme<any>()
+const Component = ({ currency, targetImg, maxAmount = 0.00, amount = 0.00, colors }) => {
+
+    //PRINCIPAL RENDER
     return (
         <View style={{
             height: 100,
@@ -84,4 +87,4 @@ const Component = ({ currency, targetImg, maxAmount = 0.00, amount = 0.00 }) => 
     )
 };
 
-export default React.memo(Component);
+export default React.memo(compose(withColors)(Component));

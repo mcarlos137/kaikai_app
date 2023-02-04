@@ -8,7 +8,9 @@ import {
     Dimensions
 } from 'react-native';
 import IconMaterialCommunity from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useTheme } from 'react-native-paper';
+import { compose } from 'redux';
+//HOC
+import { withColors } from '../hoc';
 
 type ViewInstructions_Props = {
     instructions: any[]
@@ -16,6 +18,7 @@ type ViewInstructions_Props = {
     marginTop: number
     linkText?: string
     linkTarget?: string
+    colors: any
 }
 
 const Component = ({
@@ -23,9 +26,11 @@ const Component = ({
     type,
     marginTop,
     linkText,
-    linkTarget
+    linkTarget,
+    colors
 }: ViewInstructions_Props) => {
-    const { colors } = useTheme<any>();
+
+    //PRINCIPAL RENDER
     return (
         <ScrollView
             persistentScrollbar={true}
@@ -98,4 +103,4 @@ const Component = ({
     )
 };
 
-export default Component;
+export default React.memo(compose(withColors)(Component));

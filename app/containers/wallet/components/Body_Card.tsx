@@ -7,25 +7,27 @@ import {
   ActivityIndicator,
   GestureResponderEvent
 } from "react-native";
-import { useTheme } from "react-native-paper";
+import { compose } from "redux";
+//HOC
+import { withColors } from "../../../main/hoc";
 
 type Body_Card_Props = {
   children: ReactNode
   title: string
   isLoading: boolean
   onPress: (event: GestureResponderEvent) => void
+  colors: any
 }
 
 const Component = ({
   children,
   title,
   isLoading,
-  onPress
+  onPress,
+  colors
 }: Body_Card_Props) => {
   
-  //HOOKS CALLS
-  const { colors } = useTheme<any>();
-  
+  //PRINCIPAL RENDER  
   return (
     <>
       <View
@@ -73,4 +75,4 @@ const Component = ({
   )
 };
 
-export default React.memo(Component);
+export default React.memo(compose(withColors)(Component));

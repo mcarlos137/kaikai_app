@@ -1,22 +1,21 @@
 //PRINCIPAL
 import React, { useEffect } from 'react';
 import { Dimensions, FlatList, Text, View } from 'react-native';
-import { useTheme } from 'react-native-paper';
+import { compose } from 'redux';
 //FUNCTIONS
 import { decorateTimestamp } from '../../main/functions';
-import { withUserName } from '../../main/hoc';
+//HOC
+import { withColors, withUserName } from '../../main/hoc';
 //HOOKS
 import { getNotifications } from './hooks/getNotifications';
 //COMPONENTS
 //import Body from './components/Body';
 
-const NotificationsScreen = ({ navigation, route, userName }) => {
+const NotificationsScreen = ({ navigation, route, colors, userName }) => {
 
   //HOOKS CALLS
   const { isLoading: isLoadingNotifications, data: dataNotifications, error: errorNotifications }
     = getNotifications(userName)
-
-  const { colors } = useTheme<any>()
 
   //EFFECTS
   useEffect(() => {
@@ -108,4 +107,4 @@ const NotificationsScreen = ({ navigation, route, userName }) => {
   );
 };
 
-export default React.memo(withUserName(NotificationsScreen));
+export default React.memo(compose(withColors, withUserName)(NotificationsScreen));

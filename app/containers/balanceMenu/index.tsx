@@ -8,7 +8,7 @@ import Modal from './components/Modal'
 
 const BalanceMenuScreen = ({ navigation, route }) => {
 
-  const [visibleModal, setVisibleModal] = useState(false)
+  const [isVisibleModal, setIsVisibleModal] = useState(false)
   const [modalTitle, setModalTitle] = useState('')
   const [buttons, setButtons] = useState<any[]>([])
 
@@ -86,13 +86,13 @@ const BalanceMenuScreen = ({ navigation, route }) => {
               text={'Send / Transfer'}
               onPress={() => {
                 setModalTitle('Send / Transfer')
-                setVisibleModal(true)
+                setIsVisibleModal(true)
                 setButtons([
                   {
                     id: 1,
                     title: 'To MoneyClick Users',
                     onPress: () => {
-                      setVisibleModal(false)
+                      setIsVisibleModal(false)
                       navigation.dispatch(StackActions.push('MoneyClickUserSendScreen', { ...route.params }))
                     }
                   },
@@ -100,7 +100,7 @@ const BalanceMenuScreen = ({ navigation, route }) => {
                     id: 2,
                     title: 'To Banks',
                     onPress: () => {
-                      setVisibleModal(false)
+                      setIsVisibleModal(false)
                       /*
               if (
                   authPersistedStore.getState().configState.verifications['E'] !== undefined &&
@@ -131,13 +131,13 @@ const BalanceMenuScreen = ({ navigation, route }) => {
               text={'Receive / Deposit'}
               onPress={() => {
                 setModalTitle('Receive / Deposit')
-                setVisibleModal(true)
+                setIsVisibleModal(true)
                 setButtons([
                   {
                     id: 1,
                     title: 'Gift Card Redeem',
                     onPress: () => {
-                      setVisibleModal(false)
+                      setIsVisibleModal(false)
                       navigation.dispatch(StackActions.push('GiftCardRedeemScreen', { ...route.params }))
                     }
                   },
@@ -145,7 +145,7 @@ const BalanceMenuScreen = ({ navigation, route }) => {
                     id: 2,
                     title: 'From Banks',
                     onPress: () => {
-                      setVisibleModal(false)
+                      setIsVisibleModal(false)
                       navigation.dispatch(StackActions.push('FiatBankDepositsScreen', { ...route.params }))
                       /*
                 if (authPersistedStore.getState().configState.verifications['C'] !== undefined &&
@@ -160,7 +160,7 @@ const BalanceMenuScreen = ({ navigation, route }) => {
                     id: 3,
                     title: 'From MoneyClick Users',
                     onPress: () => {
-                      setVisibleModal(false)
+                      setIsVisibleModal(false)
                       navigation.dispatch(StackActions.push('MoneyClickUserReceiveScreen', { ...route.params }))
                     }
                   }
@@ -196,7 +196,7 @@ const BalanceMenuScreen = ({ navigation, route }) => {
             <></>
           }
         </View>}
-      <Modal isVisible={visibleModal} title={modalTitle} buttons={buttons} onPressClose={() => setVisibleModal(false)} />
+      <Modal isVisible={isVisibleModal} title={modalTitle} buttons={buttons} onPressClose={() => setIsVisibleModal(false)} />
     </View >
   );
 };

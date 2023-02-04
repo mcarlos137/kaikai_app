@@ -6,106 +6,103 @@ import {
     FlatList,
 } from 'react-native';
 import { NumericFormat } from 'react-number-format';
-import { useTheme } from 'react-native-paper';
 //FUNCTIONS
 import {
     getPairComponents,
 } from '../../../main/functions'
 
-const keyExtractor = (item) => (
-    String(item.index)
-)
-
-const renderItem = (item, pair) => (
-    <View
-        key={item.index}
-        style={{
-            flexDirection: 'row',
-        }}
-    >
-        <NumericFormat
-            value={item.item.count}
-            displayType={'text'}
-            thousandSeparator={true}
-            decimalScale={0}
-            renderText={(value) => (
-                <Text
-                    style={{
-                        flex: 0.6,
-                        fontSize: 12,
-                        textAlign: 'center'
-                    }}
-                >
-                    {value}
-                </Text>
-            )}
-        />
-        <NumericFormat
-            value={item.item.amount}
-            displayType={'text'}
-            thousandSeparator={true}
-            decimalScale={pair.includes('BTC') ? 8 : 2}
-            renderText={(value) => (
-                <Text
-                    style={{
-                        flex: 1.2,
-                        fontSize: 12,
-                        textAlign: 'center'
-                    }}
-                >
-                    {value}
-                </Text>
-            )}
-        />
-        <NumericFormat
-            value={item.item.total}
-            displayType={'text'}
-            thousandSeparator={true}
-            decimalScale={pair.includes('BTC') ? 8 : 2}
-            renderText={(value) => (
-                <Text
-                    style={{
-                        flex: 1.2,
-                        fontSize: 12,
-                        textAlign: 'center'
-                    }}
-                >
-                    {value}
-                </Text>
-            )}
-        />
-        <NumericFormat
-            value={item.item.price}
-            displayType={'text'}
-            thousandSeparator={true}
-            decimalScale={2}
-            renderText={(value) => (
-                <Text
-                    style={{
-                        flex: 1.8,
-                        fontSize: 12,
-                        textAlign: 'center'
-                    }}
-                >
-                    {value}
-                </Text>
-            )}
-        />
-    </View>
-)
-
-const getItemLayout = (data, index) => ({
-    length: data.length,
-    offset: data.length * index,
-    index,
-})
-
 const Component = ({
     pair,
     data,
-    backgroundColor
+    backgroundColor,
 }) => {
-    const { colors } = useTheme<any>();
+
+    //COMPONENTS
+    const renderItem = (item, pair) => (
+        <View
+            key={item.index}
+            style={{
+                flexDirection: 'row',
+            }}
+        >
+            <NumericFormat
+                value={item.item.count}
+                displayType={'text'}
+                thousandSeparator={true}
+                decimalScale={0}
+                renderText={(value) => (
+                    <Text
+                        style={{
+                            flex: 0.6,
+                            fontSize: 12,
+                            textAlign: 'center'
+                        }}
+                    >
+                        {value}
+                    </Text>
+                )}
+            />
+            <NumericFormat
+                value={item.item.amount}
+                displayType={'text'}
+                thousandSeparator={true}
+                decimalScale={pair.includes('BTC') ? 8 : 2}
+                renderText={(value) => (
+                    <Text
+                        style={{
+                            flex: 1.2,
+                            fontSize: 12,
+                            textAlign: 'center'
+                        }}
+                    >
+                        {value}
+                    </Text>
+                )}
+            />
+            <NumericFormat
+                value={item.item.total}
+                displayType={'text'}
+                thousandSeparator={true}
+                decimalScale={pair.includes('BTC') ? 8 : 2}
+                renderText={(value) => (
+                    <Text
+                        style={{
+                            flex: 1.2,
+                            fontSize: 12,
+                            textAlign: 'center'
+                        }}
+                    >
+                        {value}
+                    </Text>
+                )}
+            />
+            <NumericFormat
+                value={item.item.price}
+                displayType={'text'}
+                thousandSeparator={true}
+                decimalScale={2}
+                renderText={(value) => (
+                    <Text
+                        style={{
+                            flex: 1.8,
+                            fontSize: 12,
+                            textAlign: 'center'
+                        }}
+                    >
+                        {value}
+                    </Text>
+                )}
+            />
+        </View>
+    )
+
+    const getItemLayout = (data, index) => ({
+        length: data.length,
+        offset: data.length * index,
+        index,
+    })
+
+    //PRINCIPAL RENDER
     return (
         <FlatList
             style={{
@@ -116,7 +113,7 @@ const Component = ({
             }}
             data={data}
             renderItem={(item) => renderItem(item, pair)}
-            keyExtractor={keyExtractor}
+            keyExtractor={(item) => String(item.index)}
             removeClippedSubviews={true}
             maxToRenderPerBatch={20}
             windowSize={50}
@@ -175,4 +172,4 @@ const Component = ({
     )
 };
 
-export default Component;
+export default React.memo(Component);

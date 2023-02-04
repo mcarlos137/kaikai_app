@@ -6,12 +6,16 @@ import {
 } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import FontAwesomeIcons from 'react-native-vector-icons/FontAwesome';
-import { useTheme } from 'react-native-paper';
+import { compose } from 'redux';
+//HOC
+import { withColors } from '../../../main/hoc';
 
-const Component = ({ iconName, text, onPress }) => {
-
-  //HOOKS CALLS
-  const { colors } = useTheme<any>();
+const Component = ({
+  iconName,
+  text,
+  onPress,
+  colors
+}) => {
 
   //PRINCIPAL RENDER
   return (
@@ -69,4 +73,4 @@ const Component = ({ iconName, text, onPress }) => {
   )
 };
 
-export default React.memo(Component);
+export default React.memo(compose(withColors)(Component));

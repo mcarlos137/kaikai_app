@@ -284,6 +284,7 @@ const FiatBankDepositsCreateScreen = ({ navigation, route, colors, userName, det
       <Modal_Transaction
         data={modalData}
         isVisible={isVisibleModalTransaction}
+        label={'CREATE BANK DEPOSIT'}
         process={process}
         isSuccess={isSuccessCreateDeposit}
         isError={isErrorCreateDeposit}

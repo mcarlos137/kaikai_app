@@ -4,19 +4,19 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useTheme } from 'react-native-paper';
-import { useNavigation, StackActions, useRoute } from '@react-navigation/native';
+import { compose } from 'redux';
+import { StackActions } from '@react-navigation/native';
+//HOC
+import { withColors, withNavigation, withRoute } from '../hoc';
 
 type Button_Options_Props = {
   options?: any[]
+  navigation: any
+  route: any
+  colors: any
 }
 
-const Component = ({ options }: Button_Options_Props) => {
-
-  //HOOKS CALLS
-  const { colors } = useTheme<any>();
-  const { dispatch } = useNavigation()
-  const route = useRoute()
+const Component = ({ options, navigation, route, colors }: Button_Options_Props) => {
 
   //COMPONENTS
   const Option = ({ colors, iconName, onPress }) => (
@@ -63,7 +63,7 @@ const Component = ({ options }: Button_Options_Props) => {
           marginTop: 5
         }}
         onPress={() => {
-          dispatch(StackActions.push('ChatScreen', { ...route.params }))
+          navigation.dispatch(StackActions.push('ChatScreen', { ...route.params }))
         }}
       >
         <MaterialCommunityIcons
@@ -76,4 +76,4 @@ const Component = ({ options }: Button_Options_Props) => {
   )
 };
 
-export default Component;
+export default React.memo(compose(withNavigation, withRoute, withColors)(Component));

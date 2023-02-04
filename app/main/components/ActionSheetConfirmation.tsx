@@ -7,7 +7,9 @@ import {
     GestureResponderEvent
 } from 'react-native';
 import ActionSheet from "react-native-actions-sheet";
-import { useTheme } from 'react-native-paper';
+import { compose } from 'redux';
+//HOC
+import { withColors } from '../hoc';
 
 type ActionSheetConfirmation_Props = {
     reference: any
@@ -15,6 +17,7 @@ type ActionSheetConfirmation_Props = {
     confirmationMessage: string
     onPress: (event: GestureResponderEvent) => void
     additionalInput?: ReactNode
+    colors: any
 }
 
 const Component = ({
@@ -22,9 +25,11 @@ const Component = ({
     height,
     confirmationMessage,
     onPress,
-    additionalInput
+    additionalInput,
+    colors
 }: ActionSheetConfirmation_Props) => {
-    const { colors } = useTheme<any>();
+
+    //PRINCIPAL RENDER
     return (
         <ActionSheet
             ref={reference}
@@ -158,4 +163,4 @@ const Component = ({
     )
 };
 
-export default React.memo(Component);
+export default React.memo(compose(withColors)(Component));
