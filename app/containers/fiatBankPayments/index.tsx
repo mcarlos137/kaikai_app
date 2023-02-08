@@ -6,7 +6,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { compose } from 'redux'
 //HOOKS
 import { getPayments } from '../../main/hooks/getPayments';
-import { StackActions } from '@react-navigation/native';
+import { CommonActions, StackActions } from '@react-navigation/native';
 import { getFieldName } from '../../main/functions';
 import { withColors, withUserName } from '../../main/hoc';
 //COMPONENTS
@@ -84,7 +84,15 @@ const FiatBankPaymentsScreen = ({ navigation, route, colors, userName }) => {
                 }}>
                 <TouchableOpacity
                   onPress={() => {
-                    navigation.dispatch(StackActions.push('FiatBankTransfersScreen', { ...route.params, selectedPayment: item }))
+                    navigation.dispatch((state) => {
+                      const params = { ...state.routes[state.routes.length - 1].params, selectedPayment: item }
+                      const routes = [...state.routes.slice(0, state.routes.length - 2), { name: 'FiatBankTransfersScreen', params: params }];
+                      return CommonActions.reset({
+                        ...state,
+                        routes,
+                        index: routes.length - 1,
+                      });
+                    });
                   }}
                 >
                   <View

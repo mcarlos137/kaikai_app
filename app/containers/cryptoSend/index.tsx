@@ -178,7 +178,7 @@ const CryptoSendScreen = ({ navigation, route, colors, userName }) => {
             marginTop: 5,
             color: colors.text
         }}>
-            {value !== '0.00' ? 'Inside MoneyClick - ' + currency.symbol + ' ' + value : 'You have to buy or receive first'}
+            {value !== '0.00' ? 'Inside MoneyClick  ' + currency.symbol + ' ' + value : 'You have to buy or receive first'}
         </Text>
     ), [currency])
 
@@ -191,7 +191,7 @@ const CryptoSendScreen = ({ navigation, route, colors, userName }) => {
                     marginTop: 5,
                     color: colors.text
                 }}>
-                    {'Outside MoneyClick - ' + currency.symbol + ' ' + value}
+                    {'Outside MoneyClick  ' + currency.symbol + ' ' + value}
                 </Text>
             }
         </>

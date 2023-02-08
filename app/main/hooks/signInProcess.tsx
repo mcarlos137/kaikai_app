@@ -1,11 +1,13 @@
 import React, { useEffect, useRef } from "react"
 import { CommonActions } from "@react-navigation/native"
+import messaging from '@react-native-firebase/messaging';
 //STORES
 import { store as authStore } from "../stores/auth"
 //HOOKS
 import { getConfig } from "./getConfig"
 import { setSecretKey } from "./setSecretKey"
 import { signIn } from "./signIn"
+import { addUserFirebaseToken } from "./addUserFirebaseToken";
 
 const Hook = (areaCode: string, phone: string, password: string, navigation: any) => {
 
@@ -32,6 +34,10 @@ const Hook = (areaCode: string, phone: string, password: string, navigation: any
             dataSignIn?.base?.userName || null,
         )
 
+    const { mutate: mutateAddUserFirebaseToken } =
+        addUserFirebaseToken()
+
+    //EFFECTS
     useEffect(() => {
         if (isMounted.current) {
             if (dataGetConfig !== undefined) {
@@ -47,6 +53,18 @@ const Hook = (areaCode: string, phone: string, password: string, navigation: any
                             frequentUsers: dataSignIn?.other.frequentUsers
                         }
                     })
+                try {
+                    messaging().requestPermission();
+                    messaging().getToken().then((token) => {
+                        console.log('>>>>>>>>>>>>>>>>token', token)
+                        /*mutateAddUserFirebaseToken({
+                            userName: areaCode + '' + phone,
+                            token: token
+                        })*/
+                    })
+                } catch (error) {
+                    alert('permission rejected');
+                }
                 navigation.dispatch((state) => {
                     const routes = [{ name: 'MainTabScreen' }];
                     return CommonActions.reset({

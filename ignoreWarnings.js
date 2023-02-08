@@ -10,6 +10,8 @@ if (__DEV__) {
         "exported from 'deprecated-react-native-prop-types'.",
         "Non-serializable values were found in the navigation state.",
         "VirtualizedLists should never be nested inside plain ScrollViews",
+        "Require cycle: node_modules/rn-fetch-blob/index.js",
+        "Module PhotoEditor requires main queue setup since it overrides `init` but doesn't implement `requiresMainQueueSetup`. In a future release React Native will default to initializing all native modules on a background thread unless explicitly opted-out of."
     ];
 
     const warn = console.warn;

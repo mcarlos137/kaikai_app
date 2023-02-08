@@ -2,6 +2,7 @@ import React, { Fragment } from "react";
 import { Text, View, TouchableOpacity } from "react-native";
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { compose } from 'redux';
+//HOC
 import { withColors } from "../../../main/hoc";
 
 const Component = ({ title, isEditing, type, canEdit, buttons, colors }) => (
@@ -129,4 +130,4 @@ const Component = ({ title, isEditing, type, canEdit, buttons, colors }) => (
     </View>
 )
 
-export default React.memo(withColors(Component))
+export default React.memo(compose(withColors)(Component))

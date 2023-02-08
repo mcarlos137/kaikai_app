@@ -7,10 +7,10 @@ import {
   TouchableOpacity,
   Text,
   Button,
+  View
 } from 'react-native';
 import { compose } from 'redux'
 import { Avatar } from '@rneui/themed';
-import { View } from 'react-native-animatable';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { StackActions } from '@react-navigation/native';
 import { NumericFormat } from 'react-number-format';

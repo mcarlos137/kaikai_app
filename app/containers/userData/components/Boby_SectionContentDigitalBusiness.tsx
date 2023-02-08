@@ -76,4 +76,4 @@ const Component = ({ data, colors }) => (
     </>
 )
 
-export default React.memo(withColors(Component))
+export default React.memo(compose(withColors)(Component))

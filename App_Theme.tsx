@@ -1,7 +1,6 @@
 //PRINCIPAL
 import React from 'react';
-import type { ReactNode } from 'react';
-import { StatusBar } from 'react-native';
+import { StatusBar, Text } from 'react-native';
 import {
     NavigationContainer,
     DefaultTheme as NavigationDefaultTheme,
@@ -30,8 +29,6 @@ type PropsFromRedux = ConnectedProps<typeof connector>
 export interface ThemeProps extends PropsFromRedux {
 
 }
-
-
 
 const MainColors = {
     getRandomMain: () => {

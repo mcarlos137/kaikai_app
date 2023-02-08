@@ -5,8 +5,8 @@ type SendNotificationMessageRequest_Props = {
   userNames: string[]
   title: string
   content: string
-  data: any
-  sound: string
+  data?: any
+  sound?: string
 }
 
 const sendNotificationMessageRequest = ({

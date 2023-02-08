@@ -27,7 +27,8 @@ import {
   getFieldName,
 } from "../functions";
 //HOC
-import { withColors } from "../hoc";
+import { withColors, withConfig, withUserName } from "../hoc";
+import { sendNotificationMessage } from "../hooks/sendNotificationMessage";
 
 const Component = ({
   data,
@@ -39,7 +40,9 @@ const Component = ({
   onPressCancel,
   onPressClose,
   allowSecongAuthStrategy,
-  colors
+  colors,
+  userName,
+  config
 }) => {
 
   //INITIAL STATES
@@ -61,9 +64,14 @@ const Component = ({
   const [countDown, setCountDown] = useState(30)
   const [isCountDownRunning, setIsCountDownRunning] = useState(false)
   const [sendCount, setSendCount] = useState(0)
+  const [mfaCodes, setMFACodes] = useState<string[]>([])
   const translationView = useRef(new Animated.Value(0)).current;
 
   const rnBiometrics = new ReactNativeBiometrics()
+
+  //HOOKS CALLS
+  const { mutate: mutateSendNotificationMessage, isSuccess: isSuccessSendNotificationMessage } =
+    sendNotificationMessage()
 
   //EFFECTS
   useEffect(() => {
@@ -163,6 +171,24 @@ const Component = ({
     }
   }, [isFirstAuthStrategyApproved])
 
+  useEffect(() => {
+    setIsSecondAuthStrategyApproved(false)
+    if (secondAuthStrategyValue.length < 7) {
+      return
+    }
+    if (mfaCodes.includes(secondAuthStrategyValue)) {
+      setIsSecondAuthStrategyApproved(true)
+    }
+  }, [secondAuthStrategyValue])
+
+  useEffect(() => {
+    if (isSecondAuthStrategyApproved) {
+      setTimeout(() => {
+        process()
+      }, 1000)
+    }
+  }, [isSecondAuthStrategyApproved])
+
   const startCountDown = () => {
     if (isCountDownRunning) {
       return
@@ -183,24 +209,6 @@ const Component = ({
       setSendCount(value => value + 1)
     }, 2000)
   }
-
-  useEffect(() => {
-    setIsSecondAuthStrategyApproved(false)
-    if (secondAuthStrategyValue.length < 7) {
-      return
-    }
-    if (secondAuthStrategyValue === 'qwertyu') {
-      setIsSecondAuthStrategyApproved(true)
-    }
-  }, [secondAuthStrategyValue])
-
-  useEffect(() => {
-    if (isSecondAuthStrategyApproved) {
-      setTimeout(() => {
-        process()
-      }, 1000)
-    }
-  }, [isSecondAuthStrategyApproved])
 
   return (
     <Modal
@@ -680,6 +688,14 @@ const Component = ({
                       marginTop: 5
                     }}
                     onPress={() => {
+                      const mfaCode = String((Math.random() * (9999999 - 1000000 + 1) + 1000000).toFixed(0))
+                      console.log('mfaCode', mfaCode)
+                      setMFACodes([...mfaCodes, mfaCode])
+                      mutateSendNotificationMessage({
+                        userNames: [userName],
+                        title: 'MFA Code',
+                        content: mfaCode
+                      })
                       startCountDown()
                     }}
                   >
@@ -690,7 +706,7 @@ const Component = ({
                         textDecorationLine: 'underline'
                       }}
                     >
-                      {'resend '}
+                      {'resend'}
                     </Text>
                   </TouchableOpacity>
                 }
@@ -715,24 +731,26 @@ const Component = ({
                           textDecorationLine: 'underline'
                         }}
                       >
-                        {'resend by SMS '}
+                        {'resend by SMS'}
                       </Text>
                     </TouchableOpacity>
-                    <TouchableOpacity
-                      onPress={() => {
-                        startCountDown()
-                      }}
-                    >
-                      <Text
-                        style={{
-                          fontSize: 16,
-                          color: colors.text,
-                          textDecorationLine: 'underline'
+                    {config?.email !== undefined &&
+                      <TouchableOpacity
+                        onPress={() => {
+                          startCountDown()
                         }}
                       >
-                        {'resend by email '}
-                      </Text>
-                    </TouchableOpacity>
+                        <Text
+                          style={{
+                            fontSize: 16,
+                            color: colors.text,
+                            textDecorationLine: 'underline'
+                          }}
+                        >
+                          {'resend by email'}
+                        </Text>
+                      </TouchableOpacity>
+                    }
                   </View>
                 }
               </View>
@@ -812,4 +830,4 @@ const Component = ({
   )
 };
 
-export default React.memo(compose(withColors)(Component));
+export default React.memo(compose(withColors, withUserName, withConfig)(Component));

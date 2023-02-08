@@ -347,7 +347,7 @@ const Component = ({
     )
 };
 
-export default React.memo(withColors(Component));
+export default React.memo(compose(withColors)(Component));
 
 const getPossibleValues = (possibleValues, values) => {
     let newPossibleValues: string[] = []

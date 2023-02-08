@@ -1,5 +1,5 @@
 const initialState = {
-    assets: {}
+    assets: {},
 };
 
 const reducer = (state = initialState, action) => {
@@ -8,15 +8,24 @@ const reducer = (state = initialState, action) => {
         if (assets[action.payload.id] === undefined) {
             assets[action.payload.id] = {}
         }
+        let update = false
         if (action.payload.imageAsset !== undefined) {
-            assets[action.payload.id] = { ...assets[action.payload.id], imageAsset: action.payload.imageAsset }
+            if (assets[action.payload.id].imageAsset === undefined) {
+                assets[action.payload.id] = { ...assets[action.payload.id], imageAsset: action.payload.imageAsset }
+                update = true
+            }
         }
         if (action.payload.videoAsset !== undefined) {
-            assets[action.payload.id] = { ...assets[action.payload.id], videoAsset: action.payload.videoAsset }
+            if (assets[action.payload.id].videoAsset === undefined) {
+                assets[action.payload.id] = { ...assets[action.payload.id], videoAsset: action.payload.videoAsset }
+                update = true
+            }
         }
-        return Object.assign({}, state, {
-            token: state.assets = assets,
-        });
+        if (update) {
+            return Object.assign({}, state, {
+                token1: state.assets = assets,
+            });
+        }
     }
     return state;
 }

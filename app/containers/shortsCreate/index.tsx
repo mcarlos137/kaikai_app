@@ -6,6 +6,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { compose } from 'redux'
 import { StackActions } from '@react-navigation/native';
 import uuid from 'react-native-uuid';
+import { createThumbnail } from 'react-native-create-thumbnail';
 //STORES
 import { store as mediaStore } from '../../main/stores/media';
 //COMPONENTS
@@ -18,7 +19,6 @@ import { handleChooseDocument } from '../../main/functions';
 import { withColors, withUserName } from '../../main/hoc';
 //HOOKS
 import { createShort } from '../../main/hooks/createShort';
-import { createThumbnail } from 'react-native-create-thumbnail';
 
 const ShortsCreateScreen = ({ navigation, route, colors, userName }) => {
 

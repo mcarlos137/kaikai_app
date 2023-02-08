@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Image, Linking, StyleSheet, Text, View } from "react-native";
-import { Camera } from "react-native-vision-camera";
+//import { Camera } from "react-native-vision-camera";
 //CONSTANTS
 import { CONTENT_SPACING, SAFE_AREA_PADDING } from '../../constants/camera';
 

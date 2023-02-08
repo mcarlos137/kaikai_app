@@ -35,8 +35,6 @@
 				</dict>
 			</dict>
 		</dict>
-		<key>NSLocationWhenInUseUsageDescription</key>
-		<string></string>
 		<key>UIAppFonts</key>
 		<array>
 			<string>AntDesign.ttf</string>
@@ -47,6 +45,7 @@
 			<string>FontAwesome5_Brands.ttf</string>
 			<string>FontAwesome5_Regular.ttf</string>
 			<string>FontAwesome5_Solid.ttf</string>
+			<string>Fontisto.ttf</string>
 			<string>Foundation.ttf</string>
 			<string>Ionicons.ttf</string>
 			<string>MaterialIcons.ttf</string>
@@ -61,18 +60,6 @@
 		<array>
 			<string>armv7</string>
 		</array>
-		<key>NSCameraUsageDescription</key>
-		<string>Your message to user when the camera is accessed for the first time</string>
-		<key>NSFaceIDUsageDescription</key>
-		<string></string>
-	
-		<!-- Include this only if you are planning to use the camera roll -->
-		<key>NSPhotoLibraryUsageDescription</key>
-		<string>Your message to user when the photo library is accessed for the first time</string>
-
-		<!-- Include this only if you are planning to use the microphone for video recording -->
-		<key>NSMicrophoneUsageDescription</key>
-		<string>Your message to user when the microsphone is accessed for the first time</string>
 		<key>UISupportedInterfaceOrientations</key>
 		<array>
 			<string>UIInterfaceOrientationPortrait</string>
@@ -81,5 +68,35 @@
 		</array>
 		<key>UIViewControllerBasedStatusBarAppearance</key>
 		<false />
+		<key>NSFaceIDUsageDescription</key>
+		<string></string>
+		<key>NSPhotoLibraryUsageDescription</key>
+		<string>Your message to user when the photo library is accessed for the first time</string>
+		<key>NSCameraUsageDescription</key>
+		<string>Camera permission description</string>
+		<key>NSLocationWhenInUseUsageDescription</key>
+		<string></string>
+		<key>NSMicrophoneUsageDescription</key>
+		<string>Microphone permission description</string>
+		<key>NSAppleMusicUsageDescription</key>
+		<string>see music</string>
+		<key>NSCalendarsUsageDescription</key>
+		<string>calendar</string>
+		<key>NSContactsUsageDescription</key>
+		<string>Your message to user when the contacts is accessed for the first time</string>
+		<key>NSLocationAlwaysUsageDescription</key>
+		<string>Detect the location of the user to show this position in de maps</string>
+		<key>NSLocationUsageDescription</key>
+		<string>Detect the location of the user to show on the map in which kaikai points of sale are also shown</string>
+		<key>NSMotionUsageDescription</key>
+		<string>motion</string>
+		<key>NSPhotoLibraryAddUsageDescription</key>
+		<string>would like to save photos to your photo gallery</string>
+		<key>NSSiriUsageDescription</key>
+		<string>siri</string>
+		<key>NSSpeechRecognitionUsageDescription</key>
+		<string>speesh recognition</string>
+	
+
 	</dict>
 </plist>

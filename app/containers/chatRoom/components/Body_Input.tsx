@@ -11,7 +11,8 @@ import {
     Alert,
     KeyboardAvoidingView,
     TouchableWithoutFeedback,
-    Dimensions
+    Dimensions,
+    NativeModules
 } from 'react-native';
 import { compose } from 'redux';
 import EmojiSelector, { Categories } from "react-native-emoji-selector";
@@ -20,8 +21,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Firestore from '@react-native-firebase/firestore'
 import { StackActions } from '@react-navigation/native';
 import { connect } from 'react-redux';
-import AudioRecorderPlayer from 'react-native-audio-recorder-player';
-import RNFetchBlob from 'rn-fetch-blob';
+//import AudioRecorderPlayer from 'react-native-audio-recorder-player';
 //STORES
 import { store as chatStore } from '../../../main/stores/chat';
 //HOC
@@ -50,16 +50,16 @@ const ConnectedComponent = ({
     const [audioRecord, setAudioRecord] = useState({})
 
     //AUDIO RECORDER
-    const audioRecorderPlayer = new AudioRecorderPlayer();
+    /*const audioRecorderPlayer = new AudioRecorderPlayer();
     const dirs = RNFetchBlob.fs.dirs;
     const path = (time) => Platform.select({
         ios: time + '_sound.m4a',
         android: `${dirs.CacheDir}/` + time + '_sound.mp3',
-    });
+    });*/
 
     //FUNCTIONS
     const onStartRecord = async () => {
-        const result = await audioRecorderPlayer.startRecorder(path(new Date().toISOString()));
+        /*const result = await audioRecorderPlayer.startRecorder(path(new Date().toISOString()));
         audioRecorderPlayer.addRecordBackListener((e) => {
             setAudioRecord({
                 recordSecs: e.currentPosition,
@@ -70,16 +70,16 @@ const ConnectedComponent = ({
             return;
         });
         chatStore.dispatch({ type: 'SET_AUDIO_ASSET', payload: { uri: result } })
-        console.log('onStartRecord', { uri: result });
+        console.log('onStartRecord', { uri: result });*/
     };
 
     const onStopRecord = async () => {
-        const result = await audioRecorderPlayer.stopRecorder();
+        /*const result = await audioRecorderPlayer.stopRecorder();
         audioRecorderPlayer.removeRecordBackListener();
         setAudioRecord({
             recordSecs: 0,
         });
-        console.log('onStopRecord', result);
+        console.log('onStopRecord', result);*/
     };
 
     //CALLBACKS
@@ -162,7 +162,7 @@ const ConnectedComponent = ({
     }, [])
 
     const onPressCamera = useCallback(() => {
-        navigation.dispatch(StackActions.push('CameraBridgeScreen', { ...route.params }))
+        //navigation.dispatch(StackActions.push('CameraBridgeScreen', { ...route.params }))
         //cameraStore.dispatch({ type: SET_CAMERA_SOURCE, payload: 'ChatRoomScreen' });
         //navigateStore.dispatch({ type: NAVIGATE, payload: { target: 'CameraScreen', redirectToTarget: 'ChatRoomScreen' } });
     }, [])

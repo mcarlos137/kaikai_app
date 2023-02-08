@@ -26,6 +26,7 @@ const sendToPaymentRequest = ({
   };
   if (paymentType !== null) body.paymentType = paymentType
   if (description !== '') body.description = description
+  console.log('body', body)
   return request({ url: `/mcUser/sendToPaymentNew`, method: 'post', data: body })
 }
 

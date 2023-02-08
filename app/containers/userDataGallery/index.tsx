@@ -7,11 +7,11 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { StackActions } from '@react-navigation/native';
 import Ionicons from "react-native-vector-icons/Ionicons";
 //STORES
-import { store as mediaStore, persistor as mediaPersistor } from '../../main/stores/media';
+import { store as mediaStore } from '../../main/stores/media';
 //COMPONENTS
 import ViewEmptyList from '../../main/components/ViewEmptyList'
 import ActionSheetDocument from '../../main/components/ActionSheetDocument';
-import Body_Image from '../../main/components/Body_Image'
+import Body_Image from './components/Body_image'
 //HOOKS
 import { getConfigGallery } from '../../main/hooks/getConfigGallery';
 import { addUserAttachment } from '../../main/hooks/addUserAttachment';
@@ -102,6 +102,16 @@ const UserDataGalleryScreen = ({ navigation, route, colors, userName }) => {
       })
     }
   }, [])
+
+  useEffect(() => {
+    const assetsBatchControl: string[] = []
+    dataConfigGallery.map(item => {
+      if(mediaStore.getState().assets[item.name] === undefined) {
+        assetsBatchControl.push(item.name)
+      } 
+    })
+    //mediaStore.dispatch({ type: 'SET_ASSETS_BATCH_CONTROL', payload: assetsBatchControl })
+  }, [dataConfigGallery])
 
   //MEMOS
   const data = useMemo(() => {
@@ -204,29 +214,23 @@ const UserDataGalleryScreen = ({ navigation, route, colors, userName }) => {
             }
             {data[type]?.length > 0 && data[type]?.map((item, index) => {
               return (
-                <TouchableOpacity
+                <Fragment
                   key={index}
-                  onPress={() => {
-                    setTimeout(() => {
-                      console.log('WAIT')
-                      navigation.dispatch(StackActions.push('UserDataGalleryViewScreen', { ...route.params, selectedGalleryItem: item }))
-                    }, 0)
-                  }}
-                  activeOpacity={0.9}
                 >
-                  <Provider store={mediaStore} >
-                    <PersistGate loading={null} persistor={mediaPersistor}>
-                      <Body_Image
-                        path={'/attachment/getUserFile/' + selectedUserName + '/' + item.name}
-                        width={data[type].length === 0 ? 0 : data[type].length <= 4 && data[type].length > 0 ? 160 : data[type].length > 4 && data[type].length <= 20 ? 120 : 80}
-                        height={data[type].length === 0 ? 0 : data[type].length <= 4 && data[type].length > 0 ? 160 : data[type].length > 4 && data[type].length <= 20 ? 120 : 80}
-                        fileName={item.name}
-                        inType={item.type}
-                        outType={'image'}
-                      />
-                    </PersistGate>
-                  </Provider>
-                </TouchableOpacity>
+                  <Body_Image
+                    userName={selectedUserName}
+                    fileName={item.name}
+                    type={item.type}
+                    width={data[type].length === 0 ? 0 : data[type].length <= 4 && data[type].length > 0 ? 160 : data[type].length > 4 && data[type].length <= 20 ? 120 : 80}
+                    height={data[type].length === 0 ? 0 : data[type].length <= 4 && data[type].length > 0 ? 160 : data[type].length > 4 && data[type].length <= 20 ? 120 : 80}
+                    onPress={() => {
+                      setTimeout(() => {
+                        console.log('WAIT')
+                        navigation.dispatch(StackActions.push('UserDataGalleryViewScreen', { ...route.params, selectedGalleryItem: item }))
+                      }, 0)
+                    }}
+                  />
+                </Fragment>
               )
             })}
           </View>

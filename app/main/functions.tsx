@@ -2,7 +2,7 @@ import { Alert, Platform } from "react-native";
 import Share from "react-native-share";
 import { request, PERMISSIONS, check, RESULTS } from "react-native-permissions";
 import { launchCamera, launchImageLibrary } from "react-native-image-picker";
-//import ImagePicker from "react-native-image-picker";
+import storage from '@react-native-firebase/storage';
 //CONSTANTS
 import { Currency, currencies as currenciesParams } from "../constants/currenciesParams";
 import { months } from "../constants/time";
@@ -848,3 +848,31 @@ export const getIconName: any = (balanceOperationType) => {
       return 'exchange'
   }
 }
+
+export const uploadImageFirebaseStorage = async (image, setUploading, setTransferred, setImage) => {
+  const { uri } = image;
+  const filename = uri.substring(uri.lastIndexOf('/') + 1);
+  const uploadUri = Platform.OS === 'ios' ? uri.replace('file://', '') : uri;
+  setUploading(true);
+  setTransferred(0);
+  const task = storage()
+    .ref(filename)
+    .putFile(uploadUri);
+  // set progress state
+  task.on('state_changed', snapshot => {
+    setTransferred(
+      Math.round(snapshot.bytesTransferred / snapshot.totalBytes) * 10000
+    );
+  });
+  try {
+    await task;
+  } catch (e) {
+    console.error(e);
+  }
+  setUploading(false);
+  Alert.alert(
+    'Photo uploaded!',
+    'Your photo has been uploaded to Firebase Cloud Storage!'
+  );
+  setImage(null);
+};

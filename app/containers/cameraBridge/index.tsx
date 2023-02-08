@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View } from 'react-native';
-import { Camera, CameraPermissionStatus } from 'react-native-vision-camera';
+//import { Camera, CameraPermissionStatus } from 'react-native-vision-camera';
 
 const CameraBridgeScreen = ({ navigation, route }) => {
 

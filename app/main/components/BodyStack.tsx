@@ -19,7 +19,7 @@ const Component = ({ name, children, navigation, route, colors }) => {
             style={{
                 flex: 1,
                 backgroundColor: name === 'Social' ? 'black' : colors.background,
-                marginTop: Platform.OS === 'android' ? 60 : 0
+                paddingTop: Platform.OS === 'android' ? 60 : 0
             }}
         >
             <SafeAreaView style={{ marginBottom: 40 }} />

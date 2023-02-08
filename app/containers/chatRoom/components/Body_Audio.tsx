@@ -10,9 +10,9 @@ import {
   Image
 } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import WaveForm from 'react-native-audiowaveform';
+//import WaveForm from 'react-native-audiowaveform';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import PhotoEditor from '@baronha/react-native-photo-editor';
+//import PhotoEditor from '@baronha/react-native-photo-editor';
 import Video from 'react-native-video';
 import { compose } from 'redux';
 //import ImageViewer from 'react-native-image-zoom-viewer';
@@ -52,7 +52,7 @@ const ConnectedComponent = ({
           }}
         >
           {/*console.log('uri', audioAsset.uri)*/}
-          <WaveForm
+          {/*<WaveForm
             source={{ uri: audioAsset.uri }}
             //source={{uri:'https://url/path/to/the/file.mp3'}}
             waveFormStyle={{waveColor:'red', scrubColor:'blue'}}
@@ -62,7 +62,7 @@ const ConnectedComponent = ({
               width: 100
             }}
             onPress = {(sender) => console.log('sender', sender) }
-          />
+          />*/}
           {/*mediaAsset.type.includes('image') &&
             <FastImage
               source={{

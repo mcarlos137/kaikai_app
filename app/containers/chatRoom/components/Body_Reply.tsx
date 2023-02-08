@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import PhotoEditor from '@baronha/react-native-photo-editor';
+//import PhotoEditor from '@baronha/react-native-photo-editor';
 import Video from 'react-native-video';
 import { compose } from 'redux';
 //import ImageViewer from 'react-native-image-zoom-viewer';

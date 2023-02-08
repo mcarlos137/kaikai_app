@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import React, { ReactNode, Fragment } from 'react';
 import { View, Image, StyleSheet, Text, TouchableOpacity, GestureResponderEvent } from 'react-native';
 import { compose } from 'redux';
 //FUNCTIONS
@@ -34,14 +34,14 @@ const Steps = ({
                 ]}>
                 {[...Array(totalSteps - 1)].map((e, i) => {
                     return (
-                        <React.Fragment key={i}>
+                        <Fragment key={i}>
                             <Image
                                 source={i + 1 < activeStep ? getRequire('STEP_DONE') : i + 1 == activeStep ? getRequire('STEP_CURRENT') : getRequire('STEP_NEXT')}
                                 style={[styles.stepIcon, { backgroundColor: colors.primaryBackground }]}
                                 resizeMode="contain"
                             />
                             <View style={[styles.lineSteps, { backgroundColor: (i + 1 <= activeStep - 1 ? lineDone : lineNext) }]} />
-                        </React.Fragment>
+                        </Fragment>
                     )
                 })}
                 <Image

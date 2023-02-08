@@ -8,14 +8,14 @@ import {
   TouchableOpacity,
   Dimensions
 } from 'react-native';
-import {
+/*import {
   mediaDevices,
   RTCPeerConnection,
   RTCIceCandidate,
   RTCSessionDescription,
   MediaStream,
   RTCView
-} from 'react-native-webrtc';
+} from 'react-native-webrtc';*/
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Firestore from '@react-native-firebase/firestore';
 import { StackActions } from '@react-navigation/native';
@@ -123,7 +123,7 @@ const CameraStreamScreen = ({ navigation, route }) => {
       }
     };
     let lms;
-    try {
+    /*try {
       const mediaStream = await mediaDevices.getUserMedia(mediaConstraints);
       if (!video) {
         let videoTrack = await mediaStream.getVideoTracks()[0];
@@ -133,7 +133,7 @@ const CameraStreamScreen = ({ navigation, route }) => {
       lms = mediaStream;
     } catch (err) {
       // Handle Error
-    };
+    };*/
     // Add our stream to the peer connection.
     lms.getTracks().forEach(track => peerConnection.current.addTrack(track, lms))
     setLocalMediaStream(lms)
@@ -319,7 +319,8 @@ const CameraStreamScreen = ({ navigation, route }) => {
           </View>}
       </View>
       {videoStatus === 'on' && remoteMediaStream !== null &&
-        <RTCView
+        <>
+          {/*<RTCView
           streamURL={remoteMediaStream.toURL()}
           //objectFit={'contain'}
           objectFit={'cover'}
@@ -331,7 +332,8 @@ const CameraStreamScreen = ({ navigation, route }) => {
             top: 0,
             left: 0
           }}
-        />
+        />*/}
+        </>
       }
       <View
         style={{
@@ -345,12 +347,14 @@ const CameraStreamScreen = ({ navigation, route }) => {
         }}
       >
         {videoStatus === 'on' && localMediaStream !== null &&
-          <RTCView
+          <>
+            {/*<RTCView
             streamURL={localMediaStream.toURL()}
             objectFit={'cover'}
             zOrder={1}
             style={{ width: '100%', flex: 1 }}
-          />
+      />*/}
+          </>
         }
       </View>
     </SafeAreaView>

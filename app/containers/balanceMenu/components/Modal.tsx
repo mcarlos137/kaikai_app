@@ -47,7 +47,7 @@ const Component = ({ isVisible, title, buttons, onPressClose, colors }) => {
       backdropColor={'#000'}
       backdropOpacity={0.7}
       animationIn='slideInRight'
-      animationOut='slideOutRight'
+      animationOut='slideOutLeft'
       animationInTiming={500}
       animationOutTiming={500}
       backdropTransitionInTiming={500}

@@ -1,5 +1,5 @@
 import React from 'react'
-import { Platform } from 'react-native'
+import { Platform, } from 'react-native'
 import FastImage from 'react-native-fast-image';
 import RNFetchBlob from 'rn-fetch-blob';
 import { createThumbnail } from 'react-native-create-thumbnail';

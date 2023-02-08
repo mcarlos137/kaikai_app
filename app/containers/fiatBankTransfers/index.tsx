@@ -39,6 +39,10 @@ const FiatBankTransfersScreen = ({ navigation, route, colors, userName, config, 
   const [financialType, setFinancialType] = useState<any>(null)
   const [allowedOwnership, setAllowedOwnership] = useState('own')
   const [addPaymentAsFrequent, setAddPaymentAsFrequent] = useState(true)
+  const [paymentType, setPaymentType] = useState<any>(null)
+  const [minOperationAmount, setMinOperationAmount] = useState(0)
+  const [maxOperationAmount, setMaxOperationAmount] = useState(0)
+  const [isFinalRequest, setIsFinalRequest] = useState(false)
   const isMounted = useRef(false)
 
   //HOOKS CALLS
@@ -51,7 +55,7 @@ const FiatBankTransfersScreen = ({ navigation, route, colors, userName, config, 
   const { mutate: mutateAddPayment } =
     addPayment()
 
-  const { mutate: mutateSendToPayment, isSuccess: isSuccessSendToPayment, isError: isErrorSendToPayment } =
+  const { mutate: mutateSendToPayment, isSuccess: isSuccessSendToPayment, isError: isErrorSendToPayment, data: dataSendToPayment } =
     sendToPayment()
 
   const { data: dataCharges, error: errorCharges, isLoading: isLoadingCharges } =
@@ -70,8 +74,16 @@ const FiatBankTransfersScreen = ({ navigation, route, colors, userName, config, 
     console.log('FiatBankTransfersScreen', route.params);
     if (route?.params?.selectedPayment !== undefined) {
       setPayment(route.params.selectedPayment)
+      setCurrency(route.params.selectedCurrency)
       setActiveStep(3)
-      //SEND TO PAYMENT ACTION
+      mutateSendToPayment({
+        userName: userName,
+        currency: route.params.selectedCurrency.value,
+        amount: 1,
+        payment: route.params.selectedPayment,
+        description: '',
+        paymentType: null
+      })
     }
   }, []);
 
@@ -143,11 +155,16 @@ const FiatBankTransfersScreen = ({ navigation, route, colors, userName, config, 
     }
   }, [financialType, allowedOwnership])
 
-  //MEMOS
-  const minAmount = useMemo(() =>
-    10
-    , [dataCharges, currency])
+  useEffect(() => {
+    console.log('>>>>>>>>>', dataSendToPayment)
+    if (paymentType === null && dataSendToPayment?.data !== undefined) {
+      setPaymentType(dataSendToPayment.data.split('____')[0])
+      setMinOperationAmount(dataSendToPayment.data.split('____')[1].split('__')[0])
+      setMaxOperationAmount(dataSendToPayment.data.split('____')[1].split('__')[1])
+    }
+  }, [dataSendToPayment])
 
+  //MEMOS
   const maxAmount = useMemo(() =>
     dataCharges?.COMMISSION?.maxOperationAmount !== undefined ? dataCharges.COMMISSION.maxOperationAmount : currency.availableBalance
     , [dataCharges, currency])
@@ -219,18 +236,6 @@ const FiatBankTransfersScreen = ({ navigation, route, colors, userName, config, 
     if (newAmount > Number(maxAmount)) {
       newAmount = Number(maxAmount)
     }
-    /*let offLimits = false
-    if (Number(payment?.minPerOperationAmount) > Number(rawText)) {
-      setAmount(Number(payment.minPerOperationAmount))
-      offLimits = true
-    }
-    if (Number(payment?.maxPerOperationAmount) < Number(rawText)) {
-      setAmount(Number(payment.maxPerOperationAmount))
-      offLimits = true
-    }
-    if (!offLimits) {
-      setAmount(Number(rawText))
-    }*/
     setAmount(newAmount)
   }, [maxAmount])
 
@@ -241,7 +246,7 @@ const FiatBankTransfersScreen = ({ navigation, route, colors, userName, config, 
       marginTop: 5,
       color: colors.text
     }}>
-      {value !== '0.00' ? 'Minimum to transfer - ' + currency.symbol + ' ' + value : 'You have to buy/sell or receive first'}
+      {value !== '0.00' ? 'Minimum to transfer  ' + currency.symbol + ' ' + value : 'You have to buy/sell or receive first'}
     </Text>
   ), [currency])
 
@@ -252,7 +257,7 @@ const FiatBankTransfersScreen = ({ navigation, route, colors, userName, config, 
       marginTop: 5,
       color: colors.text
     }}>
-      {value !== '0.00' ? 'Maximum to transfer - ' + currency.symbol + ' ' + value : 'You have to buy/sell or receive first'}
+      {value !== '0.00' ? 'Maximum to transfer  ' + currency.symbol + ' ' + value : 'You have to buy/sell or receive first'}
     </Text>
   ), [currency])
 
@@ -261,6 +266,15 @@ const FiatBankTransfersScreen = ({ navigation, route, colors, userName, config, 
   }, [])
 
   const onPressTransfer = useCallback(() => {
+    if (amount < minOperationAmount || amount > maxOperationAmount) {
+      Alert.alert(
+        "Operation Error",
+        "Yo need to enter an " + 'AMOUNT' +
+        " between min and max to complete operation.",
+        [{ text: "Ok" }]
+      );
+      return
+    }
     setIsVisibleModalTransaction(validateConfirmationModalTransaction(
       [
         { name: 'AMOUNT', value: amount, type: 'NUMERIC' },
@@ -310,17 +324,27 @@ const FiatBankTransfersScreen = ({ navigation, route, colors, userName, config, 
       ]);
       return
     }
+    mutateSendToPayment({
+      userName: userName,
+      currency: currency.value,
+      amount: 1,
+      payment: payment,
+      description: '',
+      paymentType: null
+    })
     setActiveStep(step => step + 1)
-  }, [payment, financialType])
+  }, [payment, financialType, currency, amount, payment, description])
 
   const process = () => {
+    console.log('paymentType', paymentType)
+    setIsFinalRequest(true)
     mutateSendToPayment({
       userName: userName,
       currency: currency.value,
       amount: amount,
       payment: payment,
       description: description,
-      paymentType: null
+      paymentType: paymentType
     })
   }
 
@@ -495,12 +519,12 @@ const FiatBankTransfersScreen = ({ navigation, route, colors, userName, config, 
               onChangeText={onValueChangeAmount}
             />
             <Body_TextRight
-              value={minAmount}
+              value={minOperationAmount}
               decimalScale={currency.decimals}
               renderText={renderTextMin}
             />
             <Body_TextRight
-              value={maxAmount}
+              value={maxOperationAmount}
               decimalScale={currency.decimals}
               renderText={renderTextMax}
             />
@@ -518,7 +542,7 @@ const FiatBankTransfersScreen = ({ navigation, route, colors, userName, config, 
         isVisible={isVisibleModalTransaction}
         label={'BANK TRANSFER'}
         process={process}
-        isSuccess={isSuccessSendToPayment}
+        isSuccess={isSuccessSendToPayment && isFinalRequest}
         isError={isErrorSendToPayment}
         onPressClose={onPressClose}
         onPressCancel={onPressCancel}
