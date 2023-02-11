@@ -19,9 +19,10 @@ import { StackActions } from '@react-navigation/native';
 //COMPONENTS
 import BodyList from '../../main/components/BodyList';
 import Body_ImageVideo from '../../main/components/Body_ImageVideo';
-import Body_Image from '../../main/components/Body_Image';
 //HOC
-import { withColors, withUserName } from '../../main/hoc';
+import { withColors, withHmacInterceptor, withUserName } from '../../main/hoc';
+//TOOLS
+import httpRequest from '../../tools/httpRequest';
 
 //CONSTANTS
 const INSTRUCTIONS = [
@@ -30,7 +31,7 @@ const INSTRUCTIONS = [
   { text: 'Accept donations from other users, provide the possibility to create paid calls with you and present your broadcastings and advidors.', iconName: '' },
 ]
 
-const ShortsScreen = ({ navigation, route, colors, userName }) => {
+const ShortsScreen = ({ navigation, route, colors, userName, hmacInterceptor }) => {
 
   //HOOKS CALLS
   const {
@@ -282,10 +283,19 @@ const ShortsScreen = ({ navigation, route, colors, userName }) => {
         >
           <Provider store={mediaStore} >
             <PersistGate loading={null} persistor={mediaPersistor}>
-              <Body_Image
-                path={'/shorts/getAttachment/' + item.videoFileName}
+              <Body_ImageVideo
+                source={'moneyclick'}
+                uri={'https://service8081.moneyclick.com/shorts/getAttachment/' + item.videoFileName}
+                headers={hmacInterceptor?.process(
+                  httpRequest.create(
+                    'https://service8081.moneyclick.com',
+                    '/shorts/getAttachment/' + item.videoFileName,
+                    'GET',
+                    null,
+                    false
+                  )).headers}
                 width={80}
-                height={80}
+                aspectRatioType={'square'}
                 fileName={item.assetId}
                 inType={'video'}
                 outType={'image'}
@@ -419,7 +429,7 @@ const ShortsScreen = ({ navigation, route, colors, userName }) => {
           disabled={mediaStore.getState().assets[item.assetId] === undefined}
           onPress={() => {
             //console.log('>>>>>>>>>>>>', { ...item, asset: mediaStore.getState().assets[item.assetId].videoAsset })
-            navigation.dispatch(StackActions.push('ShortsVideoScreen', { ...route.params, selectedShort: { ...item, asset: mediaStore.getState().assets[item.assetId].videoAsset } }))
+            navigation.dispatch(StackActions.push('ShortsVideoScreen', { ...route.params, selectedShort: { ...item, assetId: item.assetId } }))
           }}
         >
           <MaterialCommunityIcons
@@ -484,4 +494,4 @@ const ShortsScreen = ({ navigation, route, colors, userName }) => {
   );
 };
 
-export default React.memo(compose(withColors, withUserName)(ShortsScreen));
+export default React.memo(compose(withColors, withUserName, withHmacInterceptor)(ShortsScreen));

@@ -12,6 +12,9 @@ import {
     Alert,
     Animated
 } from 'react-native';
+import { Provider } from 'react-redux';
+import { PersistGate } from 'redux-persist/integration/react';
+import storage from '@react-native-firebase/storage';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { connect } from "react-redux";
 import Moment from 'moment';
@@ -23,12 +26,15 @@ import FastImage from 'react-native-fast-image';
 import { Avatar } from '@rneui/themed';
 //import { SliderSound } from './SliderSound';
 import { compose } from 'redux';
-//STORE
+//STORES
 import { store as chatStore } from '../../../main/stores/chat';
+import { store as mediaStore, persistor as mediaPersistor } from '../../../main/stores/media';
 //HOC
 import { withColors, withHmacInterceptor, withNavigation, withRoute, withUserName } from '../../../main/hoc';
 //TOOLS
 import httpRequest from '../../../tools/httpRequest';
+//COMPONENTS
+import Body_ImageVideo from '../../../main/components/Body_ImageVideo';
 
 const AnimatedTouchableOpacity = Animated.createAnimatedComponent(
     TouchableOpacity
@@ -315,36 +321,43 @@ const ConnectedComponent = ({
                             [{ backgroundColor: colors.primaryBackground, padding: 5, borderRadius: 5, marginLeft: 10, borderWidth: 2, borderColor: colors.primaryBackground }, selectedMessages.includes(item.item.timestamp) && { borderColor: '#009387' }]
                     }
                 >
-                    {item?.item?.mediaAsset !== undefined && item?.item?.mediaAsset.type.includes('image') &&
-                        <FastImage
-                            source={{
-                                uri: item.item.mediaAsset.uri,
-                            }}
-                            style={{
-                                marginBottom: 5,
-                                alignSelf: 'center',
-                                width: 180,
-                                height: 180 * item.item.mediaAsset.height / item.item.mediaAsset.width
-                            }}
-                        />}
-                    {item?.item?.mediaAsset !== undefined && item?.item?.mediaAsset.type.includes('video') &&
-                        <Video
-                            source={{
-                                uri: item.item.mediaAsset.uri,
-                            }}
-                            paused={true}
-                            controls={true}
-                            resizeMode='cover'
-                            onError={(error) => {
-                                //console.log('>>>>>>>>>>>>> ' + JSON.stringify(error))
-                            }}
-                            style={{
-                                height: 250 * item.item.mediaAsset.height / item.item.mediaAsset.width,
-                                width: 250,
-                                alignSelf: 'center',
-                                marginBottom: 5,
-                            }}
-                        />}
+                    {item?.item?.mediaAsset !== undefined &&
+                        <Provider store={mediaStore} >
+                            <PersistGate loading={null} persistor={mediaPersistor}>
+                                {item.item.senderUserName === userName ?
+                                    <Body_ImageVideo
+                                        source={'internal'}
+                                        uri={item?.item?.mediaAsset?.uri}
+                                        width={item?.item?.mediaAsset.type.includes('image') ? 180 : 250}
+                                        aspectRatioType={'square'}
+                                        fileName={route.params.selectedChatRoom.chatRoom + '_' + item.item.timestamp}
+                                        inType={item?.item?.mediaAsset.type.includes('image') ? 'image' : 'video'}
+                                        outType={item?.item?.mediaAsset.type.includes('image') ? 'image' : 'video'}
+                                        videoProps={item?.item?.mediaAsset.type.includes('image') ? undefined : {
+                                            paused: true,
+                                            controls: true
+                                        }}
+                                        firebaseUploadRef={'/chat/' + route.params.selectedChatRoom.chatRoom + '/assets/' + item.item.timestamp}
+                                    />
+                                    :
+                                    <Body_ImageVideo
+                                        source={'firebase'}
+                                        uri={'/chat/' + userName + '/assets/' + '11.png'}
+                                        width={item?.item?.mediaAsset.type.includes('image') ? 180 : 250}
+                                        aspectRatioType={'square'}
+                                        fileName={route.params.selectedChatRoom.chatRoom + '_' + item.item.timestamp}
+                                        inType={item?.item?.mediaAsset.type.includes('image') ? 'image' : 'video'}
+                                        outType={item?.item?.mediaAsset.type.includes('image') ? 'image' : 'video'}
+                                        videoProps={item?.item?.mediaAsset.type.includes('image') ? undefined : {
+                                            paused: true,
+                                            controls: true
+                                        }}
+                                    />
+                                }
+
+                            </PersistGate>
+                        </Provider>
+                    }
                     {item.item.text.trim() !== '' &&
                         <Text
                             style={[styles.txtMessage, { color: colors.text }]}

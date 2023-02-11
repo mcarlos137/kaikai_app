@@ -85,7 +85,7 @@ import CryptoSendScreen from "../app/containers/cryptoSend";
 import FastChangeScreen from "../app/containers/fastChange";
 
 import MoneyMarketScreen from "../app/containers/moneyMarket";
-import OrderBookScreen from "../app/containers/orderBook";
+import OrdersBookScreen from "../app/containers/ordersBook";
 
 import SettingsScreen from "../app/containers/settings";
 
@@ -143,7 +143,7 @@ import { useTheme } from "react-native-paper";
 const RootStack = createStackNavigator();
 
 const RootStackScreen = ({ }) => {
-  const { colors } = useTheme()
+  const { colors } = useTheme<any>()
   const navigation = useNavigation()
   return (
     <RootStack.Navigator
@@ -196,11 +196,32 @@ const RootStackScreen = ({ }) => {
       <RootStack.Screen
         name="MoneyMarketScreen"
         component={MoneyMarketScreen}
-        options={getOptions({ title: "Exchange", backgroundColor: colors.getRandomMain(), headerRight: <HeaderRightMoneyMarket navigation={navigation} /> })}
+        options={
+          getOptions(
+            {
+              title: "Exchange",
+              backgroundColor: colors.getRandomMain(),
+              headerRight:
+                <HeaderRight
+                  navigation={navigation}
+                  buttons={[
+                    {
+                      target: 'OrdersBookScreen',
+                      marginRight: 15,
+                      iconName: 'ios-add'
+                    },
+                    {
+                      target: 'OrderScreen',
+                      marginRight: 0,
+                      iconName: 'ios-albums'
+                    }
+                  ]}
+                />
+            })}
       />
       <RootStack.Screen
-        name="OrderBookScreen"
-        component={OrderBookScreen}
+        name="OrdersBookScreen"
+        component={OrdersBookScreen}
         options={getOptions({ title: "Order Book", backgroundColor: colors.getRandomMain() })}
       />
       <RootStack.Screen
@@ -276,7 +297,23 @@ const RootStackScreen = ({ }) => {
       <RootStack.Screen
         name="FiatBankDepositsScreen"
         component={FiatBankDepositsScreen}
-        options={getOptions({ title: "Bank Deposits", backgroundColor: colors.getRandomMain(), headerRight: <HeaderRightFiatBankDeposits navigation={navigation} /> })}
+        options={
+          getOptions(
+            {
+              title: "Exchange",
+              backgroundColor: colors.getRandomMain(),
+              headerRight:
+                <HeaderRight
+                  navigation={navigation}
+                  buttons={[
+                    {
+                      target: 'FiatBankDepositCreateScreen',
+                      marginRight: 0,
+                      iconName: 'ios-add'
+                    }
+                  ]}
+                />
+            })}
       />
       <RootStack.Screen
         name="FiatBankDepositsCreateScreen"
@@ -351,7 +388,23 @@ const RootStackScreen = ({ }) => {
       <RootStack.Screen
         name="ShortsScreen"
         component={ShortsScreen}
-        options={getOptions({ title: "Shorts", backgroundColor: colors.getRandomMain(), headerRight: <HeaderRightShorts navigation={navigation} /> })}
+        options={
+          getOptions(
+            {
+              title: "Exchange",
+              backgroundColor: colors.getRandomMain(),
+              headerRight:
+                <HeaderRight
+                  navigation={navigation}
+                  buttons={[
+                    {
+                      target: 'ShortsCreateScreen',
+                      marginRight: 0,
+                      iconName: 'ios-add'
+                    }
+                  ]}
+                />
+            })}
       />
       <RootStack.Screen
         name="ShortsCreateScreen"
@@ -366,7 +419,28 @@ const RootStackScreen = ({ }) => {
       <RootStack.Screen
         name="MoneyCallsScreen"
         component={MoneyCallsScreen}
-        options={getOptions({ title: "Paid Calls", backgroundColor: colors.getRandomMain(), headerRight: <HeaderRightMoneyCalls navigation={navigation} /> })}
+        options={
+          getOptions(
+            {
+              title: "Exchange",
+              backgroundColor: colors.getRandomMain(),
+              headerRight:
+                <HeaderRight
+                  navigation={navigation}
+                  buttons={[
+                    {
+                      target: 'MoneyCallsBlockedUsersScreen',
+                      marginRight: 15,
+                      iconName: 'ios-eye-off'
+                    },
+                    {
+                      target: 'MoneyCallsCreateScreen',
+                      marginRight: 0,
+                      iconName: 'ios-add'
+                    }
+                  ]}
+                />
+            })}
       />
       <RootStack.Screen
         name="MoneyCallsCreateScreen"
@@ -391,7 +465,23 @@ const RootStackScreen = ({ }) => {
       <RootStack.Screen
         name="DebitCardsScreen"
         component={DebitCardsScreen}
-        options={getOptions({ title: "Debit Cards", backgroundColor: colors.getRandomMain(), headerRight: <HeaderRightDebitCards navigation={navigation} /> })}
+        options={
+          getOptions(
+            {
+              title: "Exchange",
+              backgroundColor: colors.getRandomMain(),
+              headerRight:
+                <HeaderRight
+                  navigation={navigation}
+                  buttons={[
+                    {
+                      target: 'DebitCardsRequestScreen',
+                      marginRight: 0,
+                      iconName: 'ios-add'
+                    }
+                  ]}
+                />
+            })}
       />
       <RootStack.Screen
         name="DebitCardsRequestScreen"
@@ -717,9 +807,7 @@ const getOptions = ({ title, backgroundColor, headerRight = <></>, headerTitleAl
   };
 };
 
-
-
-const HeaderRightMoneyMarket = ({ navigation }) => {
+const HeaderRight = ({ navigation, buttons }) => {
   const route = useRoute()
   return (
     <View
@@ -728,123 +816,25 @@ const HeaderRightMoneyMarket = ({ navigation }) => {
         marginRight: 10
       }}
     >
-      <TouchableOpacity
-        onPress={() => {
-          navigation.dispatch(StackActions.push('OrderBookScreen', { ...route.params }))
-        }}
-        style={{
-          marginRight: 15
-        }}
-      >
-        <Ionicons
-          name="ios-add"
-          size={26}
-          color={'white'}
-        />
-      </TouchableOpacity>
-      <TouchableOpacity
-        onPress={() => {
-          navigation.dispatch(StackActions.push('OrderScreen', { ...route.params }))
-        }}
-      >
-        <Ionicons
-          name="ios-albums"
-          size={26}
-          color={'white'}
-        />
-      </TouchableOpacity>
-    </View>
-  )
-}
-
-const HeaderRightFiatBankDeposits = ({ navigation }) => {
-  const route = useRoute()
-  return (
-    <View
-      style={{
-        flexDirection: "row",
-        marginRight: 10
-      }}
-    >
-      <TouchableOpacity
-        onPress={() => {
-          navigation.dispatch(StackActions.push('FiatBankDepositCreateScreen', { ...route.params }))
-        }}
-        style={{
-          marginRight: 10
-        }}
-      >
-        <Ionicons
-          name="ios-add"
-          size={26}
-          color={'white'}
-        />
-      </TouchableOpacity>
-    </View>
-  )
-}
-
-const HeaderRightShorts = ({ navigation }) => {
-  const route = useRoute()
-  return (
-    <View
-      style={{
-        flexDirection: "row",
-        marginRight: 10
-      }}
-    >
-      <TouchableOpacity
-        onPress={() => {
-          navigation.dispatch(StackActions.push('ShortsCreateScreen', { ...route.params }))
-        }}
-        style={{
-          marginRight: 10
-        }}
-      >
-        <Ionicons
-          name="ios-add"
-          size={26}
-          color={'white'}
-        />
-      </TouchableOpacity>
-    </View>
-  )
-}
-
-const HeaderRightMoneyCalls = ({ navigation }) => {
-  const route = useRoute()
-  return (
-    <View
-      style={{
-        flexDirection: "row",
-        marginRight: 10
-      }}
-    >
-      <TouchableOpacity
-        onPress={() => {
-          navigation.dispatch(StackActions.push('MoneyCallsBlockedUsersScreen', { ...route.params }))
-        }}
-        style={{
-          marginRight: 15,
-        }}
-      >
-        <Ionicons
-          name="ios-eye-off"
-          size={30}
-          color={'white'}
-        />
-      </TouchableOpacity>
-      <TouchableOpacity
-        onPress={() => {
-          navigation.dispatch(StackActions.push('MoneyCallsCreateScreen', { ...route.params }))
-        }}
-      >
-        <Ionicons
-          name="ios-add"
-          size={30}
-          color={'white'}
-        />
-      </TouchableOpacity>
+      {buttons.map((item, index) => {
+        return (
+          <TouchableOpacity
+            key={index}
+            onPress={() => {
+              navigation.dispatch(StackActions.push(item.target, { ...route.params }))
+            }}
+            style={{
+              marginRight: item.marginRight
+            }}
+          >
+            <Ionicons
+              name={item.iconName}
+              size={26}
+              color={'white'}
+            />
+          </TouchableOpacity>
+        )
+      })}
     </View>
   )
 }
@@ -867,30 +857,6 @@ const HeaderRightChat = ({ }) => {
         }}
         source={require("../assets/logo5.png")}
       />
-    </View>
-  )
-}
-
-const HeaderRightDebitCards = ({ navigation }) => {
-  const route = useRoute()
-  return (
-    <View
-      style={{
-        flexDirection: "row",
-        marginRight: 10
-      }}
-    >
-      <TouchableOpacity
-        onPress={() => {
-          navigation.dispatch(StackActions.push('DebitCardsRequestScreen', { ...route.params }))
-        }}
-      >
-        <Ionicons
-          name="ios-add"
-          size={30}
-          color={'white'}
-        />
-      </TouchableOpacity>
     </View>
   )
 }

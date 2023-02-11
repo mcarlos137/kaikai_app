@@ -222,7 +222,6 @@ const UserDataGalleryScreen = ({ navigation, route, colors, userName }) => {
                     fileName={item.name}
                     type={item.type}
                     width={data[type].length === 0 ? 0 : data[type].length <= 4 && data[type].length > 0 ? 160 : data[type].length > 4 && data[type].length <= 20 ? 120 : 80}
-                    height={data[type].length === 0 ? 0 : data[type].length <= 4 && data[type].length > 0 ? 160 : data[type].length > 4 && data[type].length <= 20 ? 120 : 80}
                     onPress={() => {
                       setTimeout(() => {
                         console.log('WAIT')

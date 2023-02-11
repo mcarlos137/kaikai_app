@@ -22,7 +22,7 @@ import Body_Picker from './components/Body_Picker'
 //HOC
 import { withColors, withDetailedBalances } from '../../main/hoc';
 
-const MoneyMarketScreen = ({ navigation, route, colors, detailedBalances }) => {
+const OrdersBookScreen = ({ navigation, route, colors, detailedBalances }) => {
 
   //INITIAL STATE
   const [pair, setPair] = useState(route?.params?.selectedPair !== undefined ? route.params.selectedPair : 'BTCVES')
@@ -34,7 +34,7 @@ const MoneyMarketScreen = ({ navigation, route, colors, detailedBalances }) => {
 
   //EFFECTS
   useEffect(() => {
-    console.log('MoneyMarketScreen', route.params)
+    console.log('OrdersBookScreen', route.params)
     start(pair, addData)
   }, [])
 
@@ -216,4 +216,4 @@ const MoneyMarketScreen = ({ navigation, route, colors, detailedBalances }) => {
   );
 };
 
-export default React.memo(compose(withColors, withDetailedBalances)(MoneyMarketScreen));
+export default React.memo(compose(withColors, withDetailedBalances)(OrdersBookScreen));

@@ -10,13 +10,13 @@ const reducer = (state = initialState, action) => {
         }
         let update = false
         if (action.payload.imageAsset !== undefined) {
-            if (assets[action.payload.id].imageAsset === undefined) {
+            if (assets[action.payload.id].imageAsset === undefined || assets[action.payload.id].imageAsset !== action.payload.imageAsset) {
                 assets[action.payload.id] = { ...assets[action.payload.id], imageAsset: action.payload.imageAsset }
                 update = true
             }
         }
         if (action.payload.videoAsset !== undefined) {
-            if (assets[action.payload.id].videoAsset === undefined) {
+            if (assets[action.payload.id].videoAsset === undefined || assets[action.payload.id].videoAsset !== action.payload.videoAsset) {
                 assets[action.payload.id] = { ...assets[action.payload.id], videoAsset: action.payload.videoAsset }
                 update = true
             }

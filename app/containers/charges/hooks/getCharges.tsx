@@ -20,18 +20,18 @@ export const getCharges = () => {
 }
 
 const decorateGetChargesResponse = (data) => {
-    const charges = {};
+    const charges: any = {};
     charges.currencies = [];
-    Object.entries(data).forEach(([key, value]) => {
+    Object.entries(data).forEach(([key, value]: [string, any]) => {
         charges[key] = [];
         charges.currencies?.push(key);
-        Object.entries(value).forEach(([ke, val]) => {
+        Object.entries(value).forEach(([ke, val]: [string, any]) => {
             if (ke.split('__').length === 2) {
                 if (ke.split('__')[1] !== 'COMMISSION') {
                     return;
                 }
                 Object.entries(val).forEach(([k, v]) => {
-                    let charge = getCharge(ke.split('__')[0], k, v, key);
+                    let charge: any = getCharge(ke.split('__')[0], k, v, key);
                     if (ke.split('__')[0] === 'MC_BUY_BALANCE' || ke.split('__')[0] === 'SEND_TO_PAYMENT') {
                         charge.operationName = charge.operationName + ' BANK';
                     }
@@ -45,7 +45,7 @@ const decorateGetChargesResponse = (data) => {
                     return;
                 }
                 Object.entries(val).forEach(([k, v]) => {
-                    let charge = getCharge(ke.split('__')[0], k, v, key);
+                    let charge: any = getCharge(ke.split('__')[0], k, v, key);
                     let paymentType = ke.split('__')[1]
                     if (paymentType === 'GENERIC_THIRD_ACCOUNT' || paymentType === 'ACH_THIRD_ACCOUNT') {
                         paymentType = 'BANK - third account'

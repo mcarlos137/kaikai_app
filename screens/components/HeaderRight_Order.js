@@ -87,7 +87,7 @@ const ConnectedComponent = ({
         </TouchableOpacity>
         <TouchableOpacity
             onPress={() => {
-                navigateStore.dispatch({ type: NAVIGATE, payload: { target: 'OrderBookScreen' } });
+                navigateStore.dispatch({ type: NAVIGATE, payload: { target: 'OrdersBookScreen' } });
             }}
             style={{
                 marginLeft: 10

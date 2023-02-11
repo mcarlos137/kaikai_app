@@ -11,7 +11,7 @@ import {
   getReceiverUserName,
   getTargetAddress,
   getCharges
-} from './actions/functions';
+} from './functions';
 import { decorateTimestamp } from '../../main/functions';
 //HOC
 import { withColors } from '../../main/hoc';

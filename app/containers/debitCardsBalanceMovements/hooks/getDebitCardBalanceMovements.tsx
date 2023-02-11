@@ -28,18 +28,18 @@ export const getDebitCardBalanceMovements = (id, initTimestamp, finalTimestamp) 
 }
 
 const getDebitCardBalanceMovementsData = (data) => {
-  let times = [];
+  let times: number[] = [];
   let operationIdsTimes = {};
-  let partialData = {};
-  Object.entries(data).forEach(([key, value]) => {
-    let newValue = {}
+  let partialData: any = {};
+  Object.entries(data).forEach(([key, value]: [string, any]) => {
+    let newValue: any = {}
     let timestamp = timestampParser(value.timestamp);
     newValue.timestamp = timestamp;
     newValue.balanceOperationType = value.balanceOperationType
     newValue.balanceOperationStatus = value.balanceOperationStatus
     let amount = null;
     let initialAmount = null;
-    let chargesAmount = null;
+    let chargesAmount: number | null = null;
     let currency = null;
     if (value.addedAmount !== undefined) {
       newValue.operationType = 'ADD';
@@ -62,21 +62,23 @@ const getDebitCardBalanceMovementsData = (data) => {
     newValue.chargesAmount = chargesAmount;
     newValue.currency = currency;
     let time = new Date(timestamp).getTime();
-    let operationId = null;
+    let operationId: string | null = null;
     if (value.operationId !== undefined) {
       operationId = value.operationId;
       let operationIdRegistered = false;
-      if (operationIdsTimes[operationId] !== undefined) {
-        operationIdRegistered = true;
-      }
-      if (!operationIdRegistered) {
-        operationIdsTimes[operationId] = time;
-        partialData[time] = [newValue];
-      } else {
-        partialData[operationIdsTimes[operationId]].push(newValue);
+      if (operationId !== null) {
+        if (operationIdsTimes[operationId] !== undefined) {
+          operationIdRegistered = true;
+        }
+        if (!operationIdRegistered) {
+          operationIdsTimes[operationId] = time;
+          partialData[time] = [newValue];
+        } else {
+          partialData[operationIdsTimes[operationId]].push(newValue);
+        }
       }
     } else {
-      let timeRegistered = null;
+      let timeRegistered: number | null = null;
       times.forEach((value) => {
         if ((value + 600) > time && (value - 600) < time) {
           timeRegistered = value;
@@ -95,9 +97,9 @@ const getDebitCardBalanceMovementsData = (data) => {
       times.push(time);
     }
   });
-  let finalData = [];
+  let finalData: any[] = [];
   Object.keys(partialData).forEach((key) => {
-    let transaction = {};
+    let transaction: any = {};
     transaction.id = key;
     transaction.parts = partialData[key];
     finalData.push(transaction);

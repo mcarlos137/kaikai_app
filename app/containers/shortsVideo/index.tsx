@@ -1,45 +1,39 @@
 //PRINCIPAL
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { View, Dimensions } from 'react-native';
-import Video from 'react-native-video';
+import { Provider } from 'react-redux';
+import { PersistGate } from 'redux-persist/integration/react';
+//STORES
+import { store as mediaStore, persistor as mediaPersistor } from '../../main/stores/media';
+//COMPONENTS
+import Body_ImageVideo from '../../main/components/Body_ImageVideo'
 
 const ShortsVideoScreen = ({ navigation, route }) => {
 
-  //const [uri, setUri] = useState(route.params.selectedShort.uri)
-
   useEffect(() => {
-    console.log('ShortsVideoScreen', route.params.selectedShort.asset)
+    console.log('ShortsVideoScreen', route.params.selectedShort.assetId)
   }, []);
 
   return (
     <View style={{
       flex: 1
     }}>
-      <Video
-        source={{
-          uri: route.params.selectedShort.asset.uri,
-        }}
-        rate={1.0}
-        repeat={true}
-        paused={false}
-        controls={true}
-        onError={(error) => {
-          console.log('>>>>>>>>>>> ' + JSON.stringify(error))
-        }}
-        resizeMode={"cover"}
-        bufferConfig={{
-          minBufferMs: 15000,
-          maxBufferMs: 50000,
-          bufferForPlaybackMs: 2500,
-          bufferForPlaybackAfterRebufferMs: 5000
-        }}
-        style={{
-          alignSelf: 'center',
-          marginTop: 10,
-          width: Dimensions.get('window').width * 0.95,
-          height:  Dimensions.get('window').width * 0.95 * route.params.selectedShort.asset.height / route.params.selectedShort.asset.width
-        }}
-      />
+      <Provider store={mediaStore} >
+        <PersistGate loading={null} persistor={mediaPersistor}>
+          <Body_ImageVideo
+            fileName={route.params.selectedShort.assetId}
+            width={Dimensions.get('window').width * 0.95}
+            aspectRatioType={'original'}
+            inType={'video'}
+            outType={'video'}
+            videoProps={{
+              paused: true,
+              controls: true
+            }}
+          />
+        </PersistGate>
+      </Provider>
+
     </View >
   );
 };

@@ -125,7 +125,7 @@ export function getTargetAddress(balanceMovementDetails) {
 }
 
 export function getCharges(balanceMovementDetails) {
-  let charges = {};
+  let charges: any = {};
   if (balanceMovementDetails.length === 2) {
     charges["amount"] = balanceMovementDetails[0].chargesAmount;
     charges["currency"] = balanceMovementDetails[0].currency;

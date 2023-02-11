@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 //COMPONENTS
@@ -10,7 +10,6 @@ import UserDataStackScreen from './components/UserDataStackScreen';
 //STORES
 import { store as actionSheetOptionsStore } from '../app/main/stores/actionSheetOptions';
 
-const Tab = createMaterialBottomTabNavigator();
 
 const tabBackgroundColors = {
   Social: '#d02860',
@@ -22,6 +21,7 @@ const tabBackgroundColors = {
 const MainTabScreen = ({ navigation, route }) => {
 
   const [selectedTab, setSelectedTab] = useState('Social')
+  const Tab = createMaterialBottomTabNavigator();
 
   return (
     <Tab.Navigator
@@ -40,7 +40,7 @@ const MainTabScreen = ({ navigation, route }) => {
         }}
         options={{
           tabBarLabel: 'Social',
-          tabBarIcon: ({ color, size }) => (
+          tabBarIcon: ({ color }) => (
             <MaterialCommunityIcons name="home" color={color} size={26} />
           ),
         }}
@@ -53,7 +53,7 @@ const MainTabScreen = ({ navigation, route }) => {
         }}
         options={{
           tabBarLabel: 'Subs',
-          tabBarIcon: ({ color, size }) => (
+          tabBarIcon: ({ color }) => (
             <MaterialCommunityIcons name="animation-play" color={color} size={26} />
           ),
         }}
@@ -81,7 +81,7 @@ const MainTabScreen = ({ navigation, route }) => {
         }}
         options={{
           tabBarLabel: '',
-          tabBarIcon: ({ color, size }) => (
+          tabBarIcon: ({ color }) => (
             <MaterialCommunityIcons name="dots-vertical" color={color} size={26} />
           ),
         }}
@@ -94,7 +94,7 @@ const MainTabScreen = ({ navigation, route }) => {
         }}
         options={{
           tabBarLabel: 'Wallet',
-          tabBarIcon: ({ color, size }) => (
+          tabBarIcon: ({ color }) => (
             <MaterialCommunityIcons name="wallet" color={color} size={26} />
           ),
         }}
@@ -107,7 +107,7 @@ const MainTabScreen = ({ navigation, route }) => {
         }}
         options={{
           tabBarLabel: 'User Info',
-          tabBarIcon: ({ color, size }) => (
+          tabBarIcon: ({ color }) => (
             <MaterialCommunityIcons name="account-circle" color={color} size={26} />
           ),
         }}

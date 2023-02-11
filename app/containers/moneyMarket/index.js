@@ -140,7 +140,7 @@ const MoneyMarketScreen = ({ navigation, route, colors }) => {
             alignSelf: 'center',
           }}
           onPress={() => {
-            navigation.dispatch(StackActions.push('OrderBookScreen', { ...route.params, redirectToTarget: 'MoneyMarketScreen', selectedPair: item.item }))
+            navigation.dispatch(StackActions.push('OrdersBookScreen', { ...route.params, redirectToTarget: 'MoneyMarketScreen', selectedPair: item.item }))
           }}
         >
           <Text

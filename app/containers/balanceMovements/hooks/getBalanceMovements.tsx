@@ -26,11 +26,11 @@ export const getBalanceMovements = (userName) => {
 }
 
 const decorateGetBalanceMovementsResponse = (response) => {
-    let times = [];
-    let operationIdsTimes = {};
+    let times: number[] = [];
+    let operationIdsTimes: any = {};
     times.forEach((value) => { });
-    let decoratedResponse = {};
-    Object.entries(response).forEach(([key, value]) => {
+    let decoratedResponse: any = {};
+    Object.entries(response).forEach(([key, value]: [string, any]) => {
         let timestamp = timestampParser(value.timestamp);
         let time = new Date(timestamp).getTime();
         //console.log('timestamp ' + timestamp, time)
@@ -38,18 +38,19 @@ const decorateGetBalanceMovementsResponse = (response) => {
         if (value.operationId !== undefined) {
             operationId = value.operationId;
             let operationIdRegistered = false;
-
-            if (operationIdsTimes[operationId] !== undefined) {
-                operationIdRegistered = true;
-            }
-            if (!operationIdRegistered) {
-                operationIdsTimes[operationId] = time;
-                decoratedResponse[time] = [value];
-            } else {
-                decoratedResponse[operationIdsTimes[operationId]].push(value);
+            if (operationId !== null) {
+                if (operationIdsTimes[operationId] !== undefined) {
+                    operationIdRegistered = true;
+                }
+                if (!operationIdRegistered) {
+                    operationIdsTimes[operationId] = time;
+                    decoratedResponse[time] = [value];
+                } else {
+                    decoratedResponse[operationIdsTimes[operationId]].push(value);
+                }
             }
         } else {
-            let timeRegistered = null;
+            let timeRegistered: number | null = null;
             times.forEach((value) => {
                 if (value + 600 > time && value - 600 < time) {
                     timeRegistered = value;
@@ -70,7 +71,7 @@ const decorateGetBalanceMovementsResponse = (response) => {
         }
         let amount = null;
         let initialAmount = null;
-        let chargesAmount = null;
+        let chargesAmount: number | null = null;
         let currency = null;
         if (value.addedAmount !== undefined) {
             value["operationType"] = "ADD";
@@ -102,7 +103,7 @@ const decorateGetBalanceMovementsResponse = (response) => {
             delete value["chargesFilePaths"];
         }
     });
-    let finalDecoratedResponse = [];
+    let finalDecoratedResponse: any[] = [];
     Object.keys(decoratedResponse).forEach((key) => {
         let transaction = {};
         transaction["id"] = key;

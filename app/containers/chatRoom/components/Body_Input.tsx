@@ -19,7 +19,7 @@ import EmojiSelector, { Categories } from "react-native-emoji-selector";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Firestore from '@react-native-firebase/firestore'
-import { StackActions } from '@react-navigation/native';
+import storage from '@react-native-firebase/storage'
 import { connect } from 'react-redux';
 //import AudioRecorderPlayer from 'react-native-audio-recorder-player';
 //STORES
@@ -101,6 +101,10 @@ const ConnectedComponent = ({
         }
         if (mediaAsset !== null) {
             data.message['mediaAsset'] = mediaAsset
+            /*storage()
+                .ref('/chat/' + route.params.selectedChatRoom.chatRoom + '/assets/' + timestamp)
+                .putFile(mediaAsset.uri)
+                .then(response => console.log('response', response))*/
         }
         chatStore.dispatch({ type: 'ADD_DATA', payload: data })
         setText('')
@@ -125,6 +129,9 @@ const ConnectedComponent = ({
             timestamp: timestamp,
             //delivered: String(false),
             //readed: String(false)
+        }
+        if (mediaAsset !== null) {
+            newMessage['mediaAsset'] = { type: mediaAsset.type }
         }
         await chatsReceiverDoc
             .collection('new')
