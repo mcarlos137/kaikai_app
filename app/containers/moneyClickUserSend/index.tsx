@@ -20,9 +20,9 @@ import Modal_Transaction from '../../main/components/Modal_Transaction'
 import { validateConfirmationModalTransaction } from '../../main/functions';
 import { moneyClickUserSend } from './hooks/moneyClickUserSend';
 //HOC
-import { withColors, withConfig, withDetailedBalances, withUserName } from '../../main/hoc';
+import { withColors, withDetailedBalances, withUserName, withAuth } from '../../main/hoc';
 
-const MoneyClickUserSendScreen = ({ navigation, route, colors, userName, config, detailedBalances }) => {
+const MoneyClickUserSendScreen = ({ navigation, route, colors, userName, auth, detailedBalances }) => {
 
     //INITIAL STATES
     const [currency, setCurrency] = useState(route.params.selectedCurrency)
@@ -56,7 +56,7 @@ const MoneyClickUserSendScreen = ({ navigation, route, colors, userName, config,
             setPhone(route.params.selectedPhone.phone)
             setReceiverName(route.params.selectedPhone.fullName)
         } else {
-            setAreaCode(config.areaCode)
+            setAreaCode(auth.areaCode)
         }
     }, [])
 
@@ -89,7 +89,7 @@ const MoneyClickUserSendScreen = ({ navigation, route, colors, userName, config,
                 value: '+' + areaCode + ' ' + phone + ' - ' + receiverName
             }
         );
-        if (dataCharges?.COMMISSION?.amount !== undefined && dataCharges?.COMMISSION?.amount !== 0 && areaCode !== config.areaCode) {
+        if (dataCharges?.COMMISSION?.amount !== undefined && dataCharges?.COMMISSION?.amount !== 0 && areaCode !== auth.areaCode) {
             data.push(
                 {
                     title: 'Commission:',
@@ -177,7 +177,7 @@ const MoneyClickUserSendScreen = ({ navigation, route, colors, userName, config,
             targetUserName: areaCode + '' + phone,
             currency: currency.value,
             amount: amount,
-            isInternational: config.areaCode !== areaCode,
+            isInternational: auth.areaCode !== areaCode,
             baseName: 'baseName',
             targetName: receiverName,
             description: description,
@@ -292,5 +292,5 @@ const MoneyClickUserSendScreen = ({ navigation, route, colors, userName, config,
     );
 };
 
-export default React.memo(compose(withColors, withUserName, withConfig, withDetailedBalances)(MoneyClickUserSendScreen));
+export default React.memo(compose(withColors, withUserName, withAuth, withDetailedBalances)(MoneyClickUserSendScreen));
 

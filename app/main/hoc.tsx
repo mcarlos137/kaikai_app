@@ -1,9 +1,13 @@
 import React from "react";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useTheme } from 'react-native-paper';
+import { compose } from "redux";
+//STORES
 import { store as authStore } from "./stores/auth";
 import { store as balanceStore } from "./stores/balance";
 import { store as headersStore } from "./stores/headers";
+//HOOKS
+import { getConfig } from "./hooks/getConfig";
 
 export const withNavigation = (WrappedComponent) => {
     const WithComponent = props => {
@@ -53,16 +57,28 @@ export const withUserName = (WrappedComponent) => {
     return WithComponent;
 };
 
-export const withConfig = (WrappedComponent) => {
+export const withAuth = (WrappedComponent) => {
     const WithComponent = props => {
-        const { config } = authStore.getState()
         return (
             <>
-                <WrappedComponent config={config} {...props} />
+                <WrappedComponent auth={authStore.getState()} {...props} />
             </>
         );
     }
     return WithComponent;
+};
+
+export const withConfig = (WrappedComponent) => {
+    const WithComponent = props => {
+        const { isLoading: isLoadingGetConfig, data: dataGetConfig, error: errorGetConfig, isSuccess: isSuccessGetConfig } =
+            getConfig(props.userName)
+        return (
+            <>
+                <WrappedComponent config={dataGetConfig} {...props} />
+            </>
+        );
+    }
+    return compose(withUserName)(WithComponent);
 };
 
 export const withHmacInterceptor = (WrappedComponent) => {

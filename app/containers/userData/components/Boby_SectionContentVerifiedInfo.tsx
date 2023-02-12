@@ -27,7 +27,7 @@ const Component = ({
             <Fragment
                 key={key}
             >
-                {config?.others[item]?.endsWith('jpeg') ?
+                {config?.others[item]?.endsWith('jpeg') || config?.others[item]?.endsWith('jpg') ?
                     <View
                         style={{
                             flexDirection: 'row',

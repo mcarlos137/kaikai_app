@@ -6,7 +6,7 @@ type AddUserAttachmentRequest_Props = {
   userName: string
   fieldName: string
   attachment: any
-  type: string | null
+  type?: string
 }
 
 const addUserAttachmentRequest = ({
@@ -18,7 +18,7 @@ const addUserAttachmentRequest = ({
   const formData = new FormData();
   formData.append('userName', userName);
   formData.append('fieldName', fieldName);
-  if (type !== null) {
+  if (type !== undefined) {
     formData.append('type', type);
   }
   if (attachment !== null) {

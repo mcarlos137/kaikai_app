@@ -81,6 +81,30 @@ const WalletStackScreen = ({ navigation, route, colors }) => {
                                 justifyContent: 'center'
                             }}
                             onPress={() => {
+                                //walletStore.dispatch({ type: OPEN_SEARCH_MODAL, payload: true })
+                            }}
+                        >
+                            <Text
+                                style={{
+                                    color: colors.text,
+                                    fontWeight: 'bold',
+                                    fontSize: 12
+                                }}
+                            >
+                                P2P
+                            </Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={{
+                                width: 32,
+                                height: 32,
+                                backgroundColor: colors.secundaryBackground,
+                                borderRadius: 16,
+                                marginRight: 5,
+                                alignItems: 'center',
+                                justifyContent: 'center'
+                            }}
+                            onPress={() => {
                                 navigation.dispatch(StackActions.push('BalanceMovementsScreen', { ...route.params }))
                             }}
                         >
@@ -133,26 +157,6 @@ const WalletStackScreen = ({ navigation, route, colors }) => {
                                         4
                                     </Text>
                                 </View>}
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            style={{
-                                width: 32,
-                                height: 32,
-                                backgroundColor: colors.secundaryBackground,
-                                borderRadius: 16,
-                                marginRight: 5,
-                                alignItems: 'center',
-                                justifyContent: 'center'
-                            }}
-                            onPress={() => {
-                                //walletStore.dispatch({ type: OPEN_SEARCH_MODAL, payload: true })
-                            }}
-                        >
-                            <MaterialCommunityIcons
-                                name="cloud-search"
-                                size={22}
-                                color={colors.icon}
-                            />
                         </TouchableOpacity>
                     </View>
                 )

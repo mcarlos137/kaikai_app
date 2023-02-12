@@ -46,10 +46,12 @@ const Hook = (areaCode: string, phone: string, password: string, navigation: any
                         type: 'SET_PARAMS',
                         payload:
                         {
+                            areaCode: areaCode,
+                            phone: phone,
                             userName: dataSignIn?.base?.userName,
                             secretKey: dataSignIn?.base?.secretKey,
                             time: new Date().getTime(),
-                            config: { ...dataGetConfig, areaCode: areaCode, phone: phone },
+                            //config: { ...dataGetConfig },
                             frequentUsers: dataSignIn?.other.frequentUsers
                         }
                     })

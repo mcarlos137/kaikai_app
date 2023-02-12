@@ -11,9 +11,9 @@ import Body_Picker from '../../main/components/Body_Picker';
 import Body_Input from '../../main/components/Body_Input';
 import Body_Button from '../../main/components/Body_Button';
 //HOC
-import { withColors, withConfig, withDetailedBalances, withUserName } from '../../main/hoc';
+import { withAuth, withColors, withConfig, withDetailedBalances, withUserName } from '../../main/hoc';
 
-const MoneyClickUserReceiveScreen = ({ navigation, route, colors, userName, config, detailedBalances }) => {
+const MoneyClickUserReceiveScreen = ({ navigation, route, colors, userName, config, auth, detailedBalances }) => {
 
   //VARIABLES
   var svg = null
@@ -33,7 +33,7 @@ const MoneyClickUserReceiveScreen = ({ navigation, route, colors, userName, conf
     let qr: any = {};
     qr.userName = userName;
     qr.nickName = config.nickName
-    qr.phone = config.phone
+    qr.phone = auth.phone
     if (config.firstName !== undefined) {
       qr.firstName = config.firstName;
     }
@@ -131,4 +131,4 @@ const MoneyClickUserReceiveScreen = ({ navigation, route, colors, userName, conf
   );
 };
 
-export default React.memo(compose(withColors, withUserName, withConfig, withDetailedBalances)(MoneyClickUserReceiveScreen));
+export default React.memo(compose(withColors, withUserName, withConfig, withAuth, withDetailedBalances)(MoneyClickUserReceiveScreen));

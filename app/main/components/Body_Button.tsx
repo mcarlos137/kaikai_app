@@ -1,17 +1,26 @@
 import React from 'react';
 import {
     TouchableOpacity,
-    Text
+    Text,
+    ActivityIndicator
 } from 'react-native';
 import { compose } from 'redux';
 //HOC
 import { withColors } from '../hoc';
 
+type Body_Button_Request = {
+    onPress: any
+    label: string
+    isLoading?: boolean
+    colors: any
+}
+
 const Component = ({
     onPress,
     label,
-    colors
-}) => {
+    isLoading,
+    colors,
+}: Body_Button_Request) => {
 
     //PRINCIPAL RENDER
     return (
@@ -19,7 +28,10 @@ const Component = ({
             style={{
                 backgroundColor: colors.getRandomMain(),
                 marginTop: 20,
-                borderRadius: 10
+                borderRadius: 10,
+                flexDirection: 'row',
+                justifyContent: 'center',
+                alignItems: "center",
             }}
             onPress={onPress}
         >
@@ -32,6 +44,7 @@ const Component = ({
             >
                 {label}
             </Text>
+            {isLoading && <ActivityIndicator size="small" color={'white'} style={{ marginLeft: 10 }} />}
         </TouchableOpacity>
     )
 };

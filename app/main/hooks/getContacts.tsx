@@ -13,13 +13,13 @@ export const getContacts = () => {
     const { frequentUsers } = authStore.getState()
 
     //INITIAL STATES
-    const [frequents, setFrequents] = useState([])
+    const [frequents, setFrequents] = useState<any[]>([])
     const [phone, setPhone] = useState([])
 
     //EFFECTS
     useEffect(() => {
-        let data = [];
-        Object.entries(frequentUsers).forEach(([key, value]) => {
+        let data: any[] = [];
+        Object.entries(frequentUsers).forEach(([key, value]: [string, any]) => {
             delete value['username'];
             let name = value.nameUserFrequent.replace(/[^a-zA-Z ]/g, "");
             let val = { name: name, phones: [value.codCountry + '__' + value.phone] };

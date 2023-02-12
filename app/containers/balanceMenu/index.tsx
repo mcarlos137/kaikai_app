@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { StackActions } from '@react-navigation/native';
+import { compose } from 'redux';
 //COMPONENTS
 import Body_Option from './components/Body_Option'
 import Body_Balance from './components/Body_Balance'
 import Modal from './components/Modal'
+//HOC
+import { withConfig } from '../../main/hoc';
 
-const BalanceMenuScreen = ({ navigation, route }) => {
+const BalanceMenuScreen = ({ navigation, route, config }) => {
 
   const [isVisibleModal, setIsVisibleModal] = useState(false)
   const [modalTitle, setModalTitle] = useState('')
@@ -101,26 +104,20 @@ const BalanceMenuScreen = ({ navigation, route }) => {
                     title: 'To Banks',
                     onPress: () => {
                       setIsVisibleModal(false)
-                      /*
-              if (
-                  authPersistedStore.getState().configState.verifications['E'] !== undefined &&
-                  authPersistedStore.getState().configState.verifications['E'].status === 'OK' &&
-                  authPersistedStore.getState().configState.verifications['C'] === undefined) || (
-                  authPersistedStore.getState().configState.verifications['C'] !== undefined &&
-                  authPersistedStore.getState().configState.verifications['C'].status === 'OK'
-                ) {
-                navigateStore.dispatch({ type: NAVIGATE, payload: { target: 'FiatBankTransferScreen', redirectToTarget: 'BalanceDetailsScreen' } });
-              } else {
-                let verificationType = 'E'
-                if ((authPersistedStore.getState().configState.verifications['C'] !== undefined &&
-                  authPersistedStore.getState().configState.verifications['C'].status === 'PROCESSING') ||
-                  (authPersistedStore.getState().configState.verifications['C'] !== undefined &&
-                    authPersistedStore.getState().configState.verifications['C'].status === 'FAIL')) {
-                  verificationType = 'C'
-                }
-                navigateStore.dispatch({ type: NAVIGATE, payload: { target: 'VerificationScreen', redirectToTarget: 'FiatBankTransfersScreen', selectedVerificationType: verificationType } });
-              }*/
-                      navigation.dispatch(StackActions.push('FiatBankTransfersScreen', { ...route.params }))
+                      if (
+                        config?.verifications['E']?.status === 'OK' &&
+                        config?.verifications['C']?.status === 'OK'
+                      ) {
+                        navigation.dispatch(StackActions.push('FiatBankTransfersScreen', { ...route.params }))
+                      } else {
+                        let verificationType = 'E'
+                        if (
+                          config?.verifications['C']?.status === 'PROCESSING' ||
+                          config?.verifications['C']?.status === 'FAIL') {
+                          verificationType = 'C'
+                        }
+                        navigation.dispatch(StackActions.push('VerificationScreen', { ...route.params, selectedVerificationType: verificationType, replaceTarget: 'FiatBankTransfersScreen' }))
+                      }
                     }
                   }]
                 )
@@ -146,14 +143,11 @@ const BalanceMenuScreen = ({ navigation, route }) => {
                     title: 'From Banks',
                     onPress: () => {
                       setIsVisibleModal(false)
-                      navigation.dispatch(StackActions.push('FiatBankDepositsScreen', { ...route.params }))
-                      /*
-                if (authPersistedStore.getState().configState.verifications['C'] !== undefined &&
-                  authPersistedStore.getState().configState.verifications['C'].status === 'OK') {
-                  navigateStore.dispatch({ type: NAVIGATE, payload: { target: 'FiatBankDepositsScreen', redirectToTarget: 'BalanceDetailsScreen' } });
-                } else {
-                  navigateStore.dispatch({ type: NAVIGATE, payload: { target: 'VerificationScreen', redirectToTarget: 'FiatBankDepositsScreen', selectedVerificationType: 'C' } });
-                }*/
+                      if (config?.verifications['C']?.status === 'OK') {
+                        navigation.dispatch(StackActions.push('FiatBankDepositsScreen', { ...route.params }))
+                      } else {
+                        navigation.dispatch(StackActions.push('VerificationScreen', { ...route.params, selectedVerificationType: 'C', replaceTarget: 'FiatBankDepositsScreen' }))
+                      }
                     }
                   },
                   {
@@ -201,4 +195,4 @@ const BalanceMenuScreen = ({ navigation, route }) => {
   );
 };
 
-export default React.memo(BalanceMenuScreen);
+export default React.memo(compose(withConfig)(BalanceMenuScreen));
