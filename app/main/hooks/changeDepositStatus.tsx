@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "react-query"
-import { request } from "../../../tools/axiosUtils"
+import { request } from "../../tools/axiosUtils"
 
 type ChangeDepositStatusRequest = {
   id: string
@@ -17,7 +17,8 @@ const changeDepositStatusRequest = ({
     otcOperationStatus: otcOperationStatus,
     userChange: true,
   }
-  if (canceledReason !== null) body.canceledReason = canceledReason
+  if (canceledReason !== '') body.canceledReason = canceledReason
+  console.log('body', body)
   return request({ url: `/buyBalance/changeOperationStatus`, method: 'post', data: body })
 }
 
@@ -33,7 +34,7 @@ export const changeDepositStatus = () => {
         queryClient.invalidateQueries('deposits')
       },
       onSuccess(data, variables, context) {
-        //console.log('data', JSON.stringify(data, null, 4));
+        console.log('data', JSON.stringify(data, null, 4));
       },
     })
 }

@@ -199,7 +199,7 @@ const RootStackScreen = ({ }) => {
         options={
           getOptions(
             {
-              title: "Exchange",
+              title: "Orders Book",
               backgroundColor: colors.getRandomMain(),
               headerRight:
                 <HeaderRight
@@ -300,14 +300,14 @@ const RootStackScreen = ({ }) => {
         options={
           getOptions(
             {
-              title: "Exchange",
+              title: "Bank Deposits",
               backgroundColor: colors.getRandomMain(),
               headerRight:
                 <HeaderRight
                   navigation={navigation}
                   buttons={[
                     {
-                      target: 'FiatBankDepositCreateScreen',
+                      target: 'FiatBankDepositsCreateScreen',
                       marginRight: 0,
                       iconName: 'ios-add'
                     }
@@ -391,7 +391,7 @@ const RootStackScreen = ({ }) => {
         options={
           getOptions(
             {
-              title: "Exchange",
+              title: "Create short",
               backgroundColor: colors.getRandomMain(),
               headerRight:
                 <HeaderRight
@@ -422,7 +422,7 @@ const RootStackScreen = ({ }) => {
         options={
           getOptions(
             {
-              title: "Exchange",
+              title: "Blocked Users",
               backgroundColor: colors.getRandomMain(),
               headerRight:
                 <HeaderRight
@@ -468,7 +468,7 @@ const RootStackScreen = ({ }) => {
         options={
           getOptions(
             {
-              title: "Exchange",
+              title: "Request Debit Card",
               backgroundColor: colors.getRandomMain(),
               headerRight:
                 <HeaderRight

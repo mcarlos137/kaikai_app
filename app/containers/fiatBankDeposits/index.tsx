@@ -18,7 +18,7 @@ import { NumericFormat } from 'react-number-format';
 import { currencies as currenciesParams } from '../../constants/currenciesParams';
 //HOOKS
 import { getDeposits } from './hooks/getDeposits';
-import { changeDepositStatus } from './hooks/changeDepositStatus';
+import { changeDepositStatus } from '../../main/hooks/changeDepositStatus';
 //FUNCTIONS
 import { decorateTimestamp, getRequire } from '../../main/functions';
 //COMPONENTS
@@ -30,9 +30,9 @@ import { withColors, withUserName } from '../../main/hoc';
 const FiatBankDepositsScreen = ({ navigation, route, colors, userName }) => {
 
   //INITIAL STATES
-  const [actionSheetConfirmationCancelRef, setActionSheetConfirmationCancelRef] = useState(createRef())
+  const [actionSheetConfirmationCancelRef, setActionSheetConfirmationCancelRef] = useState<any>(createRef())
   const [selectedDeposit, setSelectedDeposit] = useState<any>(null)
-  const [cancelReason, setCancelReason] = useState<any>(null)
+  const [cancelReason, setCancelReason] = useState<any>('')
 
   //HOOKS CALLS
   const { isLoading: isLoadingDeposits, data: dataDeposits, error: errorDeposits, isFetching: isFetchingDeposits, refetch: refetchDeposits } =
@@ -136,27 +136,46 @@ const FiatBankDepositsScreen = ({ navigation, route, colors, userName }) => {
           </Text>
           {item.item.otcOperationStatus === 'WAITING_FOR_PAYMENT' &&
             <>
-              <View
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.dispatch(StackActions.push('FiatBankDepositsPayScreen', { ...route.params, selectedFiatBankDeposit: item.item }))
+                }}
                 style={{
+                  backgroundColor: colors.getRandomMain(),
+                  alignItems: 'center',
+                  borderRadius: 5,
+                  padding: 5,
                   marginRight: 5
                 }}
               >
-                <Button
-                  //block
-                  onPress={() => {
-                    navigation.dispatch(StackActions.push('FiatBankDepositsPayScreen', { ...route.params, selectedFiatBankDeposit: item.item }))
+                <Text
+                  style={{
+                    color: 'white'
                   }}
-                  title='PAY'
-                />
-              </View>
-              <Button
-                //block
+                >
+                  PAY
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
                 onPress={() => {
-                  //indexStore.dispatch({ type: SET_SELECTED_FIAT_BANK_DEPOSIT, payload: item.item })
+                  setSelectedDeposit(item.item)
                   actionSheetConfirmationCancelRef.current?.setModalVisible(true);
                 }}
-                title='CANCEL'
-              />
+                style={{
+                  backgroundColor: colors.getRandomMain(),
+                  alignItems: 'center',
+                  borderRadius: 5,
+                  padding: 5,
+                }}
+              >
+                <Text
+                  style={{
+                    color: 'white'
+                  }}
+                >
+                  CANCEL
+                </Text>
+              </TouchableOpacity>
             </>}
         </View>
         <View
@@ -262,6 +281,7 @@ const FiatBankDepositsScreen = ({ navigation, route, colors, userName }) => {
             otcOperationStatus: 'CANCELED',
             canceledReason: cancelReason
           })
+          actionSheetConfirmationCancelRef.current?.setModalVisible(false)
         }}
       />
     </View>

@@ -56,6 +56,7 @@ const ConnectedComponent = ({ selectedFiatBankDepositState, actionSheetDocumentR
       Deposit exact amount to:
     </Text>
     <View_Payment selectedPayment={selectedFiatBankDepositState.dollarBTCPayment} />
+    
     {JSON.stringify(fileAssetState) !== JSON.stringify({}) &&
       <View
         style={{
@@ -89,6 +90,7 @@ const ConnectedComponent = ({ selectedFiatBankDepositState, actionSheetDocumentR
           />
         </TouchableOpacity>
       </View>}
+      
     <TouchableOpacity
       style={{
         backgroundColor: navigateStore.getState().selectedColorState,
