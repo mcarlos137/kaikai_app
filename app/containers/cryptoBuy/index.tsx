@@ -34,10 +34,10 @@ const CryptoBuyScreen = ({ navigation, route, colors, userName, detailedBalances
     const [isVisibleModalTransaction, setIsVisibleModalTransaction] = useState(false)
 
     //HOOKS CALLS
-    const { data: cryptoPrice, refetch } =
+    const { data: dataCryptoPrice, refetch: refetchCryptoPrice } =
         getCryptoPrice(
+            targetCurrency?.value,
             baseCurrency.value,
-            targetCurrency?.value
         )
 
     const { data: dataCharges, error: errorCharges, isLoading: isLoadingCharges } =
@@ -88,7 +88,7 @@ const CryptoBuyScreen = ({ navigation, route, colors, userName, detailedBalances
             {
                 title: 'Price:',
                 type: 'NUMERIC',
-                value: cryptoPrice?.data.ask,
+                value: dataCryptoPrice?.ask,
                 valuePreffix: '1 ' + baseCurrency?.value + ' =',
                 valueSuffix: targetCurrency?.value,
                 valueDecimals: targetCurrency?.decimals
@@ -119,7 +119,7 @@ const CryptoBuyScreen = ({ navigation, route, colors, userName, detailedBalances
                 {
                     title: 'Final Amount to Receive:',
                     type: 'NUMERIC',
-                    value: (baseCurrencyAmount - dataCharges?.COMMISSION?.amount) * cryptoPrice?.data.ask,
+                    value: (baseCurrencyAmount - dataCharges?.COMMISSION?.amount) * dataCryptoPrice?.ask,
                     valuePreffix: '',
                     valueSuffix: targetCurrency?.value,
                     valueDecimals: targetCurrency?.decimals
@@ -127,7 +127,7 @@ const CryptoBuyScreen = ({ navigation, route, colors, userName, detailedBalances
             );
         }
         return data;
-    }, [baseCurrency, targetCurrency, baseCurrencyAmount, targetCurrencyAmount, cryptoPrice, dataCharges])
+    }, [baseCurrency, targetCurrency, baseCurrencyAmount, targetCurrencyAmount, dataCryptoPrice, dataCharges])
 
     //CALLBACKS   
     const onValueChangeBaseCurrency = useCallback((item, itemIndex) => {
@@ -141,22 +141,22 @@ const CryptoBuyScreen = ({ navigation, route, colors, userName, detailedBalances
     const onChangeTextBaseCurrencyAmount = useCallback((maskedText, rawText) => {
         if (Number(maxAmount) > Number(rawText)) {
             setBaseCurrencyAmount(Number(rawText))
-            setTargetCurrencyAmount(Number(rawText * cryptoPrice?.data.ask))
+            setTargetCurrencyAmount(Number(rawText * dataCryptoPrice?.ask))
         } else {
             setBaseCurrencyAmount(Number(maxAmount))
-            setTargetCurrencyAmount(Number(maxAmount * cryptoPrice?.data.ask))
+            setTargetCurrencyAmount(Number(maxAmount * dataCryptoPrice?.ask))
         }
-    }, [maxAmount, cryptoPrice])
+    }, [maxAmount, dataCryptoPrice])
 
     const onChangeTextTargetCurrencyAmount = useCallback((maskedText, rawText) => {
-        if (Number(maxAmount) > Number(rawText / cryptoPrice?.data.ask)) {
+        if (Number(maxAmount) > Number(rawText / dataCryptoPrice?.ask)) {
             setTargetCurrencyAmount(Number(rawText))
-            setBaseCurrencyAmount(Number(rawText / cryptoPrice?.data.ask))
+            setBaseCurrencyAmount(Number(rawText / dataCryptoPrice?.ask))
         } else {
-            setTargetCurrencyAmount(Number(maxAmount * cryptoPrice?.data.ask))
+            setTargetCurrencyAmount(Number(maxAmount * dataCryptoPrice?.ask))
             setBaseCurrencyAmount(Number(maxAmount))
         }
-    }, [maxAmount, cryptoPrice])
+    }, [maxAmount, dataCryptoPrice])
 
     const renderTextPrice = useCallback((value) => (
         <Text style={{
@@ -165,10 +165,11 @@ const CryptoBuyScreen = ({ navigation, route, colors, userName, detailedBalances
             marginTop: 5,
             color: colors.text
         }}>
-            {baseCurrency === null ? '' : '1 ' +
+            {baseCurrency === null ? '' : value +
+                ' ' +
                 baseCurrency?.value +
                 ' = ' +
-                value +
+                '1' +
                 ' ' +
                 targetCurrency?.value}
         </Text>
@@ -264,10 +265,10 @@ const CryptoBuyScreen = ({ navigation, route, colors, userName, detailedBalances
                         type={'money'}
                     />
                     <Body_TextRight
-                        value={cryptoPrice?.data?.ask}
-                        decimalScale={cryptoPrice === undefined ? 0 : cryptoPrice?.data?.ask >= 1000000
+                        value={dataCryptoPrice?.ask}
+                        decimalScale={dataCryptoPrice === undefined ? 0 : dataCryptoPrice?.ask >= 1000000
                             ? 0
-                            : cryptoPrice?.data?.ask >= 1
+                            : dataCryptoPrice?.ask >= 1
                                 ? 2
                                 : 8}
                         renderText={renderTextPrice}

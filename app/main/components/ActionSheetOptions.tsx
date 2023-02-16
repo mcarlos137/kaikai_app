@@ -11,16 +11,12 @@ import ActionSheet from "react-native-actions-sheet";
 import { compose } from 'redux';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-//STORES
-import { store as authStore } from '../stores/auth';
 //HOC
-import { withColors } from '../hoc';
+import { withColors, withUserName } from '../hoc';
 
-const Component = ({ customRef, navigation, route, colors }) => {
+const Component = ({ customRef, navigation, route, colors, userName }) => {
 
     //INITIAL CONSTANTS
-    const { userName } = authStore.getState()
-
     const OPTIONS = [
         {
             icon: 'MaterialCommunityIcons__play-box-multiple__20__SELECTED_COLOR',
@@ -226,4 +222,4 @@ const Component = ({ customRef, navigation, route, colors }) => {
     )
 };
 
-export default React.memo(compose(withColors)(Component));
+export default React.memo(compose(withColors, withUserName)(Component));

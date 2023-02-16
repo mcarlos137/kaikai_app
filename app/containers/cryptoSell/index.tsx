@@ -81,7 +81,7 @@ const CryptoSellScreen = ({ navigation, route, colors, userName, detailedBalance
             {
                 title: 'Price:',
                 type: 'NUMERIC',
-                value: dataCryptoPrice?.data.bid,
+                value: dataCryptoPrice?.bid,
                 valuePreffix: '1 ' + baseCurrency.value + ' =',
                 valueSuffix: targetCurrency?.value,
                 valueDecimals: targetCurrency?.decimals
@@ -134,19 +134,19 @@ const CryptoSellScreen = ({ navigation, route, colors, userName, detailedBalance
     const onChangeTextBaseCurrencyAmount = useCallback((maskedText, rawText) => {
         if (Number(maxAmount) > Number(rawText)) {
             setBaseCurrencyAmount(Number(rawText))
-            setTargetCurrencyAmount(Number(rawText * dataCryptoPrice?.data.bid))
+            setTargetCurrencyAmount(Number(rawText * dataCryptoPrice?.bid))
         } else {
             setBaseCurrencyAmount(Number(maxAmount))
-            setTargetCurrencyAmount(Number(maxAmount * dataCryptoPrice?.data.bid))
+            setTargetCurrencyAmount(Number(maxAmount * dataCryptoPrice?.bid))
         }
     }, [maxAmount, dataCryptoPrice])
 
     const onChangeTextTargetCurrencyAmount = useCallback((maskedText, rawText) => {
-        if (Number(maxAmount) > Number(rawText / dataCryptoPrice?.data.bid)) {
+        if (Number(maxAmount) > Number(rawText / dataCryptoPrice?.bid)) {
             setTargetCurrencyAmount(Number(rawText))
-            setBaseCurrencyAmount(Number(rawText / dataCryptoPrice?.data.bid))
+            setBaseCurrencyAmount(Number(rawText / dataCryptoPrice?.bid))
         } else {
-            setTargetCurrencyAmount(Number(maxAmount * dataCryptoPrice?.data.bid))
+            setTargetCurrencyAmount(Number(maxAmount * dataCryptoPrice?.bid))
             setBaseCurrencyAmount(Number(maxAmount))
         }
     }, [maxAmount, dataCryptoPrice])
@@ -255,10 +255,10 @@ const CryptoSellScreen = ({ navigation, route, colors, userName, detailedBalance
                         type={'money'}
                     />
                     <Body_TextRight
-                        value={dataCryptoPrice?.data?.bid}
-                        decimalScale={dataCryptoPrice === undefined ? 0 : dataCryptoPrice?.data?.bid >= 1000000
+                        value={dataCryptoPrice?.bid}
+                        decimalScale={dataCryptoPrice === undefined ? 0 : dataCryptoPrice?.bid >= 1000000
                             ? 0
-                            : dataCryptoPrice?.data?.bid >= 1
+                            : dataCryptoPrice?.bid >= 1
                                 ? 2
                                 : 8}
                         renderText={renderTextPrice}

@@ -10,8 +10,12 @@ export const getCryptoPrice = (cryptoCurrency: string, fiatCurrency: string) => 
         ['cryptoPrice', cryptoCurrency, fiatCurrency],
         getCryptoPriceRequest,
         {
-            enabled: true
-            //keepPreviousData: true
+            enabled: true,
+            initialData: [],
+            select: (data) => data?.data !== undefined ? data.data : data,
+            onSuccess: (data) => {
+                //console.log('cryptoPrice', JSON.stringify(data.length, null, 4));
+            },
         }
     )
 }
